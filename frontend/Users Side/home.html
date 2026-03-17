@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StepZone Home</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Using Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@300;400;500;700&family=Great+Vibes&display=swap"
+        rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body class="home-body">
+    <!-- Announcement Bar -->
+    <div class="announcement-bar">
+        <div class="announcement-text">
+            Invite Friends and get 50% off on your next purchase <a href="#" class="invite-link">Invite Now</a>
+        </div>
+        <div class="close-announcement"><i class="fas fa-times"></i></div>
+    </div>
+
+    <!-- Header Section -->
+    <header class="main-header">
+        <div class="header-left">
+            <div class="logo">StepZOne</a></div>
+        </div>
+
+        <nav class="header-center">
+            <ul class="nav-links">
+                <li><a href="womens_product.html">Women</a></li>
+                <li><a href="kids_product.html">Kids</a></li>
+                <li><a href="products.html">Shop</a></li>
+                <li><a href="#">Contact us</a></li>
+            </ul>
+        </nav>
+  <script>
+    if (!localStorage.getItem("token")) {
+      window.location.href = "login.html";
+    }
+  </script>
+
+        <div class="header-right">
+            <div class="search-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" placeholder="Search here" class="search-input">
+            </div>
+            <div class="header-icons">
+                <a href="wishlist.html" class="icon-link"><i class="far fa-heart"></i></a>
+                <a href="cart.html" class="icon-link"><i class="fas fa-shopping-cart"></i></a>
+                <a href="profile.html" class="profile-link">
+                    <div class="avatar-circle"><i class="fas fa-user"></i></div>
+                    <span class="username">Anne Doe</span>
+                </a>
+            </div>
+            <div class="mobile-menu-trigger">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <span class="hero-tagline">STEP INTO STYLE –</span>
+            <span class="hero-script">with</span>
+            <h1 class="hero-brand">StepZone</h1>
+            <p class="hero-sub">Latest Women Footwear Collection</p>
+            <div class="hero-buttons">
+                <a href="products.html" class="btn-primary">Shop Now</a>
+                <a href="products.html" class="btn-secondary">Explore Collection</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trending Now -->
+    <section class="section-container trending-section">
+        <h2 class="section-title">Trending Now</h2>
+        <div class="product-grid">
+            <!-- Product 1 -->
+            <div class="product-card">
+                <img src="images/image 1.jpg" alt="Product" class="product-img">
+                <div class="product-info">
+                    <h3>Velvet Pink Heels</h3>
+                    <p>$499.99</p>
+                    <button class="add-cart-btn">Add to Cart</button>
+
+                </div>
+            </div>
+            <!-- Product 2 -->
+            <div class="product-card">
+                <img src="images/image 4.jpg" alt="Product" class="product-img">
+                <div class="product-info">
+                    <h3>Pastel Sneakers</h3>
+                    <p>$599.99</p>
+                    <button class="add-cart-btn">Add to Cart</button>
+
+                </div>
+            </div>
+            <!-- Product 3 -->
+            <div class="product-card">
+                <img src="images/image 5.jpg" alt="Product" class="product-img">
+                <div class="product-info">
+                    <h3>Comfort Flats</h3>
+                    <p>$399.99</p>
+                    <button class="add-cart-btn">Add to Cart</button>
+
+                </div>
+            </div>
+            <!-- Product 4 -->
+            <div class="product-card">
+                <img src="images/image 6.jpg" alt="Product" class="product-img">
+                <div class="product-info">
+                    <h3>Summer Sandals</h3>
+                    <p>$349.99</p>
+                    <button class="add-cart-btn">Add to Cart</button>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Deals of the Day -->
+    <section class="section-container deals-section">
+        <h2 class="section-title">Deals of the Day</h2>
+        <div class="product-grid">
+            <div class="product-card">
+                <div class="badge sale-badge">SALE</div>
+                <img src="images/image 8.jpg" Deal" class="product-img">
+                <div class="product-info">
+                    <h3>Party Wear Glam</h3>
+                    <p><span class="original-price">$799.99</span> $499.99</p>
+                    <button class="add-cart-btn">Add to Cart</button>
+
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="badge hot-badge">HOT</div>
+                <img src="images/image 9.jpg" alt="Deal" class="product-img">
+                <div class="product-info">
+                    <h3>Classic Stilettos</h3>
+                    <p><span class="original-price">$699.99</span> $449.99</p>
+                    <button class="add-cart-btn">Add to Cart</button>
+
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="badge sale-badge">50% OFF</div>
+                <img src="images/image 23.jpg" Deal" class="product-img">
+                <div class="product-info">
+                    <h3>Casual Loafers</h3>
+                    <p><span class="original-price">$499.99</span> $349.99</p>
+                    <button class="add-cart-btn">Add to Cart</button>
+
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="badge best-badge">BEST</div>
+                <img src="images/image 11.jpg" alt="Deal" class="product-img">
+                <div class="product-info">
+                    <h3>Sporty Chic</h3>
+                    <p><span class="original-price">$559.00</span> $359.00</p>
+                    <button class="add-cart-btn">Add to Cart</button>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trending Offers -->
+    <section class="section-container offers-section">
+        <h2 class="section-title">Trending Offers</h2>
+        <div class="offers-grid">
+            <div class="offer-card offer-1">
+                <h3>Levi's Collection</h3>
+                <h2>Min 60% Off</h2>
+                <a href="#" class="offer-btn">Explore</a>
+            </div>
+            <div class="offer-card offer-2">
+                <h3>Forever 21</h3>
+                <h2>Flat 50% Off</h2>
+                <a href="#" class="offer-btn">Shop now</a>
+            </div>
+            <div class="offer-card offer-3">
+                <h3>Nike & Puma</h3>
+                <h2>Up to 40% Off</h2>
+                <a href="#" class="offer-btn">Grab Deal</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Promotional Banner -->
+    <section class="promo-banner-section">
+        <div class="promo-content">
+            <h3>FOREVER 21</h3>
+            <h2>Big Fashion Festival</h2>
+            <p>70% - 80% Off</p>
+            <a href="products.html" class="btn-primary">Explore Now</a>
+        </div>
+    </section>
+
+    <!-- Shop by Categories -->
+    <section class="section-container categories-section">
+        <h2 class="section-title">Shop by Categories</h2>
+        <div class="categories-grid">
+            <div class="category-card">
+                <img src="images/image 12.png" alt="Heels">
+                <p>Heels</p>
+            </div>
+            <div class="category-card">
+                <img src="images/image 14.jpg" alt="Flats">
+                <p>Flats</p>
+            </div>
+            <div class="category-card">
+                <img src="images/image 15.jpg" alt="Sandals">
+                <p>Sandals</p>
+            </div>
+            <div class="category-card">
+                <img src="images/image 16.jpg" alt="Casual">
+                <p>Casual</p>
+            </div>
+            <div class="category-card">
+                <img src="images/image 17 (2).jpg" alt="Party">
+                <p>Party Wear</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="section-container testimonials-section">
+        <h2 class="section-title">What Our Customers Say</h2>
+        <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <img src="images/cus 1.webp" User" class="user-avatar">
+                <p class="review-text">"Absolutely love the heels! So comfortable and stylish."</p>
+                <h4>- Sarah J.</h4>
+            </div>
+            <div class="testimonial-card">
+                <img src="images/cus 2.webp" alt="User" class="user-avatar">
+                <p class="review-text">"Fast shipping and great quality. Will buy again!"</p>
+                <h4>- Emily R.</h4>
+            </div>
+            <div class="testimonial-card">
+                <img src="images/cus 3.webp" User" class="user-avatar">
+                <p class="review-text">"The sale prices are unbeatable. Best footwear site!"</p>
+                <h4>- Jessica M.</h4>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Blogs -->
+    <section class="section-container blogs-section">
+        <h2 class="section-title">Featured Blogs</h2>
+        <div class="blogs-grid">
+            <div class="blog-card">
+                <img src="images/image 21.jpg" Blog" class="blog-img">
+                <div class="blog-content">
+                    <h3>Summer Style Guide</h3>
+                    <p>Top trends to look out for this summer season.</p>
+                    <a href="#">Read More</a>
+                </div>
+            </div>
+            <div class="blog-card">
+                <img src="images/image 22.jpg" alt="Blog" class="blog-img">
+                <div class="blog-content">
+                    <h3>Heel Hacks 101</h3>
+                    <p>How to walk comfortably in high heels all day.</p>
+                    <a href="#">Read More</a>
+                </div>
+            </div>
+            <div class="blog-card">
+                <img src="images/image 23.jpg" alt="Blog" class="blog-img">
+                <div class="blog-content">
+                    <h3>Shoe Care Tips</h3>
+                    <p>Keep your footwear looking brand new with these tips.</p>
+                    <a href="#">Read More</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <!-- Top Section -->
+            <div class="footer-top">
+                <!-- Brand -->
+                <div class="footer-brand-section">
+                    <h2 class="footer-logo">StepZone</h2>
+                </div>
+
+                <!-- Navigation Columns -->
+                <div class="footer-links-container">
+                    <div class="footer-column">
+                        <h3>Women</h3>
+                        <ul>
+                            <li><a href="#">All Women</a></li>
+                            <li><a href="#">Sandals</a></li>
+                            <li><a href="#">Flip Flops</a></li>
+                            <li><a href="#">Flats</a></li>
+                            <li><a href="#">Sneakers</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>Kids</h3>
+                        <ul>
+                            <li><a href="#">All Kids</a></li>
+                            <li><a href="#">Shoes</a></li>
+                            <li><a href="#">Sandals</a></li>
+                            <li><a href="#">Boots</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>Shopping</h3>
+                        <ul>
+                            <li><a href="#">Your Cart</a></li>
+                            <li><a href="#">Your Orders</a></li>
+                            <li><a href="#">Wishlist</a></li>
+                            <li><a href="#">Shipping Details</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>More Links</h3>
+                        <ul>
+                            <li><a href="#">Blogs</a></li>
+                            <li><a href="#">Gift Center</a></li>
+                            <li><a href="#">Buying Guides</a></li>
+                            <li><a href="#">New Arrivals</a></li>
+                            <li><a href="#">Clearance</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Stay in Touch -->
+                <div class="footer-newsletter">
+                    <h3>Stay in Touch</h3>
+                    <p>Subscribe to our newsletter for exclusive offers.</p>
+                    <div class="newsletter-form">
+                        <input type="email" placeholder="Enter your email">
+                        <button type="submit"><i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Bottom Section -->
+            <div class="footer-bottom">
+                <div class="footer-legal">
+                    <a href="#">Terms & Conditions</a>
+                    <span>|</span>
+                    <a href="#">Privacy Policy</a>
+                </div>
+                <div class="footer-social">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+  <script>
+    function logout() {
+      localStorage.removeItem("token");
+      alert("Logged out successfully");
+      window.location.href = "login.html";
+    }
+
+    
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email OTP Verification - StepZone</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        body {
+            background-color: #c1909d;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Roboto', sans-serif;
+            color: #000;
+        }
+
+        .otp-card {
+            background-color: #fff;
+            width: 400px;
+            padding: 40px;
+            border-radius: 15px;
+            border: 1px solid #333;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .icon-wrapper {
+            position: relative;
+            height: 60px;
+            width: 60px;
+            margin: 0 auto 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .email-icon {
+            font-size: 3rem;
+            color: #FFA500;
+        }
+
+        .lock-icon {
+            font-size: 1.5rem;
+            color: #888;
+            z-index: 2;
+            background-color: #fff;
+            padding: 2px;
+            border-radius: 4px;
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+            color: #000;
+        }
+
+        .subtitle {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        /* --- Email Input Field --- */
+        .email-input-container {
+            background-color: #f5f5f5;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            margin-bottom: 25px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .email-input-container i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+            color: #333;
+        }
+
+        .email-input {
+            flex-grow: 1;
+            font-size: 0.95rem;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-weight: 500;
+        }
+
+        .check-icon {
+            background-color: #28a745;
+            color: #fff;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.7rem;
+            display: none; /* hidden by default */
+        }
+
+        /* --- Action Button --- */
+        .send-btn {
+            width: 100%;
+            padding: 14px;
+            background-color: #e3346e;
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: opacity 0.3s;
+        }
+
+        .send-btn:hover {
+            opacity: 0.9;
+        }
+
+        .change-email {
+            font-size: 0.8rem;
+            color: #666;
+            text-decoration: none;
+            border-bottom: 1px dotted #999;
+        }
+
+        @media (max-width: 480px) {
+            .otp-card {
+                width: 90%;
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="otp-card">
+        <!-- Icon Section -->
+        <div class="icon-wrapper">
+            <i class="fas fa-envelope email-icon"></i>
+            <i class="fas fa-lock lock-icon"></i>
+        </div>
+
+        <!-- Title & Subtitle -->
+        <h1>Email Verification</h1>
+        <p class="subtitle">Enter your email address</p>
+
+        <!-- Email Input -->
+        <div class="email-input-container">
+            <i class="fas fa-envelope"></i>
+            <input type="email" id="emailAddress" placeholder="Enter your email" class="email-input">
+            <div class="check-icon" id="validCheck">
+                <i class="fas fa-check"></i>
+            </div>
+        </div>
+
+        <!-- Send Code Button -->
+        <button type="button" class="send-btn" id="sendOtpBtn">Send Code</button>
+        <p id="message" style="color: red; font-size: 0.85rem;"></p>
+
+        <!-- Footer Link -->
+        <a href="#" class="change-email">Change Email</a>
+    </div>
+
+    <script>
+        const emailInput = document.getElementById('emailAddress');
+        const sendBtn = document.getElementById('sendOtpBtn');
+        const validCheck = document.getElementById('validCheck');
+        const message = document.getElementById('message');
+
+        emailInput.addEventListener('input', () => {
+            const value = emailInput.value.trim();
+            if (value.includes('@')) {
+                validCheck.style.display = 'flex';
+                sendBtn.disabled = false;
+            } else {
+                validCheck.style.display = 'none';
+                sendBtn.disabled = true;
+            }
+        });
+
+        sendBtn.addEventListener('click', async () => {
+            const email = emailInput.value.trim();
+            if (!email.includes('@')) {
+                message.textContent = 'Please enter a valid email.';
+                return;
+            }
+
+            try {
+                const res = await fetch('http://localhost:5000/api/send-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    localStorage.setItem('otpId', data.otpId);
+                    localStorage.setItem('email', email);
+                    window.location.href = 'verify.html';
+                } else {
+                    message.textContent = data.message;
+                }
+            } catch (err) {
+                message.textContent = 'Error sending OTP. Try again.';
+                console.error(err);
+            }
+        });
+    </script>
+</body>
+
+</html>

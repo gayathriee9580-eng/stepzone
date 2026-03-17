@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StepZone | Women Footwear Products</title>
+    <style>
+        :root {
+            --sidebar-width: 260px;
+            --topbar-height: 70px;
+            --primary-blue: #e092d1;
+            --sidebar-bg: #1a1d21;
+            --sidebar-text: #adb5bd;
+            --sidebar-hover: #ffffff;
+            --body-bg: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-dark: #202124;
+            --text-muted: #5f6368;
+            --border-color: #dee2e6;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--body-bg);
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            background-color: var(--sidebar-bg);
+            position: fixed;
+            left: 0;
+            top: 0;
+            color: white;
+            padding: 20px 0;
+            z-index: 1000;
+        }
+
+        .sidebar-brand {
+            padding: 0 25px 30px;
+            font-size: 24px;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar-brand span {
+            color: var(--primary-blue);
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            padding: 2px 15px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: var(--sidebar-text);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background-color: rgba(34, 116, 223, 0.708);
+            color: var(--sidebar-hover);
+        }
+
+        .nav-link.active {
+            background-color: var(--primary-blue);
+            color: #fff;
+        }
+
+        /* Topbar Styles */
+        .topbar {
+            margin-left: var(--sidebar-width);
+            height: var(--topbar-height);
+            background-color: var(--card-bg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background-color: #f1f3f4;
+            padding: 8px 15px;
+            border-radius: 8px;
+            width: 350px;
+        }
+
+        .search-box input {
+            border: none;
+            background: transparent;
+            outline: none;
+            padding-left: 10px;
+            width: 100%;
+            font-size: 14px;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background-color: var(--primary-blue);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 30px;
+        }
+
+        .section-header {
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-header h2 {
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-blue);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: var(--transition);
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        /* Product Table Card */
+        .card {
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .filter-select {
+            padding: 8px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            background-color: #fff;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            padding: 15px;
+            background-color: #f8f9fa;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .product-img {
+            width: 45px;
+            height: 45px;
+            border-radius: 8px;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #adb5bd;
+            border: 1px solid #dee2e6;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-in-stock {
+            background-color: #e6f4ea;
+            color: #1e8e3e;
+        }
+
+        .status-out-stock {
+            background-color: #fce8e6;
+            color: #d93025;
+        }
+
+        .status-low-stock {
+            background-color: #fef7e0;
+            color: #b05a00;
+        }
+
+        .category-tag {
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid #dee2e6;
+        }
+
+        .tag-women {
+            border-color: #ea4335;
+            color: #ea4335;
+        }
+
+        .tag-kids {
+            border-color: #fbbc04;
+            color: #fbbc04;
+        }
+
+        .action-links a {
+            color: var(--primary-blue);
+            text-decoration: none;
+            margin-right: 15px;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .action-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 80px;
+            }
+
+            .sidebar-brand,
+            .nav-link span {
+                display: none;
+            }
+
+            .topbar,
+            .main-content {
+                margin-left: 80px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            Step<span>Zone</span>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="dashboard.html" class="nav-link">
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="products.html" class="nav-link active">
+                    <span>Products</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="categories.html" class="nav-link">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="orders.html" class="nav-link">
+                    <span>Orders</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="payments.html" class="nav-link">
+                    <span>Payments</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="reports.html" class="nav-link">
+                    <span>Reports & Analytics</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="offers.html" class="nav-link">
+                    <span>Offers & Coupons</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="reviews.html" class="nav-link">
+                    <span>Reviews</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="sales-reports.html" class="nav-link">
+                    <i class="fas fa-star"></i>
+                    <span>Sales Reports</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="users.html" class="nav-link">
+                    <span>User Management</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="settings.html" class="nav-link">
+                    <span>Admin Settings</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <div class="search-box">
+            <input type="text" placeholder="Search products...">
+        </div>
+        <div class="topbar-right">
+<div class="user-profile">
+    <div class="user-avatar" id="adminAvatar"></div>
+    <div class="user-info">
+        <div id="adminName"></div>
+        <div>Super Admin</div>
+    </div>
+</div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <div class="section-header">
+            <h2>Women Footwear Products</h2>
+            <a href="add-product.html" class="btn-primary">+ Add New Product</a>
+        </div>
+
+        <div class="card">
+            <div class="filters">
+                <select class="filter-select" id="categoryFilter">
+                    <option value="">Category: All</option>
+                    <option value="women">Women</option>
+                    <option value="kids">Kids</option>
+                </select>
+                <select class="filter-select" id="statusFilter">
+                    <option value="">Status: All</option>
+                    <option value="in">In Stock</option>
+                    <option value="out">Out of Stock</option>
+                    <option value="low">Low Stock</option>
+                </select>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Product Name</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                  <tbody id="productsTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+    <script src="admin-common.js"></script>
+    <script>
+
+if (!token) {
+  window.location.href = "admin-login.html";
+}
+
+async function loadProducts() {
+  try {
+    const res = await fetch("http://localhost:5000/api/admin/products", {
+      headers: { Authorization: "Bearer " + token }
+    });
+
+    let products = await res.json();
+      // 🔥 GET FILTER VALUES
+    const selectedCategory = document.getElementById("categoryFilter").value;
+    const selectedStatus = document.getElementById("statusFilter").value;
+
+// 🔥 CATEGORY FILTER
+if (selectedCategory) {
+  products = products.filter(p => {
+    if (!p.category) return false;
+    return p.category.trim().toLowerCase() === selectedCategory.trim().toLowerCase();
+  });
+}
+    // 🔥 STATUS FILTER
+    if (selectedStatus) {
+      products = products.filter(p => {
+        if (selectedStatus === "out") return p.stock === 0;
+        if (selectedStatus === "low") return p.stock > 0 && p.stock <= 5;
+        if (selectedStatus === "in") return p.stock > 5;
+      });
+    }
+
+
+    const tbody = document.getElementById("productsTableBody");
+    tbody.innerHTML = "";
+
+    products.forEach(product => {
+        const categoryName = product.category; // it’s already a string
+
+      // Status Logic
+      let statusText = "";
+      let statusClass = "";
+
+      if (product.stock === 0) {
+        statusText = "Out of Stock";
+        statusClass = "status-out-stock";
+      } else if (product.stock <= 5) {
+        statusText = "Low Stock";
+        statusClass = "status-low-stock";
+      } else {
+        statusText = "In Stock";
+        statusClass = "status-in-stock";
+      }
+      
+
+      const tr = document.createElement("tr");
+
+      tr.innerHTML = `
+        <td>
+          <img src="${product.image}" width="45" height="45" style="border-radius:8px;" />
+        </td>
+        <td><span style="font-weight:600;">${product.name}</span></td>
+        <td>
+      <span class="category-tag tag-${categoryName.toLowerCase()}">
+        ${categoryName}
+      </span>
+        </td>
+        <td>₹${product.price}</td>
+        <td>${product.stock}</td>
+        <td>
+          <span class="status-badge ${statusClass}">
+            ${statusText}
+          </span>
+        </td>
+        <td class="action-links">
+          <a href="edit-product.html?id=${product._id}">Edit</a>
+          <a href="#" onclick="deleteProduct('${product._id}')">Delete</a>
+        </td>
+      `;
+
+      tbody.appendChild(tr);
+    });
+
+  } catch (err) {
+    console.error("Load products error:", err);
+  }
+}
+
+async function deleteProduct(id) {
+  if (!confirm("Are you sure to delete this product?")) return;
+
+  await fetch(`http://localhost:5000/api/admin/products/${id}`, {
+    method: "DELETE",
+    headers: { Authorization: "Bearer " + token }
+  });
+  loadProducts();
+
+
+}
+
+
+document.getElementById("categoryFilter").addEventListener("change", loadProducts);
+document.getElementById("statusFilter").addEventListener("change", loadProducts);
+
+loadProducts();
+</script>
+</body>
+</html>

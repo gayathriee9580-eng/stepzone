@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StepZone | Admin Settings</title>
+    <style>
+        :root {
+            --sidebar-width: 260px;
+            --topbar-height: 70px;
+            --primary-blue: #e092d1;
+            --sidebar-bg: #1a1d21;
+            --sidebar-text: #adb5bd;
+            --sidebar-hover: #ffffff;
+            --body-bg: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-dark: #202124;
+            --text-muted: #5f6368;
+            --border-color: #dee2e6;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --transition: all 0.3s ease;
+            --accent-hover: rgba(34, 116, 223, 0.708);
+        }
+
+            body.dark-mode{
+            --body-bg:#121212;
+            --card-bg:#1e1e1e;
+            --text-dark:#ffffff;
+            --text-muted:#b0b0b0;
+            --border-color:#2e2e2e;
+            --sidebar-bg:#0f1114;
+            --sidebar-text:#b0b0b0;
+            --sidebar-hover:#ffffff;
+            }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--body-bg);
+            color: var(--text-dark);
+            overflow-x: hidden;
+            transition:background 0.3s,color 0.3s;
+
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            background-color: var(--sidebar-bg);
+            position: fixed;
+            left: 0;
+            top: 0;
+            color: white;
+            padding: 20px 0;
+            z-index: 1000;
+        }
+
+        .sidebar-brand {
+            padding: 0 25px 30px;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .sidebar-brand span {
+            color: var(--primary-blue);
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 25px;
+            color: var(--sidebar-text);
+            text-decoration: none;
+            font-size: 15px;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--sidebar-hover);
+            background-color: var(--accent-hover);
+        }
+
+        .nav-link.active {
+            background-color: var(--primary-blue);
+        }
+
+        /* Topbar Styles */
+        .topbar {
+            margin-left: var(--sidebar-width);
+            height: var(--topbar-height);
+            background-color: var(--card-bg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            background-color: #f1f3f4;
+            padding: 8px 15px;
+            border-radius: 8px;
+            width: 350px;
+        }
+
+        .search-container input {
+            border: none;
+            background: transparent;
+            outline: none;
+            padding-left: 10px;
+            width: 100%;
+            font-size: 14px;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background-color: var(--primary-blue);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 30px;
+            max-width: 1000px;
+        }
+
+        .section-header {
+            margin-bottom: 25px;
+        }
+
+        .section-header h2 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        /* Settings Grid */
+        .settings-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            padding: 24px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-dark);
+            border-bottom: 1px solid #f1f3f4;
+            padding-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Form Controls */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .form-input {
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            outline: none;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .form-input:focus {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(224, 146, 209, 0.1);
+        }
+
+        .form-input[readonly] {
+            background-color: #f8f9fa;
+            cursor: not-allowed;
+        }
+
+        /* Profile Selection */
+        .profile-upload {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .avatar-preview {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: #f1f3f4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--text-muted);
+            border: 2px dashed var(--border-color);
+        }
+
+        .upload-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .btn-text {
+            color: var(--primary-blue);
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        /* Toggles */
+        .preference-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f3f4;
+        }
+
+        .preference-item:last-child {
+            border-bottom: none;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: var(--primary-blue);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(20px);
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .btn-danger {
+            background-color: #fff;
+            color: #d93025;
+            border: 1px solid #fce8e6;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-danger:hover {
+            background-color: #fce8e6;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-right: 10px;
+        }
+
+        .actions-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+                .card {
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        transition: 0.2s;
+        }
+        .card:hover {
+        transform: translateY(-2px);
+        }
+        .form-input:focus {
+        border-color: #e092d1;
+        box-shadow: 0 0 0 3px rgba(224, 146, 209, 0.2);
+        }
+                    .user-profile-dropdown {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            }
+
+            .user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background-color: var(--primary-blue);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            }
+
+            /* Dropdown menu */
+            .dropdown-menu {
+            display: flex; /* inline items */
+            gap: 10px;     /* spacing between links */
+            margin-left: 10px;
+            }
+
+            .dropdown-menu .menu-item {
+            text-decoration: none;
+            font-size: 14px;
+            color: var(--text-dark);
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: 0.2s;
+            }
+
+            .dropdown-menu .menu-item:hover {
+            background-color: #f1f3f4;
+            }
+
+            /* Logout specifically in red */
+            .dropdown-menu .logout {
+            color: #d93025;
+            border: 1px solid #fce8e6;
+            }
+
+            .dropdown-menu .logout:hover {
+            background-color: #fce8e6;
+            color: #d93025;
+            }
+
+                        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+            }
+
+            .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            }
+
+            .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding-left: 4px;
+            }
+
+            .slider .slider-icon {
+            transition: 0.4s;
+            font-size: 16px;
+            }
+
+            input:checked + .slider {
+            background-color: var(--primary-blue);
+            justify-content: flex-end;
+            padding-right: 4px;
+            }
+
+            input:checked + .slider .slider-icon {
+            transform: rotate(360deg); /* optional rotation for fun */
+            color: #fff;
+            }
+
+
+
+
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 80px;
+            }
+
+            .sidebar-brand,
+            .nav-link span {
+                display: none;
+            }
+
+            .topbar,
+            .main-content {
+                margin-left: 80px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            Step<span>Zone</span>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="dashboard.html" class="nav-link">
+<span data-lang="dashboard">Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="products.html" class="nav-link">
+<span data-lang="products">Products</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="categories.html" class="nav-link">
+<span data-lang="categories">Categories</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="orders.html" class="nav-link">
+<span data-lang="orders">Orders</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="payments.html" class="nav-link">
+    <span data-lang="payments">Payments</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="reports.html" class="nav-link">
+<span data-lang="reports">Reports & Analytics</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="offers.html" class="nav-link">
+    <span data-lang="offers">Offers & Coupons</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="reviews.html" class="nav-link">
+    <span data-lang="reviews">Reviews</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="sales-reports.html" class="nav-link">
+                    <i class="fas fa-star"></i>
+    <span data-lang="salesReports">Sales Reports</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="users.html" class="nav-link">
+<span data-lang="users">User Management</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="settings.html" class="nav-link active">
+    <span data-lang="adminSettings">Admin Settings</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+            <div class="search-container">
+            <input type="text" placeholder="Search settings...">
+            </div>
+            <div class="user-profile-dropdown">
+            <div class="user-avatar" id="adminAvatar">AD</div>
+            <div class="dropdown-menu">
+                <a href="#" class="menu-item logout" onclick="logout()">Logout</a>
+            </div>
+            </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <div class="section-header">
+<h2 data-lang="adminSettings">Admin Settings</h2>
+        </div>
+
+        <div class="settings-grid">
+            <!-- SECTION 1: PROFILE -->
+            <div class="card">
+<div class="card-title" data-lang="profileSettings">
+Admin Profile Settings
+</div>
+                <div class="profile-upload">
+                    <div class="avatar-preview" id="profileAvatar"></div>
+                    <div class="upload-controls">
+                        <span class="btn-text">Change Profile Photo</span>
+                        <span style="font-size: 11px; color: var(--text-muted);">Allowed JPG, PNG. Max size 2MB</span>
+                    </div>
+                </div>
+
+<div class="form-row">
+<input type="text" id="adminName" class="form-input">
+<input type="email" id="adminEmail" class="form-input">
+<input type="text" id="adminRole" class="form-input" readonly>
+</div>
+
+<button class="btn-primary" onclick="updateProfile()" style="background-color: #202124;" data-lang="updateProfile">Update Profile</button>
+            </div>
+
+            <!-- SECTION 2: SECURITY -->
+                            <div class="card">
+                <div class="card-title" data-lang="passwordSecurity">
+                Password & Security
+                </div>
+                <div class="form-group" style="margin-bottom: 20px; max-width: 400px;">
+                    <label>Current Password</label>
+                    <input type="password" id="currentPassword" class="form-input" placeholder="••••••••">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>New Password</label>
+                        <input type="password" id="newPassword" class="form-input" placeholder="Enter new password">
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm New Password</label>
+                        <input type="password" id="confirmPassword" class="form-input" placeholder="Repeat new password">
+                    </div>
+                </div>
+
+                <button class="btn-primary" onclick="changePassword()" style="background-color: #202124;">Change Password</button>
+            </div>
+
+            <!-- SECTION 3: PREFERENCES -->
+                            <div class="card">
+                <div class="card-title" data-lang="systemPreferences">
+                System Preferences
+                </div>
+  <!-- Email Alerts Toggle -->
+<div class="preference-item">
+  <div>
+    <div style="font-size: 14px; font-weight: 600;" data-lang="emailAlerts">Email Alerts</div>
+    <div style="font-size: 12px; color: var(--text-muted);" data-lang="emailAlertsDesc">
+      Receive email notifications for new orders and low stock products
+    </div>
+  </div>
+  <label class="switch" >
+    <input type="checkbox" checked id="emailAlertsToggle">
+    <span class="slider">
+      <span class="slider-icon">🔔</span>
+    </span>
+  </label>
+</div>
+
+<!-- Theme Mode Toggle -->
+<div class="preference-item">
+  <div>
+    <div style="font-size: 14px; font-weight: 600;">Theme Mode</div>
+    <div style="font-size: 12px; color: var(--text-muted);">Switch between light and dark dashboard interface</div>
+  </div>
+  <label class="switch">
+    <input type="checkbox" id="themeToggle">
+    <span class="slider">
+      <span class="slider-icon">🌙</span>
+    </span>
+  </label>
+</div>
+
+                <div class="preference-item">
+                    <div>
+                        <div style="font-size: 14px; font-weight: 600;">Admin Language</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">Select your preferred language for
+                            administration</div>
+                    </div>
+                            <select class="form-input" id="languageSelect" style="padding:8px 15px;width:150px;">
+                            <option value="english">English</option>
+                            <option value="hindi">Hindi</option>
+                            <option value="malayalam">Malayalam</option>
+                            </select>
+                </div>
+            </div>
+
+            <!-- SECTION 4: ACCOUNT ACTIONS -->
+            <div class="card" style="border-color: #fce8e6;">
+                <div class="card-title" data-lang="accountActions" style="color: #d93025; border-bottom-color: #fce8e6;">Account Actions</div>
+
+                <div style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;"data-lang="accountWarning">
+                    Be careful with these actions. Deactivating your account will restrict your access to the StepZone
+                    admin panel immediately.
+                </div>
+
+                <div class="actions-group">
+<button class="btn-outline" onclick="logout()" data-lang="logout">Logout Account</button>
+
+                    <button class="btn-danger" data-lang="deactivateAccount">Deactivate Admin Account</button>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="admin-common.js"></script>
+<script>
+
+
+const translations = {
+
+english:{
+adminSettings:"Admin Settings",
+profileSettings:"Admin Profile Settings",
+passwordSecurity:"Password & Security",
+systemPreferences:"System Preferences",
+accountActions:"Account Actions",
+updateProfile:"Update Profile",
+changePassword:"Change Password",
+logout:"Logout Account",
+deactivateAccount:"Deactivate Admin Account",
+accountWarning:"Be careful with these actions. Deactivating your account will restrict your access to the StepZone admin panel immediately.",
+
+
+dashboard:"Dashboard",
+products:"Products",
+categories:"Categories",
+orders:"Orders",
+users:"User Management",
+reports:"Reports & Analytics",
+  payments:"Payments",
+  offers:"Offers & Coupons",
+  reviews:"Reviews",
+  salesReports:"Sales Reports",
+  adminSettings:"Admin Settings"
+
+},
+
+hindi:{
+adminSettings:"एडमिन सेटिंग्स",
+profileSettings:"एडमिन प्रोफ़ाइल सेटिंग्स",
+passwordSecurity:"पासवर्ड और सुरक्षा",
+systemPreferences:"सिस्टम प्राथमिकताएँ",
+accountActions:"अकाउंट क्रियाएँ",
+updateProfile:"प्रोफ़ाइल अपडेट करें",
+changePassword:"पासवर्ड बदलें",
+logout:"लॉगआउट",
+deactivateAccount:"एडमिन अकाउंट निष्क्रिय करें",
+accountWarning:"इन क्रियाओं से सावधान रहें। आपका अकाउंट निष्क्रिय करने पर StepZone एडमिन पैनल तक आपकी पहुँच तुरंत सीमित हो जाएगी।",
+
+dashboard:"डैशबोर्ड",
+products:"प्रोडक्ट्स",
+categories:"कैटेगरी",
+orders:"ऑर्डर्स",
+users:"यूज़र प्रबंधन",
+reports:"रिपोर्ट्स और एनालिटिक्स",
+  payments:"भुगतान",
+  offers:"ऑफ़र और कूपन",
+  reviews:"समीक्षाएँ",
+  salesReports:"सेल्स रिपोर्ट्स",
+  adminSettings:"एडमिन सेटिंग्स"
+},
+
+malayalam:{
+adminSettings:"അഡ്മിൻ ക്രമീകരണങ്ങൾ",
+profileSettings:"അഡ്മിൻ പ്രൊഫൈൽ ക്രമീകരണങ്ങൾ",
+passwordSecurity:"പാസ്‌വേഡ് & സുരക്ഷ",
+systemPreferences:"സിസ്റ്റം മുൻഗണനകൾ",
+accountActions:"അക്കൗണ്ട് പ്രവർത്തികൾ",
+updateProfile:"പ്രൊഫൈൽ അപ്ഡേറ്റ്",
+changePassword:"പാസ്‌വേഡ് മാറ്റുക",
+logout:"ലോഗ്ഔട്ട്",
+deactivateAccount:"അഡ്മിൻ അക്കൗണ്ട് പ്രവർത്തനരഹിതമാക്കുക",
+accountWarning:"ഈ പ്രവർത്തനങ്ങളിൽ ജാഗ്രത വേണം. അക്കൗണ്ട് പ്രവർത്തനരഹിതമാക്കിയാൽ StepZone അഡ്മിൻ പാനലിലേക്കുള്ള പ്രവേശനം ഉടൻ തന്നെ നിയന്ത്രിക്കപ്പെടും.",
+
+dashboard:"ഡാഷ്ബോർഡ്",
+products:"ഉൽപ്പന്നങ്ങൾ",
+categories:"വിഭാഗങ്ങൾ",
+orders:"ഓർഡറുകൾ",
+users:"ഉപയോക്തൃ നിയന്ത്രണം",
+reports:"റിപ്പോർട്ടുകളും അനലിറ്റിക്സും",
+  payments:"പേയ്മെന്റുകൾ",
+  offers:"ഓഫറുകളും കൂപ്പണുകളും",
+  reviews:"പരിശോധനകൾ",
+  salesReports:"സെയിൽസ് റിപ്പോർട്ടുകൾ",
+  adminSettings:"അഡ്മിൻ ക്രമീകരണങ്ങൾ"
+}
+
+};
+
+
+const API = "http://localhost:5000/api/admin";
+
+if(!token){
+alert("Admin not logged in");
+window.location.href = "login.html";
+}
+
+async function loadAdminProfile(){
+
+try{
+
+const res = await fetch(`${API}/settings/profile`,{
+headers:{
+"Authorization":`Bearer ${token}`
+}
+});
+
+if(!res.ok){
+throw new Error("Failed to fetch admin profile");
+}
+
+const admin = await res.json();
+
+document.getElementById("adminName").value = admin.name || "";
+document.getElementById("adminEmail").value = admin.email || "";
+document.getElementById("adminRole").value = admin.role || "";
+
+
+
+const initials = admin.name
+? admin.name.split(" ").map(n => n[0]).join("").toUpperCase()
+: "AD";
+
+document.getElementById("adminAvatar").innerText = initials;
+document.getElementById("profileAvatar").innerText = initials;
+
+}catch(err){
+
+console.error(err);
+alert("Failed to load admin profile");
+
+}
+
+}
+
+
+
+async function updateProfile(){
+
+const name = document.getElementById("adminName").value;
+const email = document.getElementById("adminEmail").value;
+
+if(!name || !email){
+alert("Name and Email required");
+return;
+}
+
+try{
+
+const res = await fetch(`${API}/settings/profile`,{
+
+method:"PUT",
+
+headers:{
+"Content-Type":"application/json",
+"Authorization":`Bearer ${token}`
+},
+
+body:JSON.stringify({name,email})
+
+});
+
+const data = await res.json();
+
+if(!res.ok){
+alert(data.message || "Profile update failed");
+return;
+}
+
+alert("Profile updated successfully");
+
+loadAdminProfile();
+
+}catch(err){
+
+console.error(err);
+alert("Server error");
+
+}
+
+}
+
+
+
+async function changePassword(){
+
+const currentPassword = document.getElementById("currentPassword").value;
+const newPassword = document.getElementById("newPassword").value;
+const confirmPassword = document.getElementById("confirmPassword").value;
+
+if(!currentPassword || !newPassword || !confirmPassword){
+alert("All fields required");
+return;
+}
+
+if(newPassword !== confirmPassword){
+alert("Passwords do not match");
+return;
+}
+
+try{
+
+const res = await fetch(`${API}/settings/change-password`,{
+
+method:"PUT",
+
+headers:{
+"Content-Type":"application/json",
+"Authorization":`Bearer ${token}`
+},
+
+body:JSON.stringify({currentPassword,newPassword})
+
+});
+
+const data = await res.json();
+
+if(!res.ok){
+alert(data.message || "Password change failed");
+return;
+}
+
+alert("Password changed successfully");
+
+document.getElementById("currentPassword").value = "";
+document.getElementById("newPassword").value = "";
+document.getElementById("confirmPassword").value = "";
+
+}catch(err){
+
+console.error(err);
+alert("Server error");
+
+}
+
+}
+
+
+
+function logout(){
+
+localStorage.removeItem("adminToken");
+
+alert("Logged out successfully");
+
+window.location.href = "login.html";
+
+}
+
+const themeToggle = document.getElementById("themeToggle");
+
+function loadTheme(){
+
+const savedTheme = localStorage.getItem("adminTheme");
+
+if(savedTheme === "dark"){
+document.body.classList.add("dark-mode");
+themeToggle.checked = true;
+}
+
+}
+
+themeToggle.addEventListener("change",function(){
+
+if(this.checked){
+
+document.body.classList.add("dark-mode");
+localStorage.setItem("adminTheme","dark");
+
+}else{
+
+document.body.classList.remove("dark-mode");
+localStorage.setItem("adminTheme","light");
+
+}
+
+});
+
+loadTheme();
+
+
+function setLanguage(lang){
+
+localStorage.setItem("adminLang",lang);
+
+document.querySelectorAll("[data-lang]").forEach(element=>{
+
+const key = element.getAttribute("data-lang");
+
+if(translations[lang] && translations[lang][key]){
+element.innerText = translations[lang][key];
+}
+});
+}
+
+const languageSelect = document.getElementById("languageSelect");
+
+languageSelect.addEventListener("change",function(){
+
+setLanguage(this.value);
+
+});
+function loadLanguage(){
+
+const savedLang = localStorage.getItem("adminLang") || "english";
+
+languageSelect.value = savedLang;
+
+setLanguage(savedLang);
+
+}
+
+// Theme Mode toggle icon
+const themeIcon = document.querySelector("#themeToggle + .slider .slider-icon");
+
+// Set initial icon based on saved theme
+if (themeToggle.checked) {
+    themeIcon.innerText = "🌙"; // dark mode
+} else {
+    themeIcon.innerText = "🌞"; // light mode
+}
+
+// Update icon whenever toggle changes
+themeToggle.addEventListener("change", function() {
+    if (this.checked) {
+        document.body.classList.add("dark-mode");
+        localStorage.setItem("adminTheme", "dark");
+        themeIcon.innerText = "🌙"; // dark mode
+    } else {
+        document.body.classList.remove("dark-mode");
+        localStorage.setItem("adminTheme", "light");
+        themeIcon.innerText = "🌞"; // light mode
+    }
+});
+
+loadLanguage();
+loadAdminProfile();
+
+</script>
+</body>
+</html>

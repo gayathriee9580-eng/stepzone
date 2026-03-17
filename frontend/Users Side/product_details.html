@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Womens Blue Stylish Footwear - StepZone</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Using Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@300;400;500;700&family=Great+Vibes&display=swap"
+        rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+</head>
+<body class="home-body">
+    <!-- Announcement Bar (Copied from home.html) -->
+    <div class="announcement-bar">
+        <div class="announcement-text">
+            Invite Friends and get 50% off on your next purchase <a href="#" class="invite-link">Invite Now</a>
+        </div>
+        <div class="close-announcement"><i class="fas fa-times"></i></div>
+    </div>
+
+    <!-- Header Section (Copied from home.html) -->
+    <header class="main-header">
+        <div class="header-left">
+            <div class="logo"><a href="home.html" style="color: black;text-decoration: none;">StepZone</a></div>
+        </div>
+
+        <nav class="header-center">
+            <ul class="nav-links">
+                <li><a href="womens_product.html">Women</a></li>
+                <li><a href="kids_product.html">Kids</a></li>
+                <li><a href="products.html">Shop</a></li>
+                <li><a href="#">Contact us</a></li>
+            </ul>
+        </nav>
+
+        <div class="header-right">
+            <div class="search-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" placeholder="Search here" class="search-input">
+            </div>
+            <div class="header-icons">
+                <a href="#" class="icon-link"><i class="far fa-heart"></i></a>
+                <a href="#" class="icon-link"><i class="fas fa-shopping-cart"></i></a>
+                <a href="#" class="profile-link">
+                    <div class="avatar-circle"><i class="fas fa-user"></i></div>
+                    <span class="username">Anne Doe</span>
+                </a>
+            </div>
+            <div class="mobile-menu-trigger">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <main class="product-details-page">
+        <!-- 1. PRODUCT MAIN SECTION -->
+        <section class="product-main-section">
+            <div class="container product-grid-3col">
+                <!-- LEFT SIDE – IMAGE THUMBNAILS -->
+                <div class="product-thumbnails">
+                    <div class="thumb active"
+                        onclick="updateMainImage(this, 'https://placehold.co/600x600/f3f4f6/3b82f6?text=Main+Shoe')">
+                        <img src="images/image 25.jpg" alt="Thumb 1">
+                    </div>
+                    <div class="thumb"
+                        onclick="updateMainImage(this, 'https://placehold.co/600x600/f3f4f6/3b82f6?text=Side+View')">
+                        <img src="images/image 25.jpg" alt="Thumb 2">
+                    </div>
+                    <div class="thumb"
+                        onclick="updateMainImage(this, 'https://placehold.co/600x600/f3f4f6/3b82f6?text=Back+View')">
+                        <img src="images/image 25.jpg" alt="Thumb 3">
+                    </div>
+                    <div class="thumb"
+                        onclick="updateMainImage(this, 'https://placehold.co/600x600/f3f4f6/3b82f6?text=Detail+View')">
+                        <img src="images/image 25.jpg" alt="Thumb 4">
+                    </div>
+                    <div class="thumb"
+                        onclick="updateMainImage(this, 'https://placehold.co/600x600/f3f4f6/3b82f6?text=Style+View')">
+                        <img src="images/image 25.jpg" alt="Thumb 5">
+                    </div>
+                </div>
+
+                <!-- CENTER – MAIN PRODUCT IMAGE -->
+                <div class="product-main-image">
+                    <div class="image-platform">
+<img id="main-image" src="images/image 25.jpg" alt="">
+                    </div>
+                </div>
+
+                <!-- RIGHT SIDE – PRODUCT DETAILS -->
+                <div class="product-info-panel">
+<h1 class="product-title" id="productTitle">Women's Footwears</h1>
+
+
+                    <p class="product-subtitle">Premium Collection | Footwear</p>
+                    <p class="product-subtitle">Top Branded Collections</p>
+
+
+    <div class="price-section">
+    <span class="discounted-price" id="productPrice"></span>
+    <span class="original-price" id="originalPrice"></span>
+    <span class="discount-badge" id="discountBadge"></span>
+</div>
+
+<div class="selector-container"> 
+    <label>Select Size</label> 
+    <div class="size-selector"> 
+        <button class="size-btn">5</button>
+         <button class="size-btn active">6</button>
+          <button class="size-btn">7</button> 
+          <button class="size-btn">8</button> 
+          <button class="size-btn">9</button> 
+        </div> </div>
+
+<div class="selector-container"> 
+    <label>Color</label>
+     <div class="color-selector"> 
+        <span class="color-swatch active" style="background-color: #3b82f6;" title="Blue">            
+        </span> <span class="color-swatch" style="background-color: #fce4ec;" title="Pink">
+            </span> <span class="color-swatch" style="background-color: #333;" title="Black"></span>
+         </div> </div>
+
+                    <ul class="product-highlights">
+                        <li><i class="fas fa-check-circle"></i> Comfort fit</li>
+                        <li><i class="fas fa-check-circle"></i> Premium sole</li>
+                        <li><i class="fas fa-check-circle"></i> Lightweight</li>
+                    </ul>
+
+ <div class="action-buttons">
+    <button class="btn-primary" id="mainAddToCart" style="position: margin">
+        Add to Cart
+    </button>
+
+    <button class="wishlist-btn" id="mainWishlistBtn">
+        <i class="fa-regular fa-heart"></i>
+    </button>
+</div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. PRODUCT INFO SECTION (Tabbed Content) -->
+        <section class="product-tabs-section">
+            <div class="container">
+                <div class="tabs-header">
+                    <button class="tab-link active" onclick="openTab(event, 'details')">Product Details</button>
+                    <button class="tab-link" onclick="openTab(event, 'spec')">Specification</button>
+                    <button class="tab-link" onclick="openTab(event, 'reviews')">Reviews & Ratings</button>
+                </div>
+
+                <div id="details" class="tab-content active">
+                    <p>Experience unmatched elegance and comfort with our Womens Blue Stylish Footwear. Designed for the
+                        modern woman, these shoes combine fashion-forward aesthetics with ergonomic design. Whether
+                        you're heading to a business meeting or a casual brunch, these shoes provide the perfect
+                        finishing touch to your outfit.</p>
+                    <p>Crafted from high-quality materials, they offer durability and a premium feel. The breathable
+                        design ensures your feet stay fresh all day long, making them an ideal choice for daily use.</p>
+                </div>
+
+                <div id="spec" class="tab-content">
+                    <ul class="spec-list">
+                        <li><span>Material</span> <span>Premium Synthetic Leather</span></li>
+                        <li><span>Sole type</span> <span>Anti-skid Rubber</span></li>
+                        <li><span>Heel height</span> <span>2.5 inches</span></li>
+                        <li><span>Weight</span> <span>450g (Lightweight)</span></li>
+                        <li><span>Occasion</span> <span>Casual & Formal</span></li>
+                    </ul>
+                </div>
+
+                <div id="reviews" class="tab-content">
+                    <div class="rating-summary">
+                        <h3>4.3 <small>out of 5</small></h3>
+                        <div class="stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                    </div>
+                    <div class="review-snippets">
+                        <div class="review-item">
+                            <p>"Perfect fit and very stylish. Love the color!" - <strong>Maria S.</strong></p>
+                        </div>
+                        <div class="review-item">
+                            <p>"Very comfortable for long hours. Highly recommend." - <strong>Linda K.</strong></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. SIMILAR PRODUCTS SECTION -->
+ <section class="section-container similar-products">
+    <h2 class="section-title">Similar Products</h2>
+    <div class="product-grid" id="similarContainer"></div>
+</section>
+
+
+        <!-- 4. CUSTOMER ALSO LIKE SECTION -->
+<section class="section-container also-like">
+    <h2 class="section-title">Customer Also Like</h2>
+    <div class="product-grid" id="alsoLikeContainer"></div>
+</section>
+
+    </main>
+
+    <!-- Footer (Copied from home.html) -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <!-- Top Section -->
+            <div class="footer-top">
+                <div class="footer-brand-section">
+                    <h2 class="footer-logo">StepZone</h2>
+                </div>
+
+                <div class="footer-links-container">
+                    <div class="footer-column">
+                        <h3>Women</h3>
+                        <ul>
+                            <li><a href="#">All Women</a></li>
+                            <li><a href="#">Sandals</a></li>
+                            <li><a href="#">Flip Flops</a></li>
+                            <li><a href="#">Flats</a></li>
+                            <li><a href="#">Sneakers</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>Kids</h3>
+                        <ul>
+                            <li><a href="#">All Kids</a></li>
+                            <li><a href="#">Shoes</a></li>
+                            <li><a href="#">Sandals</a></li>
+                            <li><a href="#">Boots</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>Shopping</h3>
+                        <ul>
+                            <li><a href="#">Your Cart</a></li>
+                            <li><a href="#">Your Orders</a></li>
+                            <li><a href="#">Wishlist</a></li>
+                            <li><a href="#">Shipping Details</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>More Links</h3>
+                        <ul>
+                            <li><a href="#">Blogs</a></li>
+                            <li><a href="#">Gift Center</a></li>
+                            <li><a href="#">Buying Guides</a></li>
+                            <li><a href="#">New Arrivals</a></li>
+                            <li><a href="#">Clearance</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="footer-newsletter">
+                    <h3>Stay in Touch</h3>
+                    <p>Subscribe to our newsletter for exclusive offers.</p>
+                    <div class="newsletter-form">
+                        <input type="email" placeholder="Enter your email">
+                        <button type="submit"><i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="footer-legal">
+                    <a href="#">Terms & Conditions</a>
+                    <span>|</span>
+                    <a href="#">Privacy Policy</a>
+                </div>
+                <div class="footer-social">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script>
+
+    function updateMainImage(el, src){
+    document.getElementById("main-image").src = src;
+    // document.getElementById("main-image").alt = product.name;
+
+    document.querySelectorAll(".thumb").forEach(t => t.classList.remove("active"));
+    el.classList.add("active");
+}
+
+function openTab(evt, tabId){
+    document.querySelectorAll(".tab-content").forEach(tc => tc.classList.remove("active"));
+    document.querySelectorAll(".tab-link").forEach(tl => tl.classList.remove("active"));
+
+    document.getElementById(tabId).classList.add("active");
+    evt.currentTarget.classList.add("active");
+}
+
+
+document.addEventListener("DOMContentLoaded", async () => {
+
+const urlParams = new URLSearchParams(window.location.search);
+const productId = urlParams.get("id"); // gets ID from URL
+const userId = localStorage.getItem("user_id"); // from login
+
+  if (!productId) {
+        console.error("No product ID found in URL");
+        return;
+    }
+
+    const product = await loadProduct(productId);
+    if (!product) return;
+
+    await loadSimilarProducts(productId);
+    await loadAlsoLike(product.category);
+
+const token = localStorage.getItem("token");
+
+if(token){
+    const res = await fetch("http://localhost:5000/api/wishlist", {
+        headers: { "Authorization": `Bearer ${token}` }
+    });
+
+const data = await res.json();
+const wishlist = data.products;  
+   if (Array.isArray(wishlist) && product?._id) {
+  const isWishlisted = wishlist.some(item => 
+    item?.productId === product._id
+  );
+
+  if (isWishlisted) {
+    heartIcon.textContent = "♥";
+    heartIcon.classList.add("active");
+  }
+}
+}
+
+
+  // ================= ADD TO CART =================
+  document.getElementById("mainAddToCart").addEventListener("click", async () => {
+
+    if (!userId) {
+      alert("Please login first");
+      return;
+    }
+
+  const response = await fetch(`http://localhost:5000/api/cart/${userId}/add`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    productId: product._id,
+    name: product.name,
+    price: product.price,
+    image: product.image
+  })
+});
+
+if(response.ok){
+    alert("Added to Cart 🛒");
+} else {
+    const data = await response.json();
+    alert(data.message || "Failed to add to cart");
+}})
+
+
+  // ================= WISHLIST =================
+  const wishlistBtn = document.getElementById("mainWishlistBtn");
+
+if (wishlistBtn) {
+
+  const icon = wishlistBtn.querySelector("i");
+
+  wishlistBtn.addEventListener("click", async () => {
+
+    const token = localStorage.getItem("token");
+if (!token) { alert("Please login first"); return; }
+
+    try {
+
+      const response = await fetch(
+        "http://localhost:5000/api/wishlist/add",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            productId: product._id,
+            name: product.name,
+            price: product.price,
+            image: product.image
+          })
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.message || "Something went wrong");
+        return;
+      }
+
+      // Change icon after success
+      icon.classList.remove("fa-regular");
+      icon.classList.add("fa-solid");
+
+      alert("Added to Wishlist ❤️");
+
+    } catch (error) {
+      console.error(error);
+      alert("Error adding to wishlist");
+    }
+
+  });
+}});
+
+async function loadProduct(productId) {
+    try {
+        const res = await fetch(`http://localhost:5000/api/products/${productId}`);
+        if (!res.ok) throw new Error("Product not found");
+
+        const product = await res.json();
+
+        // TITLE
+        const title = document.getElementById("productTitle");
+        if (title) title.innerText = product.name;
+
+        // SUBTITLE
+        const subtitle = document.querySelector(".product-subtitle");
+        if (subtitle) {
+            subtitle.innerText = product.category || "Premium Collection | Footwear";
+        }
+
+        // PRICE
+        const price = document.getElementById("productPrice");
+        if (price) price.innerText = "₹" + product.price;
+
+        // ORIGINAL PRICE
+        const originalPrice = document.getElementById("originalPrice");
+        if (originalPrice) {
+            originalPrice.innerText = product.originalPrice
+                ? "₹" + product.originalPrice
+                : "";
+        }
+
+        // DISCOUNT
+        const discount = document.getElementById("discountBadge");
+        if (discount) {
+            discount.innerText = product.discount
+                ? product.discount + "% OFF"
+                : "";
+        }
+
+        // MAIN IMAGE
+        const mainImage = document.getElementById("main-image");
+        if (mainImage) mainImage.src = product.image;
+
+        // MULTIPLE IMAGES
+        if (product.images && product.images.length) {
+            const thumbs = document.querySelectorAll(".product-thumbnails .thumb img");
+            thumbs.forEach((img, i) => {
+                if (product.images[i]) {
+                    img.src = product.images[i];
+                }
+            });
+        }
+
+        // FEATURES
+        const highlights = document.querySelector(".product-highlights");
+        if (highlights && product.features && product.features.length) {
+            highlights.innerHTML = product.features
+                .map(f => `<li><i class="fas fa-check-circle"></i> ${f}</li>`)
+                .join("");
+        }
+
+        return product;
+
+    } catch (err) {
+        console.error("Error loading product:", err);
+        return null;
+    }
+}
+
+async function loadSimilarProducts(productId){
+    const res = await fetch(`http://localhost:5000/api/products/similar/${productId}`);
+    const products = await res.json();
+
+    const container = document.getElementById("similarContainer");
+container.innerHTML = products.map(p => `
+    <div class="product-card">
+        <div class="card-image">
+            <img src="${p.image}" onclick="goToProduct('${p._id}')">
+            <button class="card-wishlist" onclick="addToWishlist('${p._id}')">
+                <i class="fa-regular fa-heart"></i>
+            </button>
+        </div>
+
+        <div class="card-body">
+            <h4 class="card-title">${p.name}</h4>
+            <p class="card-price">₹${p.price}</p>
+
+            <button class="card-cart-btn" onclick="addSimilarToCart('${p._id}')">
+                Add to Cart
+            </button>
+        </div>
+    </div>
+`).join("");
+}
+
+async function loadAlsoLike(category){
+    const res = await fetch(`http://localhost:5000/api/products/category/${category}`);
+    const products = await res.json();
+
+    const container = document.getElementById("alsoLikeContainer");
+
+ container.innerHTML = products.map(p => `
+    <div class="product-card">
+        <div class="card-image">
+            <img src="${p.image}" onclick="goToProduct('${p._id}')">
+            <button class="card-wishlist" onclick="addToWishlist('${p._id}')">
+                <i class="fa-regular fa-heart"></i>
+            </button>
+        </div>
+
+        <div class="card-body">
+            <h4 class="card-title">${p.name}</h4>
+            <p class="card-price">₹${p.price}</p>
+
+            <button class="card-cart-btn" onclick="addSimilarToCart('${p._id}')">
+                Add to Cart
+            </button>
+        </div>
+    </div>
+`).join("");
+}
+
+function goToProduct(id){
+    window.location.href = `product_details.html?id=${id}`;
+}
+
+
+</script>
+</body>
+</html>

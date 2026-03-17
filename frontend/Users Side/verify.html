@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Email OTP - StepZone</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        body {
+            background-color: #c1909d;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Roboto', sans-serif;
+            color: #000;
+        }
+
+        .otp-card {
+            background-color: #fff;
+            width: 400px;
+            padding: 40px;
+            border-radius: 15px;
+            border: 1px solid #333;
+            text-align: center;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .icon-wrapper {
+            position: relative;
+            height: 60px;
+            width: 60px;
+            margin: 0 auto 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .email-icon {
+            font-size: 3rem;
+            color: #FFA500;
+        }
+
+        .lock-icon {
+            font-size: 1.5rem;
+            color: #888;
+            z-index: 2;
+            background-color: #fff;
+            padding: 2px;
+            border-radius: 4px;
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+            color: #000;
+        }
+
+        .subtitle {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        /* --- OTP Boxes --- */
+        .otp-digit-group {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .otp-digit-box {
+            width: 45px;
+            height: 55px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-align: center;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            outline: none;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .otp-digit-box:focus {
+            border-color: #e3346e;
+            box-shadow: 0 0 5px rgba(227, 52, 110, 0.5);
+        }
+
+        .otp-digit-box.filled {
+            border-color: #e3346e;
+            background-color: #ffe4eb;
+        }
+
+        .verify-btn {
+            width: 100%;
+            padding: 14px;
+            background-color: #e3346e;
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: opacity 0.3s;
+        }
+
+        .verify-btn:hover {
+            opacity: 0.9;
+        }
+
+        .resend-code {
+            font-size: 0.8rem;
+            color: gray;
+            text-decoration: none;
+        }
+
+        #message {
+            font-size: 0.85rem;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 480px) {
+            .otp-card {
+                width: 90%;
+                padding: 30px 20px;
+            }
+
+            .otp-digit-box {
+                width: 40px;
+                height: 50px;
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="otp-card">
+        <!-- Icon -->
+        <div class="icon-wrapper">
+            <i class="fas fa-envelope email-icon"></i>
+            <i class="fas fa-lock lock-icon"></i>
+        </div>
+
+        <h1>Email OTP Verification</h1>
+        <p class="subtitle">Enter the OTP sent to your email</p>
+
+        <div class="otp-digit-group">
+            <input type="text" maxlength="1" class="otp-digit-box">
+            <input type="text" maxlength="1" class="otp-digit-box">
+            <input type="text" maxlength="1" class="otp-digit-box">
+            <input type="text" maxlength="1" class="otp-digit-box">
+            <input type="text" maxlength="1" class="otp-digit-box">
+            <input type="text" maxlength="1" class="otp-digit-box">
+        </div>
+
+        <button type="button" class="verify-btn" id="verifyBtn">Verify Code</button>
+        <p id="message"></p>
+
+        <a href="otp.html" class="resend-code" id="resendCode">Resend Code</a>
+    </div>
+
+    <script>
+        const otpBoxes = document.querySelectorAll('.otp-digit-box');
+        const verifyBtn = document.getElementById('verifyBtn');
+        const message = document.getElementById('message');
+        const resendCode = document.getElementById('resendCode');
+
+        // Autofocus next box & add filled class
+        otpBoxes.forEach((box, i) => {
+            box.addEventListener('input', () => {
+                if (box.value.length === 1) {
+                    box.classList.add('filled'); // highlight pink
+                    if (i < otpBoxes.length - 1) otpBoxes[i + 1].focus();
+                } else {
+                    box.classList.remove('filled');
+                }
+            });
+
+            box.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && box.value === '' && i > 0) {
+                    otpBoxes[i - 1].focus();
+                }
+            });
+        });
+
+        // Verify OTP
+        verifyBtn.addEventListener('click', async () => {
+            const otp = Array.from(otpBoxes).map(box => box.value).join('');
+            if (otp.length !== 6) {
+                message.style.color = 'red';
+                message.textContent = 'Please enter the 6-digit OTP.';
+                return;
+            }
+
+            const otpId = localStorage.getItem('otpId');
+            const email = localStorage.getItem('email');
+
+            if (!otpId || !email) {
+                message.style.color = 'red';
+                message.textContent = 'OTP session expired. Please resend.';
+                return;
+            }
+
+            try {
+                const res = await fetch('http://localhost:5000/api/verify-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ otpId, otp, email })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    message.style.color = 'green';
+                    message.textContent = 'OTP verified successfully!';
+                    setTimeout(() => {
+                        localStorage.removeItem('otpId');
+                        localStorage.removeItem('email');
+                        window.location.href = 'login.html';
+                    }, 1000);
+                } else {
+                    message.style.color = 'red';
+                    message.textContent = data.message;
+                }
+            } catch (err) {
+                message.style.color = 'red';
+                message.textContent = 'Error verifying OTP. Try again.';
+                console.error(err);
+            }
+        });
+
+        // Resend Code
+        resendCode.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const email = localStorage.getItem('email');
+            if (!email) {
+                message.textContent = 'Email not found. Start again.';
+                return;
+            }
+
+            try {
+                const res = await fetch('http://localhost:5000/api/send-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    localStorage.setItem('otpId', data.otpId);
+                    message.style.color = 'green';
+                    message.textContent = 'OTP resent successfully!';
+                    otpBoxes.forEach(box => {
+                        box.value = '';
+                        box.classList.remove('filled');
+                    });
+                    otpBoxes[0].focus();
+                } else {
+                    message.style.color = 'red';
+                    message.textContent = data.message;
+                }
+            } catch (err) {
+                message.style.color = 'red';
+                message.textContent = 'Error resending OTP.';
+                console.error(err);
+            }
+        });
+    </script>
+</body>
+
+</html>

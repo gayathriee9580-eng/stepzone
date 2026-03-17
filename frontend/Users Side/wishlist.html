@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Wishlist - StepZone</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Using Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@300;400;500;700&family=Great+Vibes&display=swap"
+        rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* --- Wishlist Page Internal Styles --- */
+        body {
+            background-color: #fdf6f7;
+            /* Soft pastel pink/lilac baseline */
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            color: #444;
+        }
+
+        .wishlist-page-wrapper {
+            padding: 60px 0;
+            min-height: calc(100vh - 500px);
+        }
+
+        .wishlist-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Title & Sorting Bar */
+        .wishlist-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .wishlist-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: #333;
+            margin: 0;
+            position: relative;
+        }
+
+        .wishlist-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background-color: #d81b60;
+            border-radius: 2px;
+        }
+
+        .wishlist-sort select {
+            padding: 10px 20px;
+            border-radius: 25px;
+            border: 1px solid #eee;
+            background-color: #fff;
+            color: #666;
+            outline: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .wishlist-sort select:focus {
+            border-color: #d81b60;
+        }
+
+        /* Product Grid */
+        .wishlist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        /* Product Card Styles */
+        .wishlist-card {
+            background-color: #ffffff;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .wishlist-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .card-img-wrapper {
+            position: relative;
+            height: 350px;
+            overflow: hidden;
+            background-color: #fce4ec;
+        }
+
+        .card-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .wishlist-card:hover .card-img-wrapper img {
+            transform: scale(1.05);
+        }
+
+        /* Remove Icon overlay */
+        .remove-wishlist {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 35px;
+            height: 35px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #bbb;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+
+        .remove-wishlist:hover {
+            background-color: #d81b60;
+            color: #fff;
+        }
+
+        /* Quick View Tooltip */
+        /* .quick-view {
+            position: absolute;
+            bottom: -40px;
+            left: 0;
+            right: 0;
+            background-color: rgba(216, 27, 96, 0.9);
+            color: #fff;
+            text-align: center;
+            padding: 10px 0;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        } */
+
+        .wishlist-card:hover {
+            bottom: 0;
+        }
+
+        /* Card Content */
+        .card-content {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .product-name {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #333;
+            margin: 0;
+            text-align: center;
+        }
+
+        .product-meta {
+            font-size: 0.85rem;
+            color: #888;
+            margin: 0;
+        }
+
+        .product-price {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #d81b60;
+            margin: 5px 0 15px 0;
+            text-align: center;
+        }
+
+        .add-cart-btn {
+            width: 100%;
+            background-color: #d81b60;
+            color: #fff;
+            border: none;
+            padding: 12px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: auto;
+        }
+
+        .add-cart-btn:hover {
+            background-color: #ad1457;
+            box-shadow: 0 4px 10px rgba(216, 27, 96, 0.2);
+        }
+
+        /* Empty State */
+        .empty-wishlist {
+            text-align: center;
+            padding: 80px 20px;
+            display: none;
+            /* Toggle this via JS or manual demo */
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            color: #ecd5d8;
+            margin-bottom: 20px;
+        }
+
+        .empty-wishlist h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        .shop-now-btn {
+            display: inline-block;
+            margin-top: 25px;
+            background-color: #d81b60;
+            color: #fff;
+            padding: 14px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .shop-now-btn:hover {
+            background-color: #ad1457;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .wishlist-title {
+                font-size: 2rem;
+            }
+
+            .wishlist-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .wishlist-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .wishlist-header {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body class="home-body">
+    <!-- Announcement Bar (EXACTLY from home.html) -->
+    <div class="announcement-bar">
+        <div class="announcement-text">
+            Invite Friends and get 50% off on your next purchase <a href="#" class="invite-link">Invite Now</a>
+        </div>
+        <div class="close-announcement"><i class="fas fa-times"></i></div>
+    </div>
+
+    <!-- Header Section (EXACTLY from home.html) -->
+    <header class="main-header">
+        <div class="header-left">
+            <div class="logo"><a href="home.html" style="color: black;text-decoration: none;">StepZone</a></div>
+        </div>
+
+        <nav class="header-center">
+            <ul class="nav-links">
+                <li><a href="womens_product.html">Women</a></li>
+                <li><a href="kids_product.html">Kids</a></li>
+                <li><a href="products.html">Shop</a></li>
+                <li><a href="#">Contact us</a></li>
+            </ul>
+        </nav>
+
+        <div class="header-right">
+            <div class="search-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" placeholder="Search here" class="search-input">
+            </div>
+            <div class="header-icons">
+                <a href="wishlist.html" class="icon-link"><i class="fas fa-heart"></i></a>
+                <a href="cart.html" class="icon-link"><i class="fas fa-shopping-cart"></i></a>
+                <a href="#" class="profile-link">
+                    <div class="avatar-circle"><i class="fas fa-user"></i></div>
+                    <span class="username">Anne Doe</span>
+                </a>
+            </div>
+            <div class="mobile-menu-trigger">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <main class="wishlist-page-wrapper">
+        <div class="wishlist-container">
+            <a href="profile.html" class="back-btn">
+
+                <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 21 21">
+                    <g fill="none" fill-rule="evenodd" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="1">
+                        <path d="M6.499 6.498L3.5 9.5l3 3" />
+                        <path d="M8.5 15.5h5q3 0 3-3c0-3-1-3-3-3h-10" />
+                    </g>
+                </svg>
+                <!-- Wishlist Header -->
+                <div class="wishlist-header">
+                    <h1 class="wishlist-title">My Wishlist</h1>
+                    <div class="wishlist-sort">
+                        <select>
+                            <option value="newest">Newest First</option>
+                            <option value="price-low">Price: Low to High</option>
+                            <option value="price-high">Price: High to Low</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Empty Wishlist State (Hidden by default) -->
+                <div class="empty-wishlist" id="empty-state">
+                    <div class="empty-icon"><i class="far fa-heart"></i></div>
+                    <h2>Your wishlist is empty</h2>
+                    <p>Looks like you haven't added anything to your wishlist yet.</p>
+                    <a href="products.html" class="shop-now-btn">Shop Now</a>
+                </div>
+
+                <!-- Product Grid -->
+                <div class="wishlist-grid" id="items-grid"></div>
+    </main>
+
+    <!-- Footer (EXACTLY from home.html) -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <!-- Top Section -->
+            <div class="footer-top">
+                <!-- Brand -->
+                <div class="footer-brand-section">
+                    <h2 class="footer-logo">StepZone</h2>
+                </div>
+
+                <!-- Navigation Columns -->
+                <div class="footer-links-container">
+                    <div class="footer-column">
+                        <h3>Women</h3>
+                        <ul>
+                            <li><a href="#">All Women</a></li>
+                            <li><a href="#">Sandals</a></li>
+                            <li><a href="#">Flip Flops</a></li>
+                            <li><a href="#">Flats</a></li>
+                            <li><a href="#">Sneakers</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>Kids</h3>
+                        <ul>
+                            <li><a href="#">All Kids</a></li>
+                            <li><a href="#">Shoes</a></li>
+                            <li><a href="#">Sandals</a></li>
+                            <li><a href="#">Boots</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>Shopping</h3>
+                        <ul>
+                            <li><a href="cart.html">Your Cart</a></li>
+                            <li><a href="wishlist.html">Your Wishlist</a></li>
+                            <li><a href="#">Your Orders</a></li>
+                            <li><a href="#">Shipping Details</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>More Links</h3>
+                        <ul>
+                            <li><a href="#">Blogs</a></li>
+                            <li><a href="#">Gift Center</a></li>
+                            <li><a href="#">Buying Guides</a></li>
+                            <li><a href="#">New Arrivals</a></li>
+                            <li><a href="#">Clearance</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Stay in Touch -->
+                <div class="footer-newsletter">
+                    <h3>Stay in Touch</h3>
+                    <p>Subscribe to our newsletter for exclusive offers.</p>
+                    <div class="newsletter-form">
+                        <input type="email" placeholder="Enter your email">
+                        <button type="submit"><i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Section -->
+            <div class="footer-bottom">
+                <div class="footer-legal">
+                    <a href="#">Terms & Conditions</a>
+                    <span>|</span>
+                    <a href="#">Privacy Policy</a>
+                </div>
+                <div class="footer-social">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+<script>
+async function loadWishlistPage() {
+    const token = localStorage.getItem("token");
+    if (!token) {
+        alert("Please login first");
+        window.location.href = "login.html";
+        return;
+    }
+
+    try {
+        const res = await fetch("http://localhost:5000/api/wishlist", {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+const text = await res.text();
+
+let data;
+try {
+    data = JSON.parse(text);
+} catch {
+    console.error("Not JSON response:", text);
+    return;
+}
+
+console.log("Wishlist API Response:", data);  
+
+        const grid = document.getElementById("items-grid");
+        const emptyState = document.getElementById("empty-state");
+
+        grid.innerHTML = "";
+
+        if (!data.products || data.products.length === 0) {
+            emptyState.style.display = "block";
+            return;
+        }
+
+        emptyState.style.display = "none";
+
+        data.products.forEach(item => {
+
+    if (!item.productId) return;   // 🔥 VERY IMPORTANT FIX
+
+    const product = item.productId;
+
+    grid.innerHTML += `
+        <div class="wishlist-card">
+            <div class="remove-wishlist"
+                 onclick="removeFromWishlist('${product._id}')">
+                <i class="fas fa-times"></i>
+            </div>
+
+            <div class="card-img-wrapper">
+                <img src="${product.image}" alt="${product.name}">
+            </div>
+
+            <div class="card-content">
+                <h3 class="product-name">${product.name}</h3>
+                <p class="product-price">₹${product.price}</p>
+<button class="add-cart-btn"onclick="addToCart('${product._id}')">Add to Cart</button>            </div>
+        </div>
+    `;
+});
+
+    } catch (error) {
+        console.error("Wishlist load error:", error);
+    }
+}
+
+async function removeFromWishlist(productId) {
+    const token = localStorage.getItem("token");
+
+    await fetch("http://localhost:5000/api/wishlist", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ productId })
+    });
+
+    loadWishlistPage();
+}
+
+
+
+async function addToCart(productId) {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    alert("Please login first");
+    window.location.href = "login.html";
+    return;
+  }
+
+  try {
+    const response = await fetch("http://localhost:5000/api/cart", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({ productId })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      alert("Added to cart ✅");
+      loadCartCount(); // update navbar count
+    } else {
+      alert(data.message);
+    }
+
+  } catch (error) {
+    console.error("Add to Cart Error:", error);
+  }
+}
+
+window.onload = loadWishlistPage;
+
+</script>
+</body>
+</html>

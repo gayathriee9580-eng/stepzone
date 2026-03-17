@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - StepZone</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Using Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@300;400;500;700&family=Great+Vibes&display=swap"
+        rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* --- Profile Page Internal Styles --- */
+        body {
+            background-color: #fdf6f7;
+            /* Soft pastel pink background */
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            color: #444;
+        }
+
+        .profile-page-wrapper {
+            padding: 60px 0;
+            min-height: calc(100vh - 500px);
+        }
+
+        .profile-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        /* --- Sidebar Styles --- */
+        .profile-sidebar {
+            background-color: #ffffff;
+            border-radius: 15px;
+            padding: 30px 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+            position: sticky;
+            top: 100px;
+        }
+
+        .sidebar-header {
+            text-align: center;
+            padding: 0 20px 25px 20px;
+            border-bottom: 1px solid #f9f9f9;
+            margin-bottom: 15px;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #fce4ec;
+            margin-bottom: 15px;
+        }
+
+        .sidebar-header h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            margin: 0;
+            color: #333;
+        }
+
+        .sidebar-header p {
+            font-size: 0.85rem;
+            color: #888;
+            margin: 5px 0 0 0;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 14px 25px;
+            text-decoration: none;
+            color: #555;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .sidebar-menu li a i {
+            width: 20px;
+            font-size: 1.1rem;
+            color: #888;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-menu li a:hover {
+            background-color: #fff9fa;
+            color: #d81b60;
+        }
+
+        .sidebar-menu li a:hover i {
+            color: #d81b60;
+        }
+
+        .sidebar-menu li a.active {
+            background-color: #fce4ec;
+            color: #d81b60;
+            border-left-color: #d81b60;
+        }
+
+        .sidebar-menu li a.active i {
+            color: #d81b60;
+        }
+
+        /* --- Content Area Styles --- */
+        .profile-content-area {
+            background-color: #ffffff;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 35px;
+            border-bottom: 2px solid #fce4ec;
+            padding-bottom: 15px;
+        }
+
+        .content-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: #333;
+            margin: 0;
+        }
+
+        .btn-edit-profile {
+            padding: 10px 25px;
+            background-color: #d81b60;
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(216, 27, 96, 0.15);
+        }
+
+        .btn-edit-profile:hover {
+            background-color: #ad1457;
+            transform: translateY(-2px);
+        }
+
+        /* Profile Grid */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .info-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .info-value {
+            font-size: 1.05rem;
+            color: #333;
+            font-weight: 500;
+            padding: 12px 15px;
+            background-color: #fcfcfc;
+            border-radius: 8px;
+            border: 1px solid #f0f0f0;
+        }
+
+        /* Address Book Section */
+        .address-section {
+            margin-top: 50px;
+        }
+
+        .address-card-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .address-card {
+            border: 1px solid #f0f0f0;
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .address-card:hover {
+            border-color: #fce4ec;
+            background-color: #fff9fa;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+        }
+
+        .address-type {
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: #d81b60;
+            background-color: #fce4ec;
+            padding: 4px 10px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        .address-details {
+            font-size: 0.95rem;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .address-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .action-link {
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #888;
+            transition: color 0.3s;
+        }
+
+        .action-link:hover {
+            color: #d81b60;
+        }
+
+        /* Settings / Password Section */
+        .settings-section {
+            margin-top: 50px;
+        }
+
+        .form-row {
+            margin-bottom: 20px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 10px;
+            border: 1px solid #eee;
+            outline: none;
+            transition: border-color 0.3s;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+        }
+
+        .form-input:focus {
+            border-color: #d81b60;
+        }
+
+        .btn-submit {
+            padding: 15px 40px;
+            background-color: #d81b60;
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            background-color: #ad1457;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .profile-container {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-sidebar {
+                position: relative;
+                top: 0;
+            }
+
+            .sidebar-menu {
+                display: flex;
+                overflow-x: auto;
+                padding-bottom: 10px;
+            }
+
+            .sidebar-menu li a {
+                padding: 12px 20px;
+                white-space: nowrap;
+                border-left: none;
+                border-bottom: 3px solid transparent;
+            }
+
+            .sidebar-menu li a.active {
+                border-left-color: transparent;
+                border-bottom-color: #d81b60;
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            .info-grid,
+            .address-card-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-content-area {
+                padding: 25px;
+            }
+
+            .content-header h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+      <script>
+    const token = localStorage.getItem("token");
+    if (!token) {
+      window.location.href = "login.html";
+    }
+  </script>
+</head>
+
+<body class="home-body">
+    <!-- Announcement Bar (EXACTLY from home.html) -->
+    <div class="announcement-bar">
+        <div class="announcement-text">
+            Invite Friends and get 50% off on your next purchase <a href="#" class="invite-link">Invite Now</a>
+        </div>
+        <div class="close-announcement"><i class="fas fa-times"></i></div>
+    </div>
+
+    <!-- Header Section (EXACTLY from home.html) -->
+    <header class="main-header">
+        <div class="header-left">
+            <div class="logo"><a href="home.html" style="color: black;text-decoration: none;">StepZone</a></div>
+        </div>
+
+        <nav class="header-center">
+            <ul class="nav-links">
+                <li><a href="womens_product.html">Women</a></li>
+                <li><a href="kids_product.html">Kids</a></li>
+                <li><a href="products.html">Shop</a></li>
+                <li><a href="#">Contact us</a></li>
+            </ul>
+        </nav>
+
+        <div class="header-right">
+            <div class="search-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" placeholder="Search here" class="search-input">
+            </div>
+            <div class="header-icons">
+                <a href="wishlist.html" class="icon-link"><i class="far fa-heart"></i></a>
+                <a href="cart.html" class="icon-link"><i class="fas fa-shopping-cart"></i></a>
+                <a href="profile.html" class="profile-link active">
+                    <div class="avatar-circle"><i class="fas fa-user"></i></div>
+                    <span class="username">Anne Doe</span>
+                </a>
+            </div>
+            <div class="mobile-menu-trigger">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <main class="profile-page-wrapper">
+        <div class="profile-container">
+            <!-- Sidebar Navigation -->
+            <aside class="profile-sidebar">
+                <div class="sidebar-header">
+                    <img src="images/Anna.jpg" alt="Anne Doe" class="profile-avatar">
+                    <h3>Anne Doe</h3>
+                    <p>anne.doe@example.com</p>
+                </div>
+                <ul class="sidebar-menu">
+                    <li><a href="#" class="active"><i class="fas fa-user"></i> My Profile</a></li>
+                    <li><a href="my-orders.html"><i class="fas fa-shopping-bag"></i> Orders</a></li>
+                    <li><a href="wallet.html"><i class="fas fa-wallet"></i> Wallet</a></li>
+                    <li><a href="wishlist.html"><i class="fas fa-heart"></i> Wishlist</a></li>
+                    <li><a href="#"><i class="fas fa-map-marker-alt"></i> My Address</a></li>
+                    <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+                  <li>
+<li>
+  <a href="#" onclick="logout()" style="color: rgb(191, 61, 61);">
+    <i class="fas fa-sign-out-alt"></i> Logout
+  </a>
+</li>
+
+
+                </ul>
+            </aside>
+
+            <!-- Main Content Area -->
+            <section class="profile-content-area">
+                <div class="content-header">
+                    <h2>Personal Information</h2>
+<button class="btn-edit-profile" onclick="enableEdit()">Edit Profile</button>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-group">
+                        <span class="info-label">Full Name</span>
+                        <div class="info-value">Anne Doe</div>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label">Email Address</span>
+                        <div class="info-value">anne.doe@example.com</div>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label">Mobile Number</span>
+                        <div class="info-value">+1 234 567 890</div>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label">Gender</span>
+                        <div class="info-value">Female</div>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label">Date of Birth</span>
+                        <div class="info-value">15th July, 1995</div>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label">Member Since</span>
+                        <div class="info-value">January 2023</div>
+                    </div>
+                </div>
+
+                <!-- ADDRESS BOOK PREVIEW -->
+                <div class="address-section">
+                    <div class="content-header">
+                        <h2>My Address</h2>
+                        <a href="#" class="action-link">+ Add New Address</a>
+                    </div>
+<div class="address-card-grid" id="myAddressContainer">
+                            <!-- Address 1 -->
+                        <div class="address-card">
+                        </div>
+                        <!-- Address 2 -->
+                        <div class="address-card">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CHANGE PASSWORD PREVIEW -->
+                <div class="settings-section">
+                    <div class="content-header">
+                        <h2>Change Password</h2>
+                    </div>
+                    <div class="password-form">
+<input type="password" id="currentPassword" class="form-input" placeholder="Enter current password">
+
+<input type="password" id="newPassword" class="form-input" placeholder="Create new password">
+
+<input type="password" id="confirmPassword" class="form-input" placeholder="Repeat new password">
+                        </div>
+<button class="btn-submit" onclick="changePassword()">Update Password</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer (EXACTLY from home.html) -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <!-- Top Section -->
+            <div class="footer-top">
+                <!-- Brand -->
+                <div class="footer-brand-section">
+                    <h2 class="footer-logo">StepZone</h2>
+                </div>
+
+                <!-- Navigation Columns -->
+                <div class="footer-links-container">
+                    <div class="footer-column">
+                        <h3>Women</h3>
+                        <ul>
+                            <li><a href="#">All Women</a></li>
+                            <li><a href="#">Sandals</a></li>
+                            <li><a href="#">Flip Flops</a></li>
+                            <li><a href="#">Flats</a></li>
+                            <li><a href="#">Sneakers</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>Kids</h3>
+                        <ul>
+                            <li><a href="#">All Kids</a></li>
+                            <li><a href="#">Shoes</a></li>
+                            <li><a href="#">Sandals</a></li>
+                            <li><a href="#">Boots</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>Shopping</h3>
+                        <ul>
+                            <li><a href="cart.html">Your Cart</a></li>
+                            <li><a href="wishlist.html">Your Wishlist</a></li>
+                            <li><a href="wallet.html">StepZone Wallet</a></li>
+                            <li><a href="profile.html">My Profile</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>More Links</h3>
+                        <ul>
+                            <li><a href="#">Blogs</a></li>
+                            <li><a href="#">Gift Center</a></li>
+                            <li><a href="#">Buying Guides</a></li>
+                            <li><a href="#">New Arrivals</a></li>
+                            <li><a href="#">Clearance</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Stay in Touch -->
+                <div class="footer-newsletter">
+                    <h3>Stay in Touch</h3>
+                    <p>Subscribe to our newsletter for exclusive offers.</p>
+                    <div class="newsletter-form">
+                        <input type="email" placeholder="Enter your email">
+                        <button type="submit"><i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Section -->
+            <div class="footer-bottom">
+                <div class="footer-legal">
+                    <a href="#">Terms & Conditions</a>
+                    <span>|</span>
+                    <a href="#">Privacy Policy</a>
+                </div>
+                <div class="footer-social">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+
+  const token = localStorage.getItem("token");
+  if (!token) {
+    window.location.href = "login.html";
+    return;
+  }
+
+  // ✅ Load Profile
+  try {
+    const res = await fetch("http://localhost:5000/api/users/profile", {
+      headers: { Authorization: "Bearer " + token }
+    });
+
+    const user = await res.json();
+
+    document.querySelector(".sidebar-header h3").innerText = user.name;
+    document.querySelector(".sidebar-header p").innerText = user.email;
+
+    const values = document.querySelectorAll(".info-value");
+
+    values[0].innerText = user.name;
+    values[1].innerText = user.email;
+    values[2].innerText = user.phone || "-";
+    values[3].innerText = user.gender || "-";
+    values[4].innerText = user.dob ? new Date(user.dob).toDateString() : "-";
+    values[5].innerText = new Date(user.createdAt).toDateString();
+
+  } catch (err) {
+    console.error("Profile load error:", err);
+  }
+
+  // ✅ Load Addresses
+  await loadAddresses();
+
+});
+
+
+// 🔥 Load Addresses Function
+async function loadAddresses() {
+
+  const token = localStorage.getItem("token");
+
+  try {
+    const res = await fetch("http://localhost:5000/api/address", {
+      headers: { Authorization: "Bearer " + token }
+    });
+
+    const data = await res.json();  // ✅ THIS WAS MISSING
+
+    console.log("Address API Response:", data);
+
+    const container = document.getElementById("myAddressContainer");
+    container.innerHTML = "";
+
+    if (!data.addresses || data.addresses.length === 0) {
+      container.innerHTML = "<p>No addresses found</p>";
+      return;
+    }
+
+    data.addresses.forEach((addr, index) => {
+      container.innerHTML += `
+        <div class="address-card">
+          <span class="address-type">Address ${index + 1}</span>
+          <div class="address-details">
+            <p><strong>${addr.fullName} ${addr.lastName}</strong></p>
+            <p>${addr.address}</p>
+            <p>${addr.city}, ${addr.state}</p>
+            <p>${addr.pincode}</p>
+            <p>${addr.country}</p>
+          </div>
+        </div>
+      `;
+    });
+
+  } catch (err) {
+    console.error("Address load error:", err);
+  }
+}
+
+// Logout
+function logout() {
+  localStorage.removeItem("token");
+  alert("Logged out successfully");
+  window.location.href = "login.html";
+}
+
+function enableEdit() {
+  const values = document.querySelectorAll(".info-value");
+
+  values.forEach((val, index) => {
+    if (index === 1 || index === 5) return; // skip email & member since
+
+    const current = val.innerText;
+    val.innerHTML = `<input type="text" value="${current}" class="form-input">`;
+  });
+
+  document.querySelector(".btn-edit-profile").innerText = "Save";
+  document.querySelector(".btn-edit-profile").onclick = saveProfile;
+}
+
+async function saveProfile() {
+
+  const token = localStorage.getItem("token");
+  const inputs = document.querySelectorAll(".info-value input");
+
+  const updatedData = {
+    name: inputs[0].value,
+    phone: inputs[1].value,
+    gender: inputs[2].value,
+    dob: inputs[3].value
+  };
+
+  const res = await fetch("http://localhost:5000/api/users/profile", {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token
+    },
+    body: JSON.stringify(updatedData)
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    alert(data.message);
+    return;
+  }
+
+  alert("Profile updated successfully");
+  location.reload();
+}
+
+
+async function changePassword() {
+
+  const token = localStorage.getItem("token");
+
+  const currentPassword = document.getElementById("currentPassword").value;
+  const newPassword = document.getElementById("newPassword").value;
+  const confirmPassword = document.getElementById("confirmPassword").value;
+
+  if (!currentPassword || !newPassword || !confirmPassword) {
+    alert("Please fill all fields");
+    return;
+  }
+
+  if (newPassword.length < 6) {
+    alert("Password must be at least 6 characters");
+    return;
+  }
+
+  if (newPassword !== confirmPassword) {
+    alert("Passwords do not match");
+    return;
+  }
+
+  try {
+
+    const res = await fetch("http://localhost:5000/api/users/change-password", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      },
+      body: JSON.stringify({ currentPassword, newPassword })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.message);
+      return;
+    }
+
+    alert("Password changed successfully ✅");
+
+    // Clear inputs
+    document.getElementById("currentPassword").value = "";
+    document.getElementById("newPassword").value = "";
+    document.getElementById("confirmPassword").value = "";
+
+  } catch (err) {
+    console.error("Password change error:", err);
+    alert("Something went wrong");
+  }
+}
+
+</script>
+</body>
+</html>

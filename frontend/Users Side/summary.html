@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Summary - StepZone</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Using Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@300;400;500;700&family=Great+Vibes&display=swap"
+        rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* --- Order Summary Page Internal Styles --- */
+        body {
+            background-color: #e8a1adbc;
+            /* Matching StepZone background theme from previous pages */
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .summary-page-wrapper {
+            padding: 60px 0;
+            min-height: calc(100vh - 500px);
+            background-color: #b897a5;
+        }
+
+        .summary-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            align-items: center;
+        }
+
+        /* Common Card Style */
+        .summary-card {
+            background-color: #ffffff;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: #333;
+            margin: 0 0 20px 0;
+            border-bottom: 2px solid #fce4ec;
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+
+        /* Shipping Address Section */
+        .address-info p {
+            margin: 5px 0;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .recipient-name {
+            font-weight: 700;
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        /* Order Summary Table Section */
+        .order-table-wrapper {
+            overflow-x: auto;
+        }
+
+        .order-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .order-table th {
+            background-color: #fce4ec;
+            color: #d81b60;
+            padding: 12px 15px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        .order-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            vertical-align: middle;
+        }
+
+        .order-table tr:nth-child(even) {
+            background-color: #fdfdfd;
+        }
+
+        .product-cell {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .product-img {
+            width: 60px;
+            height: 70px;
+            border-radius: 8px;
+            object-fit: cover;
+            background-color: #f9f9f9;
+        }
+
+        .product-name-info h4 {
+            margin: 0;
+            font-size: 0.95rem;
+            color: #333;
+        }
+
+        /* Payment Details Section */
+        .payment-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .payment-method p {
+            margin: 0;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            padding: 6px 15px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-completed {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        /* Order Tracking Section */
+        .tracking-stepper {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-top: 20px;
+            padding: 0 10px;
+        }
+
+        .tracking-stepper::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background-color: #eee;
+            z-index: 1;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            z-index: 2;
+            flex: 1;
+        }
+
+        .step-circle {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background-color: #eee;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+            border: 4px solid #fff;
+        }
+
+        .step.completed .step-circle {
+            background-color: #d81b60;
+        }
+
+        .step.active .step-circle {
+            background-color: #d81b60;
+            box-shadow: 0 0 0 4px rgba(216, 27, 96, 0.1);
+        }
+
+        /* Highlight line between completed steps */
+        .step.completed+.step::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: -50%;
+            width: 100%;
+            height: 4px;
+            background-color: #d81b60;
+            z-index: -1;
+        }
+
+        .step-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #888;
+            text-align: center;
+        }
+
+        .step.completed .step-label,
+        .step.active .step-label {
+            color: #d81b60;
+        }
+
+        /* Action Button */
+        .track-btn-wrapper {
+            margin-top: 10px;
+        }
+
+        .track-orders-btn {
+            background-color: #d81b60;
+            color: #fff;
+            border: none;
+            padding: 16px 60px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(216, 27, 96, 0.15);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .track-orders-btn:hover {
+            background-color: #ad1457;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(216, 27, 96, 0.25);
+        }
+
+        /* FLEX LAYOUT */
+.summary-flex {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+    margin-bottom: 30px;
+}
+
+/* LEFT SIDE BIG */
+.left-section {
+    flex: 2;
+}
+
+/* RIGHT SIDE SMALL */
+.right-section {
+    flex: 1;
+    position: sticky;
+    top: 20px;
+}
+
+/* TOTAL ROW STYLE */
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 15px;
+    color: #444;
+}
+
+.discount span:last-child {
+    color: #e53935;
+    font-weight: 500;
+}
+
+.grand-total {
+    font-size: 18px;
+    font-weight: 600;
+    color: #111;
+}
+
+.saved-text {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #2e7d32;
+    font-weight: 500;
+}
+
+/* CARD STYLE UPGRADE */
+.summary-card {
+    background: #fff;
+    padding: 25px;
+    border-radius: 12px;
+box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+}
+
+.order-total-box .total-row {
+  display: flex;
+  justify-content: space-between; /* 👈 This makes left-right */
+  align-items: center;
+  margin: 10px 0;
+}
+
+.order-total-box .total-row span:first-child {
+  color: #555;
+}
+
+.order-total-box .total-row span:last-child {
+  font-weight: 600;
+}
+
+.order-total-box .grand-total {
+  font-size: 18px;
+  font-weight: bold;
+
+  
+}
+
+.cancel-btn{
+background: transparent;
+color:#d81b60;
+border:1px solid #d81b60;
+padding:6px 12px;
+border-radius:20px;
+cursor:pointer;
+}
+
+.cancelled-btn{
+background: transparent;
+color:#d81b60;
+border:1px solid #d81b60;
+padding:6px 12px;
+border-radius:20px;
+cursor:pointer;
+}
+
+
+.cancel-btn:hover{
+background:#d81b60;
+color:white;
+}
+
+
+.tracking-stepper {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    margin-top: 20px;
+    padding: 0 10px;
+}
+
+.tracking-stepper::before {
+    content: '';
+    position: absolute;
+    top: 17px;
+    left: 15px;
+    right: 15px;
+    height: 4px;
+    background: linear-gradient(to right, #d81b60 0%, #ccc 100%);
+    border-radius: 2px;
+    z-index: 1;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    position: relative;
+    z-index: 2;
+    flex: 1;
+    min-width: 90px;
+}
+
+.step-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #d35fb6;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: 3px solid #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.step.completed .step-circle {
+    background-color: #2e7d32;
+}
+
+.step.active .step-circle {
+    background-color: #d81b60;
+    transform: scale(1.2);
+    box-shadow: 0 0 0 6px rgba(216, 27, 96, 0.15);
+}
+
+.step-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #555;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.step.completed .step-label,
+.step.active .step-label {
+    color: #d81b60;
+}
+
+.step.completed + .step::before {
+    content: '';
+    position: absolute;
+    top: 17px;
+    left: -50%;
+    width: 100%;
+    height: 4px;
+    background-color: #2e7d32;
+    border-radius: 2px;
+    z-index: -1;
+    transition: width 0.3s ease;
+}
+
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .tracking-stepper {
+                overflow-x: auto;
+                padding-bottom: 10px;
+            }
+
+            .step {
+                min-width: 100px;
+            }
+
+
+            @media (max-width: 900px) {
+    .summary-flex {
+        flex-direction: column;
+    }
+
+    .right-section {
+        position: static;
+    }
+}
+        }
+    </style>
+</head>
+<body class="home-body">
+    <!-- Announcement Bar (EXACTLY from home.html) -->
+    <div class="announcement-bar">
+        <div class="announcement-text">
+            Invite Friends and get 50% off on your next purchase <a href="#" class="invite-link">Invite Now</a>
+        </div>
+        <div class="close-announcement"><i class="fas fa-times"></i></div>
+    </div>
+
+    <!-- Header Section (EXACTLY from home.html) -->
+    <header class="main-header">
+        <div class="header-left">
+            <div class="logo"><a href="home.html" style="color: black;text-decoration: none;">StepZone</a></div>
+        </div>
+
+        <nav class="header-center">
+            <ul class="nav-links">
+                <li><a href="womens_product.html">Women</a></li>
+                <li><a href="kids_product.html">Kids</a></li>
+                <li><a href="products.html">Shop</a></li>
+                <li><a href="#">Contact us</a></li>
+            </ul>
+        </nav>
+
+        <div class="header-right">
+            <div class="search-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" placeholder="Search here" class="search-input">
+            </div>
+            <div class="header-icons">
+                <a href="#" class="icon-link"><i class="far fa-heart"></i></a>
+                <a href="cart.html" class="icon-link"><i class="fas fa-shopping-cart"></i></a>
+                <a href="#" class="profile-link">
+                    <div class="avatar-circle"><i class="fas fa-user"></i></div>
+                    <span class="username">Anne Doe</span>
+                </a>
+            </div>
+            <div class="mobile-menu-trigger">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <main class="summary-page-wrapper">
+        <div class="summary-container">
+            <!-- ORDER TRACKING SECTION (Moved to Top) -->
+            <div class="summary-card">
+                <h2 class="section-title">Order Tracking</h2>
+                <div class="tracking-stepper">
+                    <!-- Step 1: Completed -->
+                    <div class="step completed">
+                        <div class="step-circle"><i class="fas fa-check"></i></div>
+                        <span class="step-label">Order Placed</span>
+                    </div>
+                    <!-- Step 2: Active -->
+                    <div class="step active">
+                        <div class="step-circle"><i class="fas fa-box"></i></div>
+                        <span class="step-label">Packed</span>
+                    </div>
+                    <!-- Step 3: Pending -->
+                    <div class="step">
+                        <div class="step-circle"><i class="fas fa-truck"></i></div>
+                        <span class="step-label">Shipped</span>
+                    </div>
+                    <!-- Step 4: Pending -->
+                    <div class="step">
+                        <div class="step-circle"><i class="fas fa-home"></i></div>
+                        <span class="step-label">Delivered</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ORDER SUMMARY TABLE SECTION -->
+            <div class="summary-card">
+                <h2 class="section-title">Order Summary</h2>
+                <div class="order-table-wrapper">
+                    <table class="order-table">
+                        
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                                <th>Total</th>
+                                <th>Action</th> 
+
+                            </tr>
+                        </thead>
+             <tbody id="orderItems"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- PAYMENT DETAILS SECTION -->
+            <div class="summary-card">
+                <h2 class="section-title">Payment Details</h2>
+                <div class="payment-info">
+                    <div class="payment-method">
+                        <p>Method: <strong>Credit Card (Ending in 4242)</strong></p>
+                    </div>
+                    <div class="payment-status">
+                        <span class="status-badge status-completed">Completed</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SHIPPING ADDRESS SECTION (Moved to Bottom) -->
+            <div class="summary-card">
+                <h2 class="section-title">Shipping Address</h2>
+                <div style="color: #111;"   class="address-info" id="shippingInfo"></div>
+                    <!-- ORDER ID & DATE -->
+<div class="address-info" id="shippingInfo"></div>
+
+            </div>
+
+            <!-- TRACK ORDERS BUTTON -->
+            <div class="track-btn-wrapper">
+                <a href="#" class="track-orders-btn">Download Invoice</a>
+            </div>
+        </div>
+    </main>
+</body>
+    <!-- Footer (EXACTLY from home.html) -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <!-- Top Section -->
+            <div class="footer-top">
+                <!-- Brand -->
+                <div class="footer-brand-section">
+                    <h2 class="footer-logo">StepZone</h2>
+                </div>
+
+                <!-- Navigation Columns -->
+                <div class="footer-links-container">
+                    <div class="footer-column">
+                        <h3>Women</h3>
+                        <ul>
+                            <li><a href="#">All Women</a></li>
+                            <li><a href="#">Sandals</a></li>
+                            <li><a href="#">Flip Flops</a></li>
+                            <li><a href="#">Flats</a></li>
+                            <li><a href="#">Sneakers</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>Kids</h3>
+                        <ul>
+                            <li><a href="#">All Kids</a></li>
+                            <li><a href="#">Shoes</a></li>
+                            <li><a href="#">Sandals</a></li>
+                            <li><a href="#">Boots</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>Shopping</h3>
+                        <ul>
+                            <li><a href="cart.html">Your Cart</a></li>
+                            <li><a href="#">Your Orders</a></li>
+                            <li><a href="#">Wishlist</a></li>
+                            <li><a href="#">Shipping Details</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>More Links</h3>
+                        <ul>
+                            <li><a href="#">Blogs</a></li>
+                            <li><a href="#">Gift Center</a></li>
+                            <li><a href="#">Buying Guides</a></li>
+                            <li><a href="#">New Arrivals</a></li>
+                            <li><a href="#">Clearance</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Stay in Touch -->
+                <div class="footer-newsletter">
+                    <h3>Stay in Touch</h3>
+                    <p>Subscribe to our newsletter for exclusive offers.</p>
+                    <div class="newsletter-form">
+                        <input type="email" placeholder="Enter your email">
+                        <button type="submit"><i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Section -->
+            <div class="footer-bottom">
+                <div class="footer-legal">
+                    <a href="#">Terms & Conditions</a>
+                    <span>|</span>
+                    <a href="#">Privacy Policy</a>
+                </div>
+                <div class="footer-social">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script>
+document.addEventListener("DOMContentLoaded", async () => {
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+        alert("Please login first");
+        window.location.href = "login.html";
+        return;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const orderId = params.get("orderId");
+
+    if (!orderId) {
+        alert("Order not found");
+        return;
+    }
+
+    try {
+
+        const response = await fetch(`http://localhost:5000/api/orders/${orderId}`, {
+            headers: { Authorization: "Bearer " + token }
+        });
+
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message);
+
+        const order = data.order;
+
+        // =============================
+        // 1️⃣ SHIPPING ADDRESS
+        // =============================
+
+document.getElementById("shippingInfo").innerHTML = `
+    <p class="recipient-name">${order.shippingDetails.fullName}</p>
+    <p>${order.shippingDetails.address}</p>
+    <p>${order.shippingDetails.city}, ${order.shippingDetails.state} - ${order.shippingDetails.pincode}</p>
+    <p>${order.shippingDetails.country}</p>
+    <hr style="margin: 10px 0; border: 0; border-top: 1px solid #ddd;">
+    <p style="font-size:14px;color:light brown;">Order ID : <strong>${order._id}</strong></p>
+    <p style="font-size:14px;color:light brown;">Order Date : <strong>${new Date(order.createdAt).toLocaleDateString()}</strong></p>
+`;
+        
+
+        // =============================
+        // 2️⃣ ORDER ITEMS TABLE
+        // =============================
+
+        const itemsContainer = document.getElementById("orderItems");
+        itemsContainer.innerHTML = "";
+
+order.items.forEach(item => {
+
+    const total = item.quantity * item.price;
+
+let actionButton = "";
+
+if(item.status === "Cancelled"){
+actionButton = `<button class="cancelled-btn">Cancelled</button>`;
+}
+else if(order.status === "Shipped" || order.status === "Delivered"){
+actionButton = `<span style="color:#888;">Not allowed</span>`;
+}
+else{
+actionButton = `
+<button class="cancel-item-btn cancel-btn"
+data-product-id="${item.product._id}">
+Cancel
+</button>`;
+}
+
+    const row = `
+        <tr id="row-${item.product._id}">
+            <td>
+                <div class="product-cell">
+                   <img src="${item.product.image || 'images/no-image.png'}" class="product-img" class="product-img">
+                    <div class="product-name-info">
+                        <h4>${item.product.name}</h4>
+                    </div>
+                </div>
+            </td>
+            <td>${item.quantity}</td>
+            <td>₹${item.price}</td>
+            <td><strong>₹${total}</strong></td>
+            <td id="action-${item.product._id}">
+                ${actionButton}
+            </td>
+        </tr>
+    `;
+
+    itemsContainer.innerHTML += row;
+
+});
+
+        // =============================
+        // 3️⃣ ORDER TOTALS
+        // =============================
+
+function formatPrice(price){
+return "₹" + Number(price).toLocaleString("en-IN");
+}
+        
+        const totalsHTML = `
+            <tr>
+                <td colspan="3" style="text-align:left;">Subtotal</td>
+                <td>₹${order.subtotal}</td>
+            </tr>
+            <tr>
+                <td colspan="3" style="text-align:left;">Delivery</td>
+                <td>₹${order.deliveryCharge}</td>
+            </tr>
+            <tr>
+                <td colspan="3" style="text-align:left;">Discount</td>
+                <td>- ₹${order.discount}</td>
+            </tr>
+            <tr>
+                <td colspan="3" style="text-align:left; font-size:18px; color:green;">
+                    <b>Total Amount</b>
+                </td>
+                <td style="font-size:18px; color:green;">
+                    <b>${formatPrice(order.totalAmount)}</b>
+                </td>
+            </tr>
+
+            <tr>
+                <td colspan="4" style="text-align:right; padding-top:10px;">
+                    <button onclick="cancelFullOrder('${order._id}')" 
+                        id="cancelBtn"
+                        style="padding:8px 13px;background:transparent;color:black;border:1px solid black;border-radius:50px;cursor:pointer;">
+                        Cancel Total Orders
+                    </button>
+                </td>
+            </tr>
+        `;
+
+        itemsContainer.innerHTML += totalsHTML;
+
+        if (order.status === "Cancelled") {
+            const cancelBtn = document.getElementById("cancelBtn");
+            if (cancelBtn) cancelBtn.style.display = "none";
+        }
+
+        // =============================
+        // 4️⃣ CANCEL SINGLE ITEM
+        // =============================
+
+        document.querySelectorAll(".cancel-item-btn").forEach(btn => {
+
+            btn.addEventListener("click", async function () {
+
+                const productId = this.getAttribute("data-product-id");
+
+                if (!confirm("Cancel this item?")) return;
+
+                try {
+
+                    const res = await fetch("http://localhost:5000/api/orders/cancel-item", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: "Bearer " + token
+                        },
+                        body: JSON.stringify({ orderId, productId })
+                    });
+
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.message);
+
+                    document.getElementById(`action-${productId}`).innerHTML =
+                    `<button class="cancelled-btn">Cancelled</button>`;
+
+
+                    alert("Item cancelled successfully");
+
+                } catch (err) {
+                    alert(err.message);
+                }
+
+            });
+
+        });
+
+        // =============================
+        // 5️⃣ PAYMENT DETAILS
+        // =============================
+
+        document.querySelector(".payment-method p").innerHTML =
+            `Method: <strong>${order.paymentMethod}</strong>`;
+
+        const badge = document.querySelector(".status-badge");
+        badge.innerText = order.paymentStatus;
+
+        if (order.paymentStatus === "Paid") {
+            badge.style.backgroundColor = "#e8f5e9";
+            badge.style.color = "#2e7d32";
+        } else {
+            badge.style.backgroundColor = "#fff3e0";
+            badge.style.color = "#ef6c00";
+        }
+
+        // =============================
+        // 6️⃣ ORDER TRACKING
+        // =============================
+
+        const steps = document.querySelectorAll(".step");
+        steps.forEach(step => step.classList.remove("completed", "active"));
+
+        const flow = ["Pending", "Packed", "Shipped", "Delivered"];
+        const index = flow.indexOf(order.status);
+
+                const timestamps = {
+        "Order Placed": order.createdAt,
+        "Packed": order.packedAt,
+        "Shipped": order.shippedAt,
+        "Delivered": order.deliveredAt
+        };
+
+steps.forEach((step, i) => {
+  const label = step.querySelector(".step-label").innerText;
+  if(timestamps[label]){
+    const time = new Date(timestamps[label]).toLocaleDateString();
+    step.querySelector(".step-label").innerHTML += `<br><span style="font-size:10px;color:#888;">${time}</span>`;
+  }
+});
+
+    } catch (error) {
+        alert(error.message);
+    }
+
+});
+
+
+// =============================
+// CANCEL FULL ORDER
+// =============================
+
+async function cancelFullOrder(orderId) {
+
+    const token = localStorage.getItem("token");
+
+    const response = await fetch("http://localhost:5000/api/orders/cancel-full", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token
+        },
+        body: JSON.stringify({ orderId })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        alert(data.message);
+        return;
+    }
+
+    alert("Order cancelled successfully");
+    location.reload();
+}
+
+</script>
+</body>
+</html>

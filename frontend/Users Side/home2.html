@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment - StepZone</title>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Preconnect for Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Preload and use fonts -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@300;400;500;700&family=Great+Vibes&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@300;400;500;700&family=Great+Vibes&display=swap" rel="stylesheet">
+    </noscript>
+
+    <!-- FontAwesome -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    </noscript>
+
+    <!-- Razorpay Checkout Script -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
+</head>
+
+
+<body class="products-body">
+    <!-- Announcement Bar -->
+    <div class="announcement-bar">
+        <div class="announcement-text">
+            Invite Friends and get 50% off on your next purchase <a href="#" class="invite-link">Invite Now</a>
+        </div>
+        <div class="close-announcement"><i class="fas fa-times"></i></div>
+    </div>
+
+    <!-- Header Section -->
+    <header class="main-header">
+        <div class="header-left">
+            <div class="logo"><a href="home.html" style="color: black; text-decoration: none">StepZone</a></div>
+        </div>
+
+        <nav class="header-center">
+            <ul class="nav-links">
+                <li><a href="products.html">Women</a></li>
+                <li><a href="kids_product.html">Kids</a></li>
+                <li><a href="shop.html">Shop</a></li>
+                <li><a href="#">Contact us</a></li>
+            </ul>
+        </nav>
+
+        <div class="header-right">
+            <div class="search-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" placeholder="Search here" class="search-input">
+            </div>
+            <div class="header-icons">
+                <a href="wishlist.html" class="icon-link"><i class="far fa-heart"></i></a>
+                <a href="cart.html" class="icon-link"><i class="fas fa-shopping-cart"></i><span id="cart-count">0</span></a>
+                <a href="#" class="profile-link">
+                    <div class="avatar-circle"><i class="fas fa-user"></i></div>
+                    <span class="username">Anne Doe</span>
+                </a>
+            </div>
+            <div class="mobile-menu-trigger">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+        
+    </header>
+    <!-- Filter/Sort Row -->
+    <div class="listing-actions-row">
+        <div class="actions-container">
+            <button class="action-btn" id="filterToggle">
+                Filter <i class="fas fa-filter"></i>
+            </button>
+            <button class="action-btn" id="sortToggle">
+                Sort <i class="fas fa-sort-amount-down"></i>
+            </button>
+
+        </div>
+    </div>
+
+    <!-- Main Listing Layout -->
+    <div class="listing-layout">
+
+        <!-- FILTER SIDEBAR -->
+        <aside class="filter-sidebar">
+            <div class="filter-header">
+                <h3>Filters</h3>
+                <a href="#" class="clear-all">Clear all</a>
+            </div>
+
+            <div class="filter-section">
+                <h4>Brand</h4>
+                <label><input type="checkbox"> StepZone</label>
+                <label><input type="checkbox"> Bata</label>
+                <label><input type="checkbox"> Metro</label>
+                <label><input type="checkbox"> Mochi</label>
+                <label><input type="checkbox"> HeelStar</label>
+                <a href="#" class="more">+ more</a>
+            </div>
+
+            <div class="filter-section">
+                <h4>Price</h4>
+                <label><input type="checkbox"> ₹500 – ₹999</label>
+                <label><input type="checkbox"> ₹1000 – ₹1999</label>
+                <label><input type="checkbox"> ₹2000 & above</label>
+            </div>
+
+            <div class="filter-section">
+                <h4>Color</h4>
+                <label><input type="checkbox"> Black</label>
+                <label><input type="checkbox"> Nude</label>
+                <label><input type="checkbox"> Pink</label>
+                <label><input type="checkbox"> White</label>
+            </div>
+        </aside>
+        <!-- Sort Section -->
+        <aside class="sort-box">
+            <ul>
+                <li><button>Price: Low to High</button></li>
+                <li><button>Price: High to Low</button></li>
+                <li><button>Newest</button></li>
+                <li><button>Popularity</button></li>
+            </ul>
+        </aside>
+
+
+        <!-- Product Grid Section -->
+        <section class="section-container product-listing-section">
+            <div class="products-container" id="productsContainer"></div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <!-- Top Section -->
+            <div class="footer-top">
+                <!-- Brand -->
+                <div class="footer-brand-section">
+                    <h2 class="footer-logo">StepZone</h2>
+                </div>
+
+                <!-- Navigation Columns -->
+                <div class="footer-links-container">
+                    <div class="footer-column">
+                        <h3>Women</h3>
+                        <ul>
+                            <li><a href="#">All Women</a></li>
+                            <li><a href="#">Sandals</a></li>
+                            <li><a href="#">Flip Flops</a></li>
+                            <li><a href="#">Flats</a></li>
+                            <li><a href="#">Sneakers</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>Kids</h3>
+                        <ul>
+                            <li><a href="#">All Kids</a></li>
+                            <li><a href="#">Shoes</a></li>
+                            <li><a href="#">Sandals</a></li>
+                            <li><a href="#">Boots</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>Shopping</h3>
+                        <ul>
+                            <li><a href="#">Your Cart</a></li>
+                            <li><a href="#">Your Orders</a></li>
+                            <li><a href="#">Wishlist</a></li>
+                            <li><a href="#">Shipping Details</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>More Links</h3>
+                        <ul>
+                            <li><a href="#">Blogs</a></li>
+                            <li><a href="#">Gift Center</a></li>
+                            <li><a href="#">Buying Guides</a></li>
+                            <li><a href="#">New Arrivals</a></li>
+                            <li><a href="#">Clearance</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Stay in Touch -->
+                <div class="footer-newsletter">
+                    <h3>Stay in Touch</h3>
+                    <p>Subscribe to our newsletter for exclusive offers.</p>
+                    <div class="newsletter-form">
+                        <input type="email" placeholder="Enter your email">
+                        <button type="submit"><i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Section -->
+            <div class="footer-bottom">
+                <div class="footer-legal">
+                    <a href="#">Terms & Conditions</a>
+                    <span>|</span>
+                    <a href="#">Privacy Policy</a>
+                </div>
+                <div class="footer-social">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+  <script>
+
+document.addEventListener("DOMContentLoaded", loadProducts);
+
+async function loadProducts() {
+  try {
+    const res = await fetch("http://localhost:5000/api/products");
+    const products = await res.json();
+
+    const container = document.getElementById("productsContainer");
+    container.innerHTML = "";
+
+    products.forEach(product => {
+      const card = document.createElement("div");
+      card.classList.add("product-card");
+
+      card.innerHTML = `
+        <div class="image-wrapper">
+         <img src="${product.image || 'images/default.png'}" class="product-img" onclick="goToDetails('${product._id}')">
+
+          <div class="wishlist-icon"
+               data-id="${product._id}"
+               onclick="toggleWishlist('${product._id}', this)">
+               ♡
+          </div>
+        </div>
+
+        <div class="product-info">
+          <h3 onclick="goToDetails('${product._id}')">
+            ${product.name}
+          </h3>
+
+          <p class="price">₹ ${product.price}</p>
+
+<button class="add-cart-btn" onclick="addToCart('${product._id}')">ADD TO CART</button>
+        </div>
+      `;
+
+      container.appendChild(card);
+    });
+
+    initializeWishlist();
+
+  } catch (err) {
+    console.error("Error loading products:", err);
+  }
+}
+
+// Navigate
+function goToDetails(productId) {
+  window.location.href = `product_details.html?id=${productId}`;
+}
+
+// ❤️ Toggle Wishlist
+async function toggleWishlist(productId, iconElement) {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    alert("Please login first");
+    window.location.href = "login.html";
+    return;
+  }
+
+  try {
+    const response = await fetch("http://localhost:5000/api/wishlist", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({ productId })
+    });
+
+    const data = await response.json();
+    console.log("Backend response:", data);
+
+    if (!response.ok) {
+      throw new Error(data.message);
+    }
+
+    // 🔥 Update UI based on backend message
+  if (data.message === "Added to wishlist") {
+  iconElement.classList.add("active");
+  iconElement.textContent = "♥";
+} 
+else if (data.message === "Removed from wishlist") {
+  iconElement.classList.remove("active");
+  iconElement.textContent = "♡";
+}
+
+  } catch (error) {
+    console.error("Wishlist error:", error);
+  }
+}
+async function initializeWishlist() {
+  const token = localStorage.getItem("token");
+  if (!token) return;
+
+  try {
+    const res = await fetch("http://localhost:5000/api/wishlist", {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+
+    const wishlist = await res.json();
+    if (!wishlist.products) return;
+
+   const wishlistIds = wishlist.products
+  .filter(item => item.productId) // 🔥 important safety
+  .map(item => item.productId._id.toString());
+
+
+document.querySelectorAll(".wishlist-icon").forEach(icon => {
+  const productId = icon.dataset.id.toString();
+
+  if (wishlistIds.includes(productId)) {
+    icon.classList.add("active");
+    icon.textContent = "♥";
+  } else {
+    icon.classList.remove("active");
+    icon.textContent = "♡";
+  }
+});
+
+  } catch (err) {
+    console.error("Wishlist load error:", err);
+  }}
+
+// 🛒 Add to Cart
+async function addToCart(productId) {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    alert("Please login first");
+    window.location.href = "login.html";
+    return;
+  }
+
+  try {
+    const response = await fetch("http://localhost:5000/api/cart", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({ productId })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      alert("Added to cart ✅");
+      loadCartCount(); // update navbar count
+    } else {
+      alert(data.message);
+    }
+
+  } catch (error) {
+    console.error("Add to Cart Error:", error);
+  }
+}
+
+async function loadCartCount() {
+  const token = localStorage.getItem("token");
+  if (!token) return;
+
+  try {
+
+  const response = await fetch("http://localhost:5000/api/cart", {
+    headers: {
+      "Authorization": "Bearer " + token
+    }
+  });
+
+  const data = await response.json();
+    console.log("Cart API response:", data);
+
+
+  const cartCountElement = document.getElementById("cart-count");
+
+  if (!cartCountElement) {
+    console.log("cart-count element not found");
+    return;
+  }
+
+  // cartCountElement.innerText = data.items.length;
+  cartCountElement.innerText = data.products ? data.products.length : 0;
+} catch (error) {
+    console.error("Error loading cart:", error);
+  }}
+
+</script>
+</body>
+</html>

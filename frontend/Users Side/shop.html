@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StepZone Products</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Using Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@300;400;500;700&family=Great+Vibes&display=swap"
+        rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<style>
+    /* FIX: Product pages must not use centered flex layout */
+    .products-body {
+        display: block;
+        height: auto;
+        align-items: unset;
+        justify-content: unset;
+        background-color: #d1cdd1;
+    }
+
+
+    /* Main layout */
+    .listing-layout {
+        display: flex;
+        gap: 30px;
+        padding: 40px 60px;
+        align-items: flex-start;
+    }
+
+    /* Filter sidebar */
+    .filter-sidebar {
+        display: hidden;
+        width: 260px;
+        background: #fff;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+        font-family: "Roboto", sans-serif;
+    }
+
+    .filter-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+    }
+
+    .filter-header h3 {
+        font-size: 18px;
+    }
+
+    .clear-all {
+        font-size: 13px;
+        color: #ad1457;
+        text-decoration: none;
+    }
+
+    .filter-section {
+        margin-bottom: 20px;
+    }
+
+    .filter-section h4 {
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+
+    .filter-section label {
+        display: block;
+        font-size: 13px;
+        margin-bottom: 6px;
+        cursor: pointer;
+    }
+
+    .filter-section input {
+        margin-right: 8px;
+        accent-color: #ad1457;
+    }
+
+    .more {
+        font-size: 12px;
+        color: #ad1457;
+        text-decoration: none;
+    }
+
+    /* Product section should take remaining space */
+    .product-listing-section {
+        flex: 1;
+    }
+
+    /* Filter hidden initially */
+    .filter-sidebar {
+        display: none;
+    }
+
+    /* When active */
+    .filter-sidebar.active {
+        display: block;
+    }
+
+    /* Smooth animation (optional but nice) */
+    .filter-sidebar {
+        animation: slideIn 0.3s ease;
+    }
+
+    /* Sort Box */
+    .sort-box {
+        display: none;
+        position: absolute;
+        top: 150px;
+        right: 20px;
+        width: 220px;
+        background: #fff;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        z-index: 1000;
+    }
+
+    .sort-box.active {
+        display: block;
+    }
+
+    .sort-box h4 {
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+
+    .sort-box ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .sort-box li button {
+        width: 100%;
+        padding: 8px 10px;
+        border: none;
+        background: none;
+        text-align: left;
+        cursor: pointer;
+        border-radius: 6px;
+    }
+
+    .sort-box li button:hover {
+        background: #f3d0d8;
+    }
+
+
+    @keyframes slideIn {
+        from {
+            transform: translateX(-20px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+</style>
+
+<body class="products-body">
+    <!-- Announcement Bar -->
+    <div class="announcement-bar">
+        <div class="announcement-text">
+            Invite Friends and get 50% off on your next purchase <a href="#" class="invite-link">Invite Now</a>
+        </div>
+        <div class="close-announcement"><i class="fas fa-times"></i></div>
+    </div>
+
+    <!-- Header Section -->
+    <header class="main-header">
+        <div class="header-left">
+            <div class="logo"><a href="home.html" style="color: black; text-decoration: none">StepZone</a></div>
+        </div>
+
+        <nav class="header-center">
+            <ul class="nav-links">
+                <li><a href="products.html">Women</a></li>
+                <li><a href="kids_product.html">Kids</a></li>
+                <li><a href="shop.html">Shop</a></li>
+                <li><a href="#">Contact us</a></li>
+            </ul>
+        </nav>
+
+        <div class="header-right">
+            <div class="search-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" placeholder="Search here" class="search-input">
+            </div>
+            <div class="header-icons">
+                <a href="#" class="icon-link"><i class="far fa-heart"></i></a>
+                <a href="#" class="icon-link"><i class="fas fa-shopping-cart"></i></a>
+                <a href="#" class="profile-link">
+                    <div class="avatar-circle"><i class="fas fa-user"></i></div>
+                    <span class="username">Anne Doe</span>
+                </a>
+            </div>
+            <div class="mobile-menu-trigger">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+    <!-- Filter/Sort Row -->
+    <div class="listing-actions-row">
+        <div class="actions-container">
+            <button class="action-btn" id="filterToggle">
+                Filter <i class="fas fa-filter"></i>
+            </button>
+            <button class="action-btn" id="sortToggle">
+                Sort <i class="fas fa-sort-amount-down"></i>
+            </button>
+
+        </div>
+    </div>
+
+    <!-- Main Listing Layout -->
+    <div class="listing-layout">
+
+        <!-- FILTER SIDEBAR -->
+        <aside class="filter-sidebar">
+            <div class="filter-header">
+                <h3>Filters</h3>
+                <a href="#" class="clear-all">Clear all</a>
+            </div>
+
+            <div class="filter-section">
+                <h4>Brand</h4>
+                <label><input type="checkbox"> StepZone</label>
+                <label><input type="checkbox"> Bata</label>
+                <label><input type="checkbox"> Metro</label>
+                <label><input type="checkbox"> Mochi</label>
+                <label><input type="checkbox"> HeelStar</label>
+                <a href="#" class="more">+ more</a>
+            </div>
+
+            <div class="filter-section">
+                <h4>Price</h4>
+                <label><input type="checkbox"> ₹500 – ₹999</label>
+                <label><input type="checkbox"> ₹1000 – ₹1999</label>
+                <label><input type="checkbox"> ₹2000 & above</label>
+            </div>
+
+            <div class="filter-section">
+                <h4>Color</h4>
+                <label><input type="checkbox"> Black</label>
+                <label><input type="checkbox"> Nude</label>
+                <label><input type="checkbox"> Pink</label>
+                <label><input type="checkbox"> White</label>
+            </div>
+        </aside>
+        <!-- Sort Section -->
+        <aside class="sort-box">
+            <ul>
+                <li><button>Price: Low to High</button></li>
+                <li><button>Price: High to Low</button></li>
+                <li><button>Newest</button></li>
+                <li><button>Popularity</button></li>
+            </ul>
+        </aside>
+
+
+        <!-- Product Grid Section -->
+        <section class="section-container product-listing-section">
+            <div class="listing-grid">
+                <!-- Product 1 -->
+                <div class="listing-card">
+                    <!-- <div class="badge sale-badge">₹</div> -->
+                    <div class="wishlist-heart"><i class="far fa-heart"></i></div>
+                    <img src="images/image 11.jpg" alt="Luxury Heels" class="listing-img">
+                    <div class="listing-info">
+                        <h3>Luxury Blush Heels</h3>
+                        <p class="price">₹999</p>
+                        <button class="add-cart-btn">Add to Cart</button>
+
+                    </div>
+                </div>
+                <!-- Product 2 -->
+                <div class="listing-card">
+                    <div class="wishlist-heart"><i class="far fa-heart"></i></div>
+                    <img src="images/image 20.jpg" alt="Party Sandals" class="listing-img">
+                    <div class="listing-info">
+                        <h3>Velvet Party Sandals</h3>
+                        <p class="price">₹1,499</p>
+                        <button class="add-cart-btn">Add to Cart</button>
+
+                    </div>
+                </div>
+                <!-- Product 3 -->
+                <div class="listing-card">
+                    <div class="wishlist-heart"><i class="far fa-heart"></i></div>
+                    <img src="images/image 21.jpg" alt="Classic Flats" class="listing-img">
+                    <div class="listing-info">
+                        <h3>Classic Nude Flats</h3>
+                        <p class="price">₹1,299</p>
+                        <button class="add-cart-btn">Add to Cart</button>
+
+                    </div>
+                </div>
+                <!-- Product 4 -->
+                <div class="listing-card">
+                    <div class="wishlist-heart"><i class="far fa-heart"></i></div>
+                    <a href="product-details.html">
+                        <img src="images/image 14.jpg" alt="Pastel Sneakers" class="listing-img">
+                    </a>
+                    <div class="listing-info">
+                        <h3>Chic Pastel Sneakers</h3>
+                        <p class="price">₹999</p>
+                        <button class="add-cart-btn">Add to Cart</button>
+
+                    </div>
+                </div>
+                <!-- Product 5 -->
+                <div class="listing-card">
+                    <div class="wishlist-heart"><i class="far fa-heart"></i></div>
+                    <img src="images/image 15.jpg" alt="Summer Wedges" class="listing-img">
+                    <div class="listing-info">
+                        <h3>Elegant Summer Wedges</h3>
+                        <p class="price">₹899</p>
+                        <button class="add-cart-btn">Add to Cart</button>
+
+                    </div>
+                </div>
+                <!-- Product 6 -->
+                <div class="listing-card">
+                    <div class="wishlist-heart"><i class="far fa-heart"></i></div>
+                    <img src="images/image 16.jpg" alt="Bridal Heels" class="listing-img">
+                    <div class="listing-info">
+                        <h3>Exquisite Bridal Heels</h3>
+                        <p class="price">₹799</p>
+                        <button class="add-cart-btn">Add to Cart</button>
+
+                    </div>
+                </div>
+                <div class="listing-card">
+                    <div class="wishlist-heart"><i class="far fa-heart"></i></div>
+                    <img src="images/image 17.jpg" alt="Bridal Heels" class="listing-img">
+                    <div class="listing-info">
+                        <h3>Exquisite Bridal Heels</h3>
+                        <p class="price">₹899</p>
+                        <button class="add-cart-btn">Add to Cart</button>
+
+                    </div>
+                </div>
+                <div class="listing-card">
+                    <div class="wishlist-heart"><i class="far fa-heart"></i></div>
+                    <img src="images/image 11.jpg" alt="Bridal Heels" class="listing-img">
+                    <div class="listing-info">
+                        <h3>Exquisite Bridal Heels</h3>
+                        <p class="price">₹699</p>
+                        <button class="add-cart-btn">Add to Cart</button>
+
+                    </div>
+                </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <!-- Top Section -->
+            <div class="footer-top">
+                <!-- Brand -->
+                <div class="footer-brand-section">
+                    <h2 class="footer-logo">StepZone</h2>
+                </div>
+
+                <!-- Navigation Columns -->
+                <div class="footer-links-container">
+                    <div class="footer-column">
+                        <h3>Women</h3>
+                        <ul>
+                            <li><a href="#">All Women</a></li>
+                            <li><a href="#">Sandals</a></li>
+                            <li><a href="#">Flip Flops</a></li>
+                            <li><a href="#">Flats</a></li>
+                            <li><a href="#">Sneakers</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>Kids</h3>
+                        <ul>
+                            <li><a href="#">All Kids</a></li>
+                            <li><a href="#">Shoes</a></li>
+                            <li><a href="#">Sandals</a></li>
+                            <li><a href="#">Boots</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>Shopping</h3>
+                        <ul>
+                            <li><a href="#">Your Cart</a></li>
+                            <li><a href="#">Your Orders</a></li>
+                            <li><a href="#">Wishlist</a></li>
+                            <li><a href="#">Shipping Details</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>More Links</h3>
+                        <ul>
+                            <li><a href="#">Blogs</a></li>
+                            <li><a href="#">Gift Center</a></li>
+                            <li><a href="#">Buying Guides</a></li>
+                            <li><a href="#">New Arrivals</a></li>
+                            <li><a href="#">Clearance</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Stay in Touch -->
+                <div class="footer-newsletter">
+                    <h3>Stay in Touch</h3>
+                    <p>Subscribe to our newsletter for exclusive offers.</p>
+                    <div class="newsletter-form">
+                        <input type="email" placeholder="Enter your email">
+                        <button type="submit"><i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Section -->
+            <div class="footer-bottom">
+                <div class="footer-legal">
+                    <a href="#">Terms & Conditions</a>
+                    <span>|</span>
+                    <a href="#">Privacy Policy</a>
+                </div>
+                <div class="footer-social">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script>
+        const filterBtn = document.getElementById("filterToggle");
+        const filterSidebar = document.querySelector(".filter-sidebar");
+
+        filterBtn.addEventListener("click", () => {
+            filterSidebar.classList.toggle("active");
+        });
+        const sortBtn = document.getElementById("sortToggle");
+        const sortBox = document.querySelector(".sort-box");
+
+        sortBtn.addEventListener("click", () => {
+            sortBox.classList.toggle("active");
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StepZone | Add New Product</title>
+    <style>
+        :root {
+            --sidebar-width: 260px;
+            --topbar-height: 70px;
+            --primary-blue: #e092d1;
+            --sidebar-bg: #1a1d21;
+            --sidebar-text: #adb5bd;
+            --sidebar-hover: #ffffff;
+            --body-bg: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-dark: #202124;
+            --text-muted: #5f6368;
+            --border-color: #dee2e6;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--body-bg);
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            background-color: var(--sidebar-bg);
+            position: fixed;
+            left: 0;
+            top: 0;
+            color: white;
+            padding: 20px 0;
+            z-index: 1000;
+        }
+
+        .sidebar-brand {
+            padding: 0 25px 30px;
+            font-size: 24px;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar-brand span {
+            color: var(--primary-blue);
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            padding: 2px 15px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: var(--sidebar-text);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background-color: rgba(34, 116, 223, 0.708);
+            color: var(--sidebar-hover);
+        }
+
+        /* Topbar Styles */
+        .topbar {
+            margin-left: var(--sidebar-width);
+            height: var(--topbar-height);
+            background-color: var(--card-bg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background-color: var(--primary-blue);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 30px;
+        }
+
+        .section-header {
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-header h2 {
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .btn-back {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .btn-back:hover {
+            color: var(--text-dark);
+        }
+
+        /* Form Card */
+        .card {
+            background-color: var(--card-bg);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(224, 146, 209, 0.1);
+        }
+
+        /* Checkbox Styles */
+        .checkbox-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #f8f9fa;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+        }
+
+        .checkbox-item input {
+            cursor: pointer;
+        }
+
+        /* File Upload Placeholder */
+        .file-upload-wrapper {
+            border: 2px dashed var(--border-color);
+            padding: 40px;
+            text-align: center;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .file-upload-wrapper:hover {
+            background-color: #f8f9fa;
+            border-color: var(--primary-blue);
+        }
+
+        .upload-icon {
+            font-size: 30px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .upload-text {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .btn-submit {
+            background-color: var(--primary-blue);
+            color: white;
+            padding: 14px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .btn-submit:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 80px;
+            }
+
+            .sidebar-brand,
+            .nav-link span {
+                display: none;
+            }
+
+            .topbar,
+            .main-content {
+                margin-left: 80px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full-width {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            Step<span>Zone</span>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="dashboard.html" class="nav-link active">
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="products.html" class="nav-link">
+                    <span>Products</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="categories.html" class="nav-link">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="orders.html" class="nav-link">
+                    <span>Orders</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="payments.html" class="nav-link">
+                    <span>Payments</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="reports.html" class="nav-link">
+                    <span>Reports & Analytics</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="offers.html" class="nav-link">
+                    <span>Offers & Discounts</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="reviews.html" class="nav-link">
+                    <span>Reviews</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="users.html" class="nav-link">
+                    <span>User Management</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="settings.html" class="nav-link">
+                    <span>Admin Settings</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <div style="font-weight: 500; font-size: 14px; color: var(--text-muted);">
+            Admin Panel / Products / Add New
+        </div>
+        <div class="topbar-right">
+            <div class="user-profile">
+                <div class="user-avatar">AD</div>
+                <div class="user-info">
+                    <div style="font-size: 14px; font-weight: 600;">Anna Doe</div>
+                    <div style="font-size: 12px; color: var(--text-muted);">Super Admin</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <div class="section-header">
+            <a href="products.html" class="btn-back">← Back to Products</a>
+            <h2>Add New Footwear Product</h2>
+        </div>
+
+        <div class="card">
+            <form action="#" onsubmit="return false;">
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="p-name">Product Name</label>
+                        <input type="text" id="p-name" placeholder="e.g. Elegant Stiletto Heels" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="p-category">Category</label>
+                        <select id="p-category" required>
+                            <option value="">Select Category</option>
+                            <option value="women">Women</option>
+                            <option value="kids">Kids</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="p-price">Price ($)</label>
+                        <input type="number" id="p-price" step="0.01" placeholder="0.00" required>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Available Sizes</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-item"><input type="checkbox"> 5</label>
+                            <label class="checkbox-item"><input type="checkbox"> 6</label>
+                            <label class="checkbox-item"><input type="checkbox"> 7</label>
+                            <label class="checkbox-item"><input type="checkbox"> 8</label>
+                            <label class="checkbox-item"><input type="checkbox"> 9</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="p-stock">Stock Quantity</label>
+                        <input type="number" id="p-stock" placeholder="0" required>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Product Images</label>
+                        <div class="file-upload-wrapper">
+                            <div class="upload-icon">📁</div>
+                            <div class="upload-text">Drag & drop or <strong>browse</strong> to upload images</div>
+                            <input type="file" multiple style="display: none;">
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">Add Product</button>
+            </form>
+        </div>
+    </main>
+
+</body>
+
+</html>

@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - StepZone</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Using Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@300;400;500;700&family=Great+Vibes&display=swap"
+        rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* --- Checkout Page Internal Styles --- */
+        body {
+            background-color: #df9ba6bc;
+            /* Soft blush background theme consistent with Cart Page */
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .checkout-page-wrapper {
+            padding: 60px 0;
+            min-height: calc(100vh - 500px);
+        }
+
+      .checkout-container {
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.details-section, .summary-section {
+  flex: 1;
+  min-width: 250px auto;
+}
+
+        /* Titles */
+        .page-section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: #333;
+            margin: 0 0 25px 0;
+        }
+
+        /* Common Card Style */
+        .checkout-card {
+            background-color: #dbd3d3;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+        }
+
+        /* Left Column – User Details Form */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-control {
+            padding: 14px 20px;
+            border: 1px solid #eee;
+            border-radius: 50px;
+            background-color: #fcfcfc;
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: #d81b60;
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgba(216, 27, 96, 0.05);
+        }
+
+        textarea.form-control {
+            border-radius: 20px;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Right Column – Order Summary */
+        .order-summary-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 35px 0;
+            border-bottom: 1px solid #f9f9f9;
+        }
+
+        .item-info-left {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .item-title {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #333;
+        }
+
+        .item-qty-price {
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        .item-total-price {
+            font-weight: 700;
+            color: #333;
+            font-size: 0.95rem;
+        }
+
+        .summary-totals {
+            margin-top: 20px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+            color: #666;
+        }
+
+        .discount-val {
+            color: #2e7d32;
+            font-weight: 500;
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid #f0f0f0;
+            margin: 20px 0;
+        }
+
+        .final-total {
+            font-weight: 700;
+            color: #111;
+            font-size: 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .total-amount {
+            color: #d81b60;
+            font-size: 1.6rem;
+        }
+
+        /* Bottom Section – Action Button */
+        .checkout-footer {
+            grid-column: span 2;
+            display: flex;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        .place-order-btn {
+            background-color: #d81b60;
+            color: #fff;
+            border: none;
+            padding: 20px 100px;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(216, 27, 96, 0.2);
+        }
+
+        .place-order-btn:hover {
+            background-color: #ad1457;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(216, 27, 96, 0.3);
+        }
+
+
+        .summary-product {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.summary-product img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.place-order-wrapper {
+    display: flex;
+    justify-content: center;   /* center horizontally */
+    margin-top: 20px;
+}
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .checkout-container {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .checkout-footer {
+                grid-column: 1;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full-width {
+                grid-column: 1;
+            }
+
+            .place-order-btn {
+                width: 100%;
+                padding: 18px;
+            }
+
+            .checkout-card {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body class="home-body">
+    <!-- Announcement Bar (EXACTLY from home.html) -->
+    <div class="announcement-bar">
+        <div class="announcement-text">
+            Invite Friends and get 50% off on your next purchase <a href="#" class="invite-link">Invite Now</a>
+        </div>
+        <div class="close-announcement"><i class="fas fa-times"></i></div>
+    </div>
+
+    <!-- Header Section (EXACTLY from home.html) -->
+    <header class="main-header">
+        <div class="header-left">
+            <div class="logo">StepZone</div>
+        </div>
+
+        <nav class="header-center">
+            <ul class="nav-links">
+                <li><a href="home.html">Women</a></li>
+                <li><a href="#">Kids</a></li>
+                <li><a href="products.html">Shop</a></li>
+                <li><a href="#">Contact us</a></li>
+            </ul>
+        </nav>
+
+        <div class="header-right">
+            <div class="search-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" placeholder="Search here" class="search-input">
+            </div>
+            <div class="header-icons">
+                <a href="#" class="icon-link"><i class="far fa-heart"></i></a>
+                <a href="cart.html" class="icon-link"><i class="fas fa-shopping-cart"></i></a>
+                <a href="#" class="profile-link">
+                    <div class="avatar-circle"><i class="fas fa-user"></i></div>
+                    <span class="username">Anne Doe</span>
+                </a>
+            </div>
+            <div class="mobile-menu-trigger">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <main class="checkout-page-wrapper">
+        <div class="checkout-container">
+            <!-- LEFT SECTION – USER DETAILS FORM -->
+          <!-- LEFT SECTION – USER DETAILS FORM -->
+<div class="details-section">
+  <div class="checkout-card">
+    <h2 class="page-section-title">Shipping Details</h2>
+  <form class="details-form" id="shippingForm">
+  <div class="form-grid">
+    <div class="form-group">
+      <label>First Name</label>
+      <input type="text" class="form-control" name="fullName" placeholder="Enter first name">
+    </div>
+    <div class="form-group">
+      <label>Last Name</label>
+      <input type="text" class="form-control" name="lastName" placeholder="Enter last name">
+    </div>
+    <div class="form-group full-width">
+      <label>Address</label>
+      <textarea class="form-control" name="address" placeholder="Enter address"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Country</label>
+      <input type="text" class="form-control" name="country" placeholder="Enter country">
+    </div>
+    <div class="form-group">
+      <label>State</label>
+      <input type="text" class="form-control" name="state" placeholder="Enter state">
+    </div>
+    <div class="form-group">
+      <label>City</label>
+      <input type="text" class="form-control" name="city" placeholder="Enter city">
+    </div>
+    <div class="form-group">
+      <label>Pincode</label>
+      <input type="text" class="form-control" name="pincode" placeholder="Enter pincode">
+    </div>
+  </div>
+</form>
+  </div>
+</div>
+
+<!-- RIGHT SECTION – ORDER SUMMARY -->
+<div class="summary-section">
+  <div class="checkout-card">
+    <h2 class="page-section-title">Order Summary</h2>
+    <ul class="order-summary-list" id="orderList"></ul> <!-- dynamic items go here -->
+
+    <div class="summary-totals">
+      <div class="summary-row">
+        <span>Subtotal</span><span id="subtotal"></span>
+      </div>
+      <div class="summary-row">
+        <span>Delivery</span><span id="delivery"></span>
+      </div>
+      <div class="summary-row">
+        <span>Discount</span><span id="discount"></span>
+      </div>
+      <div class="summary-row final-total">
+        <span>Total</span><span class="total-amount" id="total"></span>
+      </div>
+    </div>              
+</div>
+</main>
+
+<div class="place-order-wrapper">
+    <button type="button" class="place-order-btn">
+        Save & Continue
+    </button>
+</div>
+
+    <!-- Footer (EXACTLY from home.html) -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <!-- Top Section -->
+            <div class="footer-top">
+                <!-- Brand -->
+                <div class="footer-brand-section">
+                    <h2 class="footer-logo">StepZone</h2>
+                </div>
+
+                <!-- Navigation Columns -->
+                <div class="footer-links-container">
+                    <div class="footer-column">
+                        <h3>Women</h3>
+                        <ul>
+                            <li><a href="#">All Women</a></li>
+                            <li><a href="#">Sandals</a></li>
+                            <li><a href="#">Flip Flops</a></li>
+                            <li><a href="#">Flats</a></li>
+                            <li><a href="#">Sneakers</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>Kids</h3>
+                        <ul>
+                            <li><a href="#">All Kids</a></li>
+                            <li><a href="#">Shoes</a></li>
+                            <li><a href="#">Sandals</a></li>
+                            <li><a href="#">Boots</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>Shopping</h3>
+                        <ul>
+                            <li><a href="cart.html">Your Cart</a></li>
+                            <li><a href="#">Your Orders</a></li>
+                            <li><a href="#">Wishlist</a></li>
+                            <li><a href="#">Shipping Details</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>More Links</h3>
+                        <ul>
+                            <li><a href="#">Blogs</a></li>
+                            <li><a href="#">Gift Center</a></li>
+                            <li><a href="#">Buying Guides</a></li>
+                            <li><a href="#">New Arrivals</a></li>
+                            <li><a href="#">Clearance</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Stay in Touch -->
+                <div class="footer-newsletter">
+                    <h3>Stay in Touch</h3>
+                    <p>Subscribe to our newsletter for exclusive offers.</p>
+                    <div class="newsletter-form">
+                        <input type="email" placeholder="Enter your email">
+                        <button type="submit"><i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Section -->
+            <div class="footer-bottom">
+                <div class="footer-legal">
+                    <a href="#">Terms & Conditions</a>
+                    <span>|</span>
+                    <a href="#">Privacy Policy</a>
+                </div>
+                <div class="footer-social">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script>
+// Place order button click
+document.querySelector(".place-order-btn").addEventListener("click", async () => {
+const form = document.getElementById("shippingForm");
+const token = localStorage.getItem("token");
+
+
+const shippingDetails = {
+  fullName: form.fullName.value.trim(),
+  lastName: form.lastName.value.trim(),
+  address: form.address.value.trim(),
+  country: form.country.value.trim(),
+  state: form.state.value.trim(),
+  city: form.city.value.trim(),
+  pincode: form.pincode.value.trim()
+};
+
+// 🔥 SAVE SHIPPING ADDRESS FOR PAYMENT PAGE
+localStorage.setItem("shippingDetails", JSON.stringify(shippingDetails));
+
+  for (const key in shippingDetails) {
+    if (!shippingDetails[key]) {
+      return alert("Please fill all shipping fields");
+    }
+  }
+
+
+//Save Address To Database When User Clicks Place Order
+await fetch("http://localhost:5000/api/address", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer " + token
+  },
+  body: JSON.stringify(shippingDetails)
+});
+
+
+  // ✅ Fetch cart again and save in localStorage
+  if (!token) return alert("Login first!");
+
+  try {
+    const res = await fetch("http://localhost:5000/api/cart", {
+      headers: { Authorization: "Bearer " + token }
+    });
+    const data = await res.json();
+
+    if (!data.products || data.products.length === 0) {
+      return alert("Your cart is empty!");
+    }
+
+const cartProducts = data.products.map(item => ({
+  id: item.product._id,
+  name: item.product.name,
+  price: item.product.price,
+  quantity: item.quantity,
+  image: item.product.image.trim()   // ⚡ remove extra spaces
+}));
+
+    let subtotal = 0;
+    cartProducts.forEach(item => subtotal += item.price * item.quantity);
+
+    // ✅ Save cart and totals to localStorage
+    localStorage.setItem("cartItems", JSON.stringify(cartProducts));
+    localStorage.setItem("subtotal", subtotal);
+    localStorage.setItem("deliveryCharge", 50); // fixed example
+    localStorage.setItem("discount", 0);        // example
+    localStorage.setItem("finalTotal", subtotal + 50 - 0);
+
+    // Redirect to payment page
+    window.location.href = "payment.html";
+
+  } catch (err) {
+    console.error(err);
+    alert("Failed to save cart data. Please try again.");
+  }
+});
+
+// Load cart items dynamically
+document.addEventListener("DOMContentLoaded", async () => {
+  const token = localStorage.getItem("token");
+  if (!token) return alert("Login first!");
+
+  try {
+    const res = await fetch("http://localhost:5000/api/cart", {
+      headers: { Authorization: "Bearer " + token }
+    });
+
+    const data = await res.json();
+    const list = document.getElementById("orderList");
+    list.innerHTML = "";
+
+    if (!data.products || data.products.length === 0) {
+      list.innerHTML = "<li>No items in cart</li>";
+      return;
+    }
+
+    let subtotal = 0;
+
+    data.products.forEach(item => {
+      const li = document.createElement("li");
+      li.className = "summary-item";
+      li.innerHTML = `
+        <div class="summary-product">
+          <img src="${item.product.image}" />
+          <div class="item-info-left">
+            <span class="item-title">${item.product.name}</span>
+            <span class="item-qty-price">Qty: ${item.quantity} × ₹${item.product.price}</span>
+          </div>
+        </div>
+        <span class="item-total-price">₹${item.quantity * item.product.price}</span>
+      `;
+      list.appendChild(li);
+      subtotal += item.quantity * item.product.price;
+    });
+
+    const deliveryCharge = 50; // Fixed
+    const discount = 0; // Example
+    document.getElementById("subtotal").innerText = "₹" + subtotal;
+    document.getElementById("delivery").innerText = "₹" + deliveryCharge;
+    document.getElementById("discount").innerText = "-₹" + discount;
+    document.getElementById("total").innerText = "₹" + (subtotal + deliveryCharge - discount);
+
+  } catch (err) {
+    console.error(err);
+    alert("Failed to load cart items");
+  }
+
+});
+
+function selectAddress(address) {
+  localStorage.setItem("shippingDetails", JSON.stringify(address));
+  window.location.href = "payment.html";
+}
+
+</script>
+</body>
+</html>

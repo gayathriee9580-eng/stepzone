@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders - StepZone</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Using Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* --- My Orders Page Internal Styles --- */
+        body {
+            background-color: #fcfcfc;
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            color: #444;
+        }
+
+        .orders-page-wrapper {
+            padding: 60px 0 100px 0;
+            min-height: calc(100vh - 400px);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* --- Page Title --- */
+        .page-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .item-count {
+            font-size: 1.1rem;
+            color: #888;
+            font-weight: 400;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        /* --- Order Cards --- */
+        .orders-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .order-card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 24px;
+            display: flex;
+            gap: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            border: 1px solid #f0f0f0;
+        }
+
+        .order-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Left side: Image */
+        .order-img-wrapper {
+            flex-shrink: 0;
+            width: 120px;
+            height: 120px;
+            border-radius: 10px;
+            overflow: hidden;
+            background-color: #f9f9f9;
+        }
+
+        .order-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Center section: Details */
+        .order-details {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .product-name {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #222;
+            margin-bottom: 2px;
+        }
+
+        .product-category {
+            font-size: 0.85rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .product-price {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #d81b60;
+            margin-top: 4px;
+        }
+
+        .order-meta-info {
+            display: grid;
+            grid-template-columns: auto auto;
+            gap: 15px 30px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .meta-item i {
+            width: 16px;
+            margin-right: 5px;
+            color: #999;
+        }
+
+        /* Right side: Order info & Status */
+        .order-status-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            justify-content: space-between;
+            min-width: 180px;
+            text-align: right;
+        }
+
+        .order-number {
+            font-size: 0.85rem;
+            color: #999;
+            font-weight: 500;
+        }
+
+        .view-details-link {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #d81b60;
+            text-decoration: none;
+            transition: color 0.3s;
+            margin-bottom: 15px;
+        }
+
+        .view-details-link:hover {
+            color: #ad1457;
+            text-decoration: underline;
+        }
+
+        .status-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        /* Status Colors */
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .status-delivered {
+            color: #2e7d32;
+            background-color: #e8f5e9;
+        }
+
+        .status-delivered .status-dot {
+            background-color: #4caf50;
+        }
+
+        .status-cancelled {
+            color: #c62828;
+            background-color: #ffebee;
+        }
+
+        .status-cancelled .status-dot {
+            background-color: #ef5350;
+        }
+
+        .status-shipped {
+            color: #ef6c00;
+            background-color: #fff3e0;
+        }
+
+        .status-shipped .status-dot {
+            background-color: #ff9800;
+        }
+
+        .cancel-order-link {
+            font-size: 0.85rem;
+            color: #dc3545;
+            text-decoration: none;
+            font-weight: 500;
+            margin-top: 5px;
+            cursor: pointer;
+        }
+
+        .cancel-order-link:hover {
+            text-decoration: underline;
+        }
+
+        /* --- Divider --- */
+        .divider {
+            height: 1px;
+            background-color: #f0f0f0;
+            margin: 10px 0;
+        }
+
+        /* --- Footer Summary Bar --- */
+        .summary-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #ffffff;
+            box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.05);
+            padding: 20px 0;
+            z-index: 100;
+            border-top: 1px solid #eee;
+        }
+
+        .summary-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .total-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .total-label {
+            font-size: 0.85rem;
+            color: #888;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .total-amount {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #d81b60;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .summary-actions .btn-primary {
+            padding: 12px 35px;
+            font-size: 0.95rem;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            color: #444;
+            text-decoration: none;
+            margin-bottom: 24px;
+        }
+
+        .back-btn i {
+            font-size: 14px;
+        }
+
+        .back-btn:hover {
+            color: #e91e63;
+            /* StepZone primary pink */
+        }
+
+
+        /* --- Responsive Design --- */
+        @media (max-width: 900px) {
+            .order-card {
+                flex-direction: column;
+                gap: 20px;
+                padding: 20px;
+            }
+
+            .order-img-wrapper {
+                width: 100%;
+                height: 200px;
+            }
+
+            .order-status-section {
+                align-items: flex-start;
+                text-align: left;
+                border-top: 1px solid #f9f9f9;
+                padding-top: 15px;
+                width: 100%;
+            }
+
+            .order-meta-info {
+                grid-template-columns: 1fr;
+                gap: 5px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .page-title {
+                font-size: 1.6rem;
+            }
+
+            .summary-content {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .summary-bar {
+                padding: 15px 0;
+            }
+        }
+    </style>
+</head>
+
+<body class="home-body">
+    <!-- Announcement Bar -->
+    <div class="announcement-bar">
+        <div class="announcement-text">
+            Invite Friends and get 50% off on your next purchase <a href="#" class="invite-link">Invite Now</a>
+        </div>
+        <div class="close-announcement"><i class="fas fa-times"></i></div>
+    </div>
+
+    <!-- Header Section -->
+    <header class="main-header">
+        <div class="header-left">
+            <div class="logo"><a href="home.html" style="color: black;text-decoration: none;">StepZone</a></div>
+        </div>
+
+        <nav class="header-center">
+            <ul class="nav-links">
+                <li><a href="womens_product.html">Women</a></li>
+                <li><a href="kids_product.html">Kids</a></li>
+                <li><a href="products.html">Shop</a></li>
+                <li><a href="#">Contact us</a></li>
+            </ul>
+        </nav>
+
+        <div class="header-right">
+            <div class="search-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" placeholder="Search here" class="search-input">
+            </div>
+            <div class="header-icons">
+                <a href="wishlist.html" class="icon-link"><i class="far fa-heart"></i></a>
+                <a href="cart.html" class="icon-link"><i class="fas fa-shopping-cart"></i></a>
+                <a href="profile.html" class="profile-link">
+                    <div class="avatar-circle"><i class="fas fa-user"></i></div>
+                    <span class="username">Anne Doe</span>
+                </a>
+            </div>
+            <div class="mobile-menu-trigger">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="orders-page-wrapper">
+        <div class="container">
+            <a href="profile.html" class="back-btn">
+                <!-- <i class="fas fa-arrow-left"></i>  -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 21 21">
+                    <g fill="none" fill-rule="evenodd" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="1">
+                        <path d="M6.499 6.498L3.5 9.5l3 3" />
+                        <path d="M8.5 15.5h5q3 0 3-3c0-3-1-3-3-3h-10" />
+                    </g>
+                </svg>
+            </a>
+
+            <h1 class="page-title">
+                My Orders
+<span class="item-count" id="orderCount">(0 items)</span>
+            </h1>
+
+<div class="orders-list" id="ordersList"></div>                <!-- Order Card 1: Delivered -->
+
+    </main>
+
+
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <!-- Top Section -->
+            <div class="footer-top">
+                <!-- Brand -->
+                <div class="footer-brand-section">
+                    <h2 class="footer-logo">StepZone</h2>
+                </div>
+
+                <!-- Navigation Columns -->
+                <div class="footer-links-container">
+                    <div class="footer-column">
+                        <h3>Women</h3>
+                        <ul>
+                            <li><a href="#">All Women</a></li>
+                            <li><a href="#">Sandals</a></li>
+                            <li><a href="#">Flip Flops</a></li>
+                            <li><a href="#">Flats</a></li>
+                            <li><a href="#">Sneakers</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>Kids</h3>
+                        <ul>
+                            <li><a href="#">All Kids</a></li>
+                            <li><a href="#">Shoes</a></li>
+                            <li><a href="#">Sandals</a></li>
+                            <li><a href="#">Boots</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>Shopping</h3>
+                        <ul>
+                            <li><a href="cart.html">Your Cart</a></li>
+                            <li><a href="my-orders.html">Your Orders</a></li>
+                            <li><a href="wishlist.html">Wishlist</a></li>
+                            <li><a href="profile.html">My Profile</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>More Links</h3>
+                        <ul>
+                            <li><a href="#">Blogs</a></li>
+                            <li><a href="#">Gift Center</a></li>
+                            <li><a href="#">Buying Guides</a></li>
+                            <li><a href="#">New Arrivals</a></li>
+                            <li><a href="#">Clearance</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Stay in Touch -->
+                <div class="footer-newsletter">
+                    <h3>Stay in Touch</h3>
+                    <p>Subscribe to our newsletter for exclusive offers.</p>
+                    <div class="newsletter-form">
+                        <input type="email" placeholder="Enter your email">
+                        <button type="submit"><i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Section -->
+            <div class="footer-bottom">
+                <div class="footer-legal">
+                    <a href="#">Terms & Conditions</a>
+                    <span>|</span>
+                    <a href="#">Privacy Policy</a>
+                </div>
+                <div class="footer-social">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+<script>
+
+document.addEventListener("DOMContentLoaded", loadOrders);
+
+async function loadOrders() {
+
+  const token = localStorage.getItem("token");
+
+  try {
+
+    const res = await fetch("http://localhost:5000/api/orders/my-orders", {
+      headers: { Authorization: "Bearer " + token }
+    });
+
+    const data = await res.json();
+    console.log("Full orders response:", data);
+
+    const ordersList = document.getElementById("ordersList");
+    const orderCount = document.getElementById("orderCount");
+    const totalAmountEl = document.getElementById("totalAmount");
+
+    ordersList.innerHTML = "";
+
+    if (!data.orders || data.orders.length === 0) {
+      ordersList.innerHTML = "<p>No orders found</p>";
+      orderCount.innerText = "(0 items)";
+      totalAmountEl.innerText = "$0";
+      return;
+    }
+
+    orderCount.innerText = `(${data.orders.length} items)`;
+
+    let grandTotal = 0;
+    console.log("Orders data:", data.orders);
+
+    data.orders.forEach(order => {
+
+      grandTotal += order.totalAmount;
+
+if (!order.items || order.items.length === 0) return;
+
+const firstItem = order.items[0];
+const firstProduct = firstItem.product;
+
+if (!firstProduct) return;
+      const statusClass =
+        order.status === "Delivered" ? "status-delivered" :
+        order.status === "Cancelled" ? "status-cancelled" :
+        "status-shipped";
+
+      const statusText =
+        order.status === "Delivered" ?
+        `Delivered on ${new Date(order.updatedAt).toDateString()}` :
+        order.status;
+
+      ordersList.innerHTML += `
+        <div class="order-card">
+
+          <div class="order-img-wrapper">
+            <img src="${firstProduct.image}" class="order-img">
+          </div>
+
+          <div class="order-details">
+            <h2 class="product-name">${firstProduct.name}</h2>
+            <span class="product-category">${firstProduct.category}</span>
+            <span class="product-price">₹${order.totalAmount}</span>
+
+            <div class="order-meta-info">
+              <span class="meta-item">
+                <i class="far fa-calendar-alt"></i>
+                Placed on ${new Date(order.createdAt).toDateString()}
+              </span>
+            </div>
+          </div>
+
+          <div class="order-status-section">
+            <span class="order-number">Order #${order._id.slice(-6)}</span>
+            <a href="order-details.html?id=${order._id}" class="view-details-link">
+              View Order Details
+            </a>
+
+            <div class="status-container ${statusClass}">
+              <span class="status-dot"></span>
+              ${statusText}
+            </div>
+
+          </div>
+
+        </div>
+      `;
+    });
+
+  } catch (err) {
+    console.error("Load orders error:", err);
+  }
+}
+</script>
+</body>
+</html>

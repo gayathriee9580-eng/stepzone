@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StepZone | Admin Dashboard</title>
+    <style>
+        :root {
+            --sidebar-width: 260px;
+            --topbar-height: 70px;
+            --primary-blue: #e092d1;
+            --sidebar-bg: #1a1d21;
+            --sidebar-text: #adb5bd;
+            --sidebar-hover: #ffffff;
+            --body-bg: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-dark: #202124;
+            --text-muted: #5f6368;
+            --border-color: #dee2e6;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--body-bg);
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            background-color: var(--sidebar-bg);
+            position: fixed;
+            left: 0;
+            top: 0;
+            color: white;
+            padding: 20px 0;
+            z-index: 1000;
+        }
+
+        .sidebar-brand {
+            padding: 0 25px 30px;
+            font-size: 24px;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar-brand span {
+            color: var(--primary-blue);
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            padding: 2px 15px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: var(--sidebar-text);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background-color: rgba(34, 116, 223, 0.708);
+            color: var(--sidebar-hover);
+        }
+
+        .nav-link.active {
+            background-color: var(--primary-blue);
+            color: #fff;
+        }
+
+        .nav-link i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Topbar Styles */
+        .topbar {
+            margin-left: var(--sidebar-width);
+            height: var(--topbar-height);
+            background-color: var(--card-bg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background-color: #f1f3f4;
+            padding: 8px 15px;
+            border-radius: 8px;
+            width: 350px;
+        }
+
+        .search-box input {
+            border: none;
+            background: transparent;
+            outline: none;
+            padding-left: 10px;
+            width: 100%;
+            font-size: 14px;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background-color: var(--primary-blue);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 30px;
+        }
+
+        .section-header {
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-header h2 {
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        /* Grid Layouts */
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 25px;
+            margin-bottom: 35px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 25px;
+            margin-bottom: 35px;
+        }
+
+        /* Metric Cards */
+        .metric-card {
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .metric-title {
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .metric-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .metric-change {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .change-up {
+            color: #1e8e3e;
+        }
+
+        .change-down {
+            color: #d93025;
+        }
+
+        /* Chart/Visualization Components */
+        .card {
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            margin-bottom: 25px;
+        }
+
+        .card-header {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        /* CSS Bar Chart */
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            height: 200px;
+            padding: 20px 0;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .bar-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 10%;
+        }
+
+        .bar {
+            width: 100%;
+            background-color: var(--primary-blue);
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+            transition: height 0.5s ease;
+        }
+
+        .bar-label {
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* CSS Pie/Circular Display */
+        .gauge-container {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px 0;
+        }
+
+        .gauge-item {
+            text-align: center;
+        }
+
+        .gauge {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: conic-gradient(var(--primary-blue) 0% 75%, #e9ecef 75% 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin: 0 auto 15px;
+        }
+
+        .gauge::after {
+            content: '';
+            position: absolute;
+            width: 90px;
+            height: 90px;
+            background-color: white;
+            border-radius: 50%;
+        }
+
+        .gauge-text {
+            position: relative;
+            z-index: 10;
+            font-weight: 700;
+            font-size: 20px;
+        }
+
+        /* Tables */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            padding: 15px;
+            background-color: #f8f9fa;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-paid {
+            background-color: #e6f4ea;
+            color: #1e8e3e;
+        }
+
+        .status-pending {
+            background-color: #fef7e0;
+            color: #b05a00;
+        }
+
+        .status-shipped {
+            background-color: #e8f0fe;
+            color: #1a73e8;
+        }
+
+        .status-low {
+            background-color: #f6e6e6;
+            color: #d93025;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary-blue);
+            border-radius: 10px;
+        }
+
+        /* Domain Specific */
+        .category-tag {
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-right: 5px;
+        }
+
+        .tag-men {
+            border: 1px solid #1a73e8;
+            color: #1a73e8;
+        }
+
+        .tag-women {
+            border: 1px solid #ea4335;
+            color: #ea4335;
+        }
+
+        .tag-kids {
+            border: 1px solid #fbbc04;
+            color: #fbbc04;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 80px;
+            }
+
+            .sidebar-brand,
+            .nav-link span {
+                display: none;
+            }
+
+            .topbar,
+            .main-content {
+                margin-left: 80px;
+            }
+
+            .search-box {
+                width: 200px;
+            }
+
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            Step<span>Zone</span>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="dashboard.html" class="nav-link active">
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="products.html" class="nav-link">
+                    <span>Products</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="categories.html" class="nav-link">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="orders.html" class="nav-link">
+                    <span>Orders</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="payments.html" class="nav-link">
+                    <span>Payments</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="reports.html" class="nav-link">
+                    <span>Reports & Analytics</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="offers.html" class="nav-link">
+                    <span>Offers & Discounts</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="reviews.html" class="nav-link">
+                    <span>Reviews</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="users.html" class="nav-link">
+                    <span>User Management</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="settings.html" class="nav-link">
+                    <span>Admin Settings</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <div class="search-box">
+            <input type="text" placeholder="Search orders, products...">
+        </div>
+        <div class="topbar-right">
+            <div class="user-profile">
+                <div class="user-avatar">AD</div>
+                <div class="user-info">
+                    <div style="font-size: 14px; font-weight: 600;">Anna Doe</div>
+                    <div style="font-size: 12px; color: var(--text-muted);">Super Admin</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <!-- DASHBOARD OVERVIEW -->
+        <section id="dashboard">
+            <div class="section-header">
+                <h2>Dashboard Overview</h2>
+                <div style="color: var(--text-muted); font-size: 14px;">Feb 06, 2026</div>
+            </div>
+
+            <!-- METRIC CARDS -->
+            <div class="grid-4">
+                <div class="metric-card">
+                    <div class="metric-title">Total Orders</div>
+                    <div class="metric-value">1,284</div>
+                    <div class="metric-change change-up">↑ 12.5% <span
+                            style="font-weight: 400; color: var(--text-muted);">vs last month</span></div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Total Revenue</div>
+                    <div class="metric-value">$42,560.00</div>
+                    <div class="metric-change change-up">↑ 8.2% <span
+                            style="font-weight: 400; color: var(--text-muted);">vs last month</span></div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Active Users</div>
+                    <div class="metric-value">5,632</div>
+                    <div class="metric-change change-up">↑ 15.3% <span
+                            style="font-weight: 400; color: var(--text-muted);">vs last month</span></div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-title">Total Products</div>
+                    <div class="metric-value">845</div>
+                    <div class="metric-change">Stable <span style="font-weight: 400; color: var(--text-muted);">0.0%
+                            change</span></div>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <!-- ORDERS OVERVIEW -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Orders Status</div>
+                    </div>
+                    <div>
+                        <div style="margin-bottom: 20px;">
+                            <div style="display: flex; justify-content: space-between; font-size: 14px;">
+                                <span>Completed</span>
+                                <span>75%</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: 75%; background-color: #1e8e3e;"></div>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <div style="display: flex; justify-content: space-between; font-size: 14px;">
+                                <span>Processing</span>
+                                <span>15%</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: 15%; background-color: #1a73e8;"></div>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <div style="display: flex; justify-content: space-between; font-size: 14px;">
+                                <span>Returned</span>
+                                <span>6%</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: 6%; background-color: #fbbc04;"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="display: flex; justify-content: space-between; font-size: 14px;">
+                                <span>Cancelled</span>
+                                <span>4%</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" style="width: 4%; background-color: #d93025;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ANALYTICS GAUGES -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Regional Performance</div>
+                    </div>
+                    <div class="gauge-container">
+                        <div class="gauge-item">
+                            <div class="gauge" style="background: conic-gradient(#1a73e8 0% 80%, #e9ecef 80% 100%);">
+                                <div class="gauge-text">80%</div>
+                            </div>
+                            <div style="font-size: 14px; font-weight: 500;">North</div>
+                        </div>
+                        <div class="gauge-item">
+                            <div class="gauge" style="background: conic-gradient(#34a853 0% 65%, #e9ecef 65% 100%);">
+                                <div class="gauge-text">65%</div>
+                            </div>
+                            <div style="font-size: 14px; font-weight: 500;">South</div>
+                        </div>
+                        <div class="gauge-item">
+                            <div class="gauge" style="background: conic-gradient(#fbbc04 0% 45%, #e9ecef 45% 100%);">
+                                <div class="gauge-text">45%</div>
+                            </div>
+                            <div style="font-size: 14px; font-weight: 500;">East/West</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ANALYTICS VISUALIZATION -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Monthly Revenue (Last 6 Months)</div>
+                </div>
+                <div class="bar-chart">
+                    <div class="bar-container">
+                        <div class="bar" style="height: 120px;"></div>
+                        <div class="bar-label">Sept</div>
+                        <div style="font-size: 10px; font-weight: 600;">$24k</div>
+                    </div>
+                    <div class="bar-container">
+                        <div class="bar" style="height: 150px;"></div>
+                        <div class="bar-label">Oct</div>
+                        <div style="font-size: 10px; font-weight: 600;">$30k</div>
+                    </div>
+                    <div class="bar-container">
+                        <div class="bar" style="height: 140px;"></div>
+                        <div class="bar-label">Nov</div>
+                        <div style="font-size: 10px; font-weight: 600;">$28k</div>
+                    </div>
+                    <div class="bar-container">
+                        <div class="bar" style="height: 180px;"></div>
+                        <div class="bar-label">Dec</div>
+                        <div style="font-size: 10px; font-weight: 600;">$36k</div>
+                    </div>
+                    <div class="bar-container">
+                        <div class="bar" style="height: 160px;"></div>
+                        <div class="bar-label">Jan</div>
+                        <div style="font-size: 10px; font-weight: 600;">$32k</div>
+                    </div>
+                    <div class="bar-container">
+                        <div class="bar" style="height: 190px;"></div>
+                        <div class="bar-label">Feb</div>
+                        <div style="font-size: 10px; font-weight: 600;">$38k</div>
+                    </div>
+                </div>
+                <div style="margin-top: 15px; text-align: center; font-size: 12px; color: var(--text-muted);">
+                    Data represents revenue in USD ($). Growth trend: <strong>+12%</strong>
+                </div>
+            </div>
+
+            <!-- TABLES SECTION -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Recent Orders</div>
+                    <a href="#"
+                        style="font-size: 13px; color: var(--primary-blue); text-decoration: none; font-weight: 600;">View
+                        All</a>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Product</th>
+                                <th>Category</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="font-weight: 600;">#SZ-2541</td>
+                                <td><span style="font-weight: 500;">Air Max Sneakers</span></td>
+                                <td><span class="category-tag tag-women">Women</span></td>
+                                <td>$129.00</td>
+                                <td><span class="status-badge status-shipped">Shipped</span></td>
+                                <td>Feb 05, 2026</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: 600;">#SZ-2540</td>
+                                <td><span style="font-weight: 500;">Classic Leather Heels</span></td>
+                                <td><span class="category-tag tag-women">Women</span></td>
+                                <td>$85.50</td>
+                                <td><span class="status-badge status-paid">Paid</span></td>
+                                <td>Feb 04, 2026</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: 600;">#SZ-2539</td>
+                                <td><span style="font-weight: 500;">Lightweight Runner X</span></td>
+                                <td><span class="category-tag tag-kids">Kids</span></td>
+                                <td>$45.00</td>
+                                <td><span class="status-badge status-pending">Pending</span></td>
+                                <td>Feb 04, 2026</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: 600;">#SZ-2538</td>
+                                <td><span style="font-weight: 500;">Pro Leather Boots</span></td>
+                                <td><span class="category-tag tag-women">Women</span></td>
+                                <td>$199.99</td>
+                                <td><span class="status-badge status-shipped">Shipped</span></td>
+                                <td>Feb 03, 2026</td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: 600;">#SZ-2537</td>
+                                <td><span style="font-weight: 500;">Floral Summer Flats</span></td>
+                                <td><span class="category-tag tag-kids">Kids</span></td>
+                                <td>$55.00</td>
+                                <td><span class="status-badge status-paid">Paid</span></td>
+                                <td>Feb 03, 2026</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- PRODUCT STOCK TABLE -->
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Inventory Alerts</div>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Size</th>
+                                    <th>Stock</th>
+                                    <th>Level</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Elite Marathon Shoes</td>
+                                    <td>10</td>
+                                    <td>3</td>
+                                    <td><span class="status-badge status-low">Low Stock</span></td>
+                                </tr>
+                                <tr>
+                                    <td>City Trek Sandals</td>
+                                    <td>8</td>
+                                    <td>5</td>
+                                    <td><span class="status-badge status-low">Low Stock</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Kids Soft-Step Boots</td>
+                                    <td>12</td>
+                                    <td>2</td>
+                                    <td><span class="status-badge status-low">Low Stock</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Formal Leather Oxfords</td>
+                                    <td>9</td>
+                                    <td>8</td>
+                                    <td><span class="status-badge status-pending"
+                                            style="background-color: #fef7e0;">Reorder Soon</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Category Distribution</div>
+                    </div>
+                    <div style="padding: 10px 0;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 25px;">
+                            <div style="display: flex; align-items: center;">
+                                <div
+                                    style="width: 12px; height: 12px; background-color: var(--primary-blue); border-radius: 2px; margin-right: 10px;">
+                                </div>
+                                <span style="font-size: 14px;">Men's Footwear</span>
+                            </div>
+                            <span style="font-weight: 600;">45%</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 25px;">
+                            <div style="display: flex; align-items: center;">
+                                <div
+                                    style="width: 12px; height: 12px; background-color: #ea4335; border-radius: 2px; margin-right: 10px;">
+                                </div>
+                                <span style="font-size: 14px;">Women's Footwear</span>
+                            </div>
+                            <span style="font-weight: 600;">35%</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 25px;">
+                            <div style="display: flex; align-items: center;">
+                                <div
+                                    style="width: 12px; height: 12px; background-color: #fbbc04; border-radius: 2px; margin-right: 10px;">
+                                </div>
+                                <span style="font-size: 14px;">Kids' Footwear</span>
+                            </div>
+                            <span style="font-weight: 600;">20%</span>
+                        </div>
+                        <div class="progress-bar-container" style="display: flex; height: 20px;">
+                            <div style="width: 45%; background-color: var(--primary-blue);"></div>
+                            <div style="width: 35%; background-color: #ea4335;"></div>
+                            <div style="width: 20%; background-color: #fbbc04;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- FOOTER -->
+        <footer
+            style="margin-top: 50px; text-align: center; padding-bottom: 30px; color: var(--text-muted); font-size: 13px;">
+            &copy; 2026 StepZone Footwear Admin Panel. All Rights Reserved. Created for StepZone academic project.
+        </footer>
+    </main>
+
+</body>
+
+</html>

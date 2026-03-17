@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Using Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@300;400;500&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="signup-container">
+        <div class="signup-header">
+            <h1>Sign Up</h1>
+            <p>Create your account</p>
+        </div>
+        <form id="signupForm">
+          <input type="text" id="name" placeholder="Full Name" class="input-field" required>
+      <input type="email" id="email" placeholder="Email Address" class="input-field" required>
+      <input type="tel" id="phone" placeholder="Mobile Number" class="input-field">
+      <input type="password" id="password" placeholder="Password" class="input-field" required>
+      <input type="password" id="confirmPassword" placeholder="Confirm Password" class="input-field" required>
+
+      <button type="submit" class="signup-btn">Sign Up</button>
+
+        </form>
+        <div class="footer-text">
+            Already have an account? <a href="login.html" class="login-link">Login</a>
+        </div>
+    </div>
+<script>
+  document.getElementById("signupForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const password = document.getElementById("password").value;
+  const confirmPassword = document.getElementById("confirmPassword").value;
+
+  if(password !== confirmPassword) {
+    return alert("Passwords do not match");
+  }
+
+  try {
+    const response = await fetch("http://localhost:5000/api/auth/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, phone, password })
+    });
+
+    const data = await response.json();
+
+    if(response.ok) {
+      alert("Signup successful");
+      window.location.href = "login.html";
+    } else {
+      alert(data.message || "Signup failed");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Server error");
+  }
+});
+
+</script>
+</body>
+</html>

@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StepZone | Offers & Discounts</title>
+    <style>
+        :root {
+            --sidebar-width: 260px;
+            --topbar-height: 70px;
+            --primary-blue: #e092d1;
+            --sidebar-bg: #1a1d21;
+            --sidebar-text: #adb5bd;
+            --sidebar-hover: #ffffff;
+            --body-bg: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-dark: #202124;
+            --text-muted: #5f6368;
+            --border-color: #dee2e6;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --transition: all 0.3s ease;
+            --accent-hover: rgba(34, 116, 223, 0.708);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--body-bg);
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            background-color: var(--sidebar-bg);
+            position: fixed;
+            left: 0;
+            top: 0;
+            color: white;
+            padding: 20px 0;
+            z-index: 1000;
+        }
+
+        .sidebar-brand {
+            padding: 0 25px 30px;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .sidebar-brand span {
+            color: var(--primary-blue);
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 25px;
+            color: var(--sidebar-text);
+            text-decoration: none;
+            font-size: 15px;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--sidebar-hover);
+            background-color: var(--accent-hover);
+        }
+
+        .nav-link.active {
+            background-color: var(--primary-blue);
+        }
+
+        /* Topbar Styles */
+        .topbar {
+            margin-left: var(--sidebar-width);
+            height: var(--topbar-height);
+            background-color: var(--card-bg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            background-color: #f1f3f4;
+            padding: 8px 15px;
+            border-radius: 8px;
+            width: 350px;
+        }
+
+        .search-container input {
+            border: none;
+            background: transparent;
+            outline: none;
+            padding-left: 10px;
+            width: 100%;
+            font-size: 14px;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background-color: var(--primary-blue);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 30px;
+        }
+
+        .section-header {
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-header h2 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .btn-add {
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .btn-add:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        /* Layout Grid */
+        .offers-layout {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 25px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            padding: 24px;
+        }
+
+        /* Offers Table */
+        .table-controls {
+            margin-bottom: 20px;
+        }
+
+        .table-search {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 12px 15px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-bottom: 2px solid var(--border-color);
+            background-color: #f8f9fa;
+            text-transform: uppercase;
+        }
+
+        td {
+            padding: 15px;
+            font-size: 14px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tr:hover {
+            background-color: rgba(224, 146, 209, 0.05);
+        }
+
+        /* Status Badges */
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: inline-block;
+        }
+
+        .status-active {
+            background-color: #e6f4ea;
+            color: #1e8e3e;
+        }
+
+        .status-expired {
+            background-color: #fce8e6;
+            color: #d93025;
+        }
+
+        .status-upcoming {
+            background-color: #e8f0fe;
+            color: #1a73e8;
+        }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            color: var(--text-muted);
+        }
+
+        .action-icon {
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .action-icon:hover {
+            color: var(--primary-blue);
+        }
+
+        /* Details Panel */
+        .details-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .detail-item {
+            margin-bottom: 20px;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .offer-rule-card {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-blue);
+            margin-top: 10px;
+        }
+
+        .usage-bar-wrapper {
+            height: 8px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .usage-bar {
+            height: 100%;
+            background-color: var(--primary-blue);
+            border-radius: 4px;
+        }
+        #offerCategory{
+        display:none;
+        }
+        
+        #couponTable{
+        margin-top:15px;
+        }
+
+        #couponTable button{
+padding:6px 12px;
+border:none;
+background:#e092d1;
+color:white;
+border-radius:6px;
+cursor:pointer;
+}
+
+#couponTable button:hover{
+opacity:0.9;
+}
+
+#code,#discountValue,#minOrderAmount,#maxDiscount,#expiryDate,#discountType{
+width:100%;
+padding:8px;
+margin-bottom:8px;
+border:1px solid #ccc;
+border-radius:6px;
+}
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .offers-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 80px;
+            }
+
+            .sidebar-brand,
+            .nav-link span {
+                display: none;
+            }
+
+            .topbar,
+            .main-content {
+                margin-left: 80px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            Step<span>Zone</span>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="dashboard.html" class="nav-link">
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="products.html" class="nav-link">
+                    <span>Products</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="categories.html" class="nav-link">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="orders.html" class="nav-link">
+                    <span>Orders</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="payments.html" class="nav-link">
+                    <span>Payments</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="reports.html" class="nav-link">
+                    <span>Reports & Analytics</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="offers.html" class="nav-link active">
+                    <span>Offers & Coupons</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="reviews.html" class="nav-link">
+                    <span>Reviews</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="sales-reports.html" class="nav-link">
+                    <i class="fas fa-star"></i>
+                    <span>Sales Reports</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="users.html" class="nav-link">
+                    <span>User Management</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="settings.html" class="nav-link">
+                    <span>Admin Settings</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <div class="search-container">
+            <input type="text" placeholder="Search offers...">
+        </div>
+        <div class="topbar-right">
+<div class="user-profile">
+    <div class="user-avatar" id="adminAvatar"></div>
+    <div class="user-info">
+        <div id="adminName"></div>
+        <div>Super Admin</div>
+    </div>
+</div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <div class="section-header">
+            <h2>Offers & Coupons</h2>
+<button class="btn-add" onclick="openOfferModal()">+ Add Offer</button>
+        </div>
+
+        <div class="offers-layout">
+            <!-- LEFT: OFFERS LIST -->
+            <div class="card">
+                <div class="table-controls">
+                    <input type="text" class="table-search" placeholder="Search offers by name or code...">
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Offer Name</th>
+                            <th>Type</th>
+                            <th>Value</th>
+                            <th>Category</th>
+                            <th>Validity</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="offersTableBody"></tbody>
+                </table>
+                </div>
+
+<div class="card">
+<h3>Add Coupon</h3>
+
+<input id="code" placeholder="Coupon Code">
+
+<select id="discountType">
+<option value="percentage">Percentage</option>
+<option value="fixed">Fixed</option>
+</select>
+
+<input id="discountValue" type="number" placeholder="Discount Value">
+<input id="minOrderAmount" type="number" placeholder="Minimum Order">
+<input id="maxDiscount" type="number" placeholder="Max Discount">
+
+<input id="expiryDate" type="date">
+
+<button onclick="createCoupon()">Create</button>
+</div>
+
+<div class="card">
+    <h2>Coupons</h2>
+
+    <table id="couponTable">
+<thead>
+<tr>
+<th>Code</th>
+<th>Discount</th>
+<th>Min Order</th>
+<th>Expiry</th>
+<th>Status</th>
+<th>Actions</th>
+</tr>
+</thead>
+
+<tbody></tbody>
+</table>
+</div>
+
+
+
+            <!-- RIGHT: DISCOUNT DETAILS -->
+<div class="card">
+
+<div class="details-title">Offer Details</div>
+
+<div id="offerDetailsContent">
+Select an offer to view details
+</div>
+
+</div>
+            </div>
+        </div>
+        <div id="offerModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#00000070; align-items:center; justify-content:center;">
+
+<div style="background:white; padding:25px; border-radius:10px; width:400px">
+
+<h3 style="margin-bottom:15px">Create Offer</h3>
+
+<input id="offerTitle" placeholder="Offer Name" style="width:100%; padding:10px; margin-bottom:10px">
+
+<select id="offerType" style="width:100%; padding:10px; margin-bottom:10px">
+<option value="product">Product Offer</option>
+<option value="category">Category Offer</option>
+</select>
+
+<input id="offerDiscount" type="number" placeholder="Discount %" style="width:100%; padding:10px; margin-bottom:10px">
+
+<input id="offerCategory" placeholder="Category Name" style="width:100%; padding:10px; margin-bottom:10px">
+
+<input id="offerExpiry" type="date" style="width:100%; padding:10px; margin-bottom:10px">
+
+<button onclick="createOffer()" style="background:#e092d1;color:white;border:none;padding:10px 20px;border-radius:6px">Save</button>
+
+<button onclick="closeModal()" style="margin-left:10px">Cancel</button>
+
+</div>
+
+</div>
+</div>
+    </main>
+    <script src="admin-common.js"></script>
+    <script>
+
+
+async function loadOffers(){
+
+document.getElementById("offersTableBody").innerHTML =
+"<tr><td colspan='7'>Loading...</td></tr>";
+
+const res = await fetch("http://localhost:5000/api/admin/offers",{
+headers:{
+Authorization:`Bearer ${token}`
+}
+});
+
+const data = await res.json();
+
+renderOffers(data.offers);
+
+}
+
+function renderOffers(offers){
+
+const tbody = document.getElementById("offersTableBody");
+
+tbody.innerHTML="";
+
+if(!offers || offers.length===0){
+tbody.innerHTML="<tr><td colspan='7'>No offers found</td></tr>";
+return;
+}
+
+offers.forEach(offer=>{
+
+const tr=document.createElement("tr");
+tr.style.cursor="pointer";
+tr.onclick=()=>showOfferDetails(offer);
+
+let valueText="";
+
+if(offer.type==="product" || offer.type==="category"){
+valueText=offer.discountPercentage+"% OFF";
+}
+
+let categoryText=offer.category || "Product Offer";
+
+let status="Active";
+let statusClass="status-active";
+
+const today=new Date();
+const expiry=new Date(offer.expiryDate);
+
+if(expiry<today){
+status="Expired";
+statusClass="status-expired";
+}
+
+tr.innerHTML=`
+<td style="font-weight:600">${offer.title}</td>
+<td>${offer.type === "product" ? "Product Offer" : "Category Offer"}</td>
+<td>${valueText}</td>
+<td>${categoryText}</td>
+
+<td style="font-size:12px;color:#5f6368">
+${new Date(offer.createdAt).toLocaleDateString()} -
+${new Date(offer.expiryDate).toLocaleDateString()}
+</td>
+
+<td><span class="badge ${statusClass}">${status}</span></td>
+
+<td class="actions">
+<span class="action-icon" onclick="editOffer('${offer._id}')">✎</span>
+<span class="action-icon" onclick="deleteOffer('${offer._id}')">🗑</span>
+</td>
+`;
+
+tbody.appendChild(tr);
+
+});
+
+}
+async function deleteOffer(id){
+
+if(!confirm("Delete this offer?")) return;
+
+await fetch(`http://localhost:5000/api/admin/offers/${id}`,{
+method:"DELETE",
+headers:{
+Authorization:`Bearer ${token}`
+}
+});
+
+loadOffers();
+
+}
+
+function openOfferModal(){
+document.getElementById("offerModal").style.display="flex";
+}
+
+function closeModal(){
+document.getElementById("offerModal").style.display="none";
+document.getElementById("offerTitle").value="";
+document.getElementById("offerDiscount").value="";
+document.getElementById("offerCategory").value="";
+document.getElementById("offerExpiry").value="";
+
+}
+
+async function createOffer(){
+
+const title = document.getElementById("offerTitle").value;
+const type = document.getElementById("offerType").value;
+const discount = Number(document.getElementById("offerDiscount").value);
+const category = document.getElementById("offerCategory").value;
+const expiry = document.getElementById("offerExpiry").value;
+
+if(!title){
+alert("Please enter offer name");
+return;
+}
+
+if(type === "category" && !category){
+alert("Please enter category name");
+return;
+}
+
+if(!expiry){
+alert("Please select expiry date");
+return;
+}
+
+if(discount <=0 || discount > 90){
+alert("Discount must be between 1% and 90%");
+return;
+}
+
+const today = new Date();
+today.setHours(0,0,0,0);
+
+const selectedDate = new Date(expiry);
+
+if(selectedDate <= today){
+alert("Expiry date must be future date");
+return;
+}
+
+const offer={
+title:title,
+type:type,
+discountPercentage:discount,
+category:category,
+expiryDate:expiry
+};
+
+if(!confirm("Create this offer?")) return;
+
+
+const res = await fetch("http://localhost:5000/api/admin/offers",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json",
+Authorization:`Bearer ${token}`
+},
+
+body:JSON.stringify(offer)
+});
+const data = await res.json();
+
+if(!res.ok){
+alert(data.message || "Failed to create offer");
+return;
+}
+
+closeModal();
+
+loadOffers();
+
+alert("Offer Created Successfully");
+
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+
+loadOffers();
+loadCoupons();
+
+
+document.getElementById("offerType").addEventListener("change", function(){
+
+const categoryField = document.getElementById("offerCategory");
+
+if(this.value === "category"){
+categoryField.style.display = "block";
+}else{
+categoryField.style.display = "none";
+}
+
+});
+
+});
+
+async function loadCoupons(){
+
+  const token = localStorage.getItem("adminToken");
+
+document.querySelector("#couponTable tbody").innerHTML =
+"<tr><td colspan='6'>Loading...</td></tr>";
+
+  const res = await fetch("http://localhost:5000/api/admin/coupons",{
+    headers:{
+      "Authorization":"Bearer " + token
+    }
+  });
+
+  const data = await res.json();
+
+  renderCoupons(data.coupons);
+}
+
+
+function renderCoupons(coupons){
+
+const tbody = document.querySelector("#couponTable tbody");
+
+if(!coupons || coupons.length === 0){
+tbody.innerHTML = "<tr><td colspan='6'>No coupons available</td></tr>";
+return;
+}
+
+
+tbody.innerHTML = "";
+
+coupons.forEach(coupon=>{
+
+const discountText =
+coupon.discountType === "percentage"
+? coupon.discountValue + "%"
+: "₹" + coupon.discountValue;
+
+const expiry =
+new Date(coupon.expiryDate).toLocaleDateString();
+
+let status="Active";
+
+const today=new Date();
+const expiryDate=new Date(coupon.expiryDate);
+
+today.setHours(0,0,0,0);
+expiryDate.setHours(0,0,0,0);
+
+if(expiryDate < today){
+status="Expired";
+}
+
+if(!coupon.isActive){
+status="Inactive";
+}
+
+const tr = document.createElement("tr");
+let statusClass="status-active";
+
+if(status==="Expired") statusClass="status-expired";
+if(status==="Inactive") statusClass="status-upcoming";
+
+
+tr.innerHTML = `
+<td>${coupon.code}</td>
+<td>${discountText}</td>
+<td>₹${coupon.minOrderAmount}</td>
+<td>${expiry}</td>
+<td><span class="badge ${statusClass}">${status}</span></td>
+<td>
+<button onclick="deleteCoupon('${coupon._id}')">Delete</button>
+</td>
+`;
+
+tbody.appendChild(tr);
+
+});
+
+}
+
+async function deleteCoupon(id){
+
+if(!confirm("Delete this coupon?")) return;
+
+const token = localStorage.getItem("adminToken");
+
+await fetch(`http://localhost:5000/api/admin/coupons/${id}`,{
+
+method:"DELETE",
+
+headers:{
+"Authorization":"Bearer " + token
+}
+
+});
+
+loadCoupons();
+
+}
+
+async function createCoupon(){
+
+const token = localStorage.getItem("adminToken");
+
+const code = document.getElementById("code").value;
+const discountType = document.getElementById("discountType").value;
+const discountValue = Number(document.getElementById("discountValue").value);
+const minOrderAmount = Number(document.getElementById("minOrderAmount").value);
+const maxDiscount = Number(document.getElementById("maxDiscount").value);
+const expiryInput = document.getElementById("expiryDate").value;
+
+
+// required validation
+if(!code || !discountValue || !expiryInput){
+alert("Please fill required fields");
+return;
+}
+
+
+// expiry validation
+const today = new Date();
+const expiry = new Date(expiryInput);
+
+today.setHours(0,0,0,0);
+if(expiry <= today){
+alert("Expiry must be future date");
+return;
+}
+
+
+// coupon object
+const coupon = {
+code: code.toUpperCase(),
+discountType,
+discountValue,
+minOrderAmount,
+maxDiscount,
+expiryDate: expiryInput
+};
+
+const existing = document.querySelectorAll("#couponTable tbody tr");
+
+for(let row of existing){
+if(row.children[0].innerText === code.toUpperCase()){
+alert("Coupon already exists");
+return;
+}
+}
+
+// API call
+const res = await fetch("http://localhost:5000/api/admin/coupons",{
+method:"POST",
+headers:{
+"Content-Type":"application/json",
+Authorization:`Bearer ${token}`
+},
+body:JSON.stringify(coupon)
+});
+
+const data = await res.json();
+
+if(!data.success){
+alert("Failed to create coupon");
+return;
+}
+alert("Coupon created successfully");
+
+loadCoupons();
+
+
+// clear form
+document.getElementById("code").value="";
+document.getElementById("discountValue").value="";
+document.getElementById("minOrderAmount").value="";
+document.getElementById("maxDiscount").value="";
+document.getElementById("expiryDate").value="";
+
+}
+
+function openAddCoupon(){
+alert("Coupon form is below");
+}
+
+function showOfferDetails(offer){
+
+const container = document.getElementById("offerDetailsContent");
+
+let category = offer.category || "Product Offer";
+
+const created = new Date(offer.createdAt).toLocaleDateString();
+const expiry = new Date(offer.expiryDate).toLocaleDateString();
+
+container.innerHTML = `
+
+<div class="detail-item">
+<div class="detail-label">Offer Name</div>
+<div class="detail-value" style="font-weight:700;color:#e092d1">
+${offer.title}
+</div>
+</div>
+
+<div class="detail-item">
+<div class="detail-label">Type</div>
+<div class="detail-value">
+${offer.type === "product" ? "Product Offer" : "Category Offer"}
+</div>
+</div>
+
+<div class="detail-item">
+<div class="detail-label">Discount</div>
+<div class="detail-value">
+${offer.discountPercentage}% OFF
+</div>
+</div>
+
+<div class="detail-item">
+<div class="detail-label">Category</div>
+<div class="detail-value">
+${category}
+</div>
+</div>
+
+<div class="detail-item">
+<div class="detail-label">Validity</div>
+<div class="detail-value">
+${created} - ${expiry}
+</div>
+</div>
+
+<div class="offer-rule-card">
+<div class="detail-label" style="color:black">Offer Rules</div>
+
+<div style="font-size:13px;margin-top:8px">
+
+• Discount: <strong>${offer.discountPercentage}%</strong><br>
+• Type: <strong>${offer.type}</strong><br>
+• Category: <strong>${category}</strong>
+
+</div>
+</div>
+
+`;
+}
+
+</script>
+</body>
+</html>

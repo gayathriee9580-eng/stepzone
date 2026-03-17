@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Using Google Fonts for better typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@400;500&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="login-container">
+        <h1>LOGIN</h1>
+        <form id="loginForm">
+            <input type="text" id="email" placeholder="Username / Email" class="input-field" required>
+      <input type="password" id="password" placeholder="Password" class="input-field" required>
+
+            <div class="options-row">
+                <label class="remember-me">
+                    <input type="checkbox"> Remember Me
+                </label>
+                <a href="forgot_password.html" class="forgot-password">Forgot Password?</a>
+            </div>
+
+                  <button type="submit" class="login-btn">LOGIN</button>
+
+            <!-- <div class="divider">or</div> -->
+            <div class="google-auth">
+                <button class="google-btn">
+                    <img src="https://developers.google.com/identity/images/g-logo.png"> <span
+                        class="google-text">Continue with Google</span>
+
+                </button>
+            </div>
+
+        </form>
+        <div class="footer-text">
+            Don't have an account? <a href="signup.html" class="create-account">Create Account</a>
+        </div>
+    </div>
+
+
+
+<script>
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  console.log("Login form submitted"); // 👈 ADD THIS
+
+
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  const response = await fetch("http://localhost:5000/api/auth/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password })
+  });
+
+  const data = await response.json();
+
+
+  if (response.ok && data.token) {
+    // ✅ token store cheyyuka
+    localStorage.setItem("token", data.token);
+
+    // ✅ login success message (optional)
+    alert("Login successful");
+
+    // ✅ DIRECT HOME PAGE REDIRECT
+    window.location.href = "home.html";
+  } else {
+    alert(data.message || "Login failed");
+  }
+});
+
+  if (response.ok && data.token) {
+    // ✅ token store cheyyuka
+    localStorage.setItem("token", data.token);
+
+    // ✅ login success message (optional)
+    alert("Login successful");
+
+    // ✅ DIRECT HOME PAGE REDIRECT
+    window.location.href = "products.html";
+  } else {
+    alert(data.message || "Login failed");
+  }
+;
+</script>
+</body>
+
+</html>

@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StepZone | Category Management</title>
+    <style>
+        :root {
+            --sidebar-width: 260px;
+            --topbar-height: 70px;
+            --primary-blue: #e092d1;
+            --sidebar-bg: #1a1d21;
+            --sidebar-text: #adb5bd;
+            --sidebar-hover: #ffffff;
+            --body-bg: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-dark: #202124;
+            --text-muted: #5f6368;
+            --border-color: #dee2e6;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --transition: all 0.3s ease;
+            --accent-hover: rgba(34, 116, 223, 0.708);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--body-bg);
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            background-color: var(--sidebar-bg);
+            position: fixed;
+            left: 0;
+            top: 0;
+            color: white;
+            padding: 20px 0;
+            z-index: 1000;
+        }
+
+        .sidebar-brand {
+            padding: 0 25px 30px;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .sidebar-brand span {
+            color: var(--primary-blue);
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 25px;
+            color: var(--sidebar-text);
+            text-decoration: none;
+            font-size: 15px;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--sidebar-hover);
+            background-color: var(--accent-hover);
+        }
+
+        .nav-link.active {
+            background-color: var(--primary-blue);
+        }
+
+        /* Topbar Styles */
+        .topbar {
+            margin-left: var(--sidebar-width);
+            height: var(--topbar-height);
+            background-color: var(--card-bg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            background-color: #f1f3f4;
+            padding: 8px 15px;
+            border-radius: 8px;
+            width: 350px;
+        }
+
+        .search-container input {
+            border: none;
+            background: transparent;
+            outline: none;
+            padding-left: 10px;
+            width: 100%;
+            font-size: 14px;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background-color: var(--primary-blue);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* Main Content Layout */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 30px;
+        }
+
+        .section-header {
+            margin-bottom: 25px;
+        }
+
+        .section-header h2 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .container-split {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 25px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            padding: 24px;
+            height: fit-content;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Category Table Styles */
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .btn-add {
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .table-search {
+            flex-grow: 1;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 12px 15px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-bottom: 2px solid var(--border-color);
+            text-transform: uppercase;
+        }
+
+        td {
+            padding: 15px;
+            font-size: 14px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tr:hover {
+            background-color: rgba(224, 146, 209, 0.05);
+        }
+
+        .status-active {
+            color: #34a853;
+            font-size: 18px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            color: var(--text-muted);
+        }
+
+        .action-icon {
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .action-icon:hover {
+            color: var(--primary-blue);
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .page-nav {
+            display: flex;
+            gap: 10px;
+        }
+
+        .page-link {
+            padding: 5px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            text-decoration: none;
+            color: var(--text-dark);
+        }
+
+        .page-link.active {
+            background-color: var(--primary-blue);
+            color: white;
+            border-color: var(--primary-blue);
+        }
+
+        /* Assign Products Panel Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+        }
+
+        .prefilled-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            color: var(--text-dark);
+            font-weight: 500;
+            outline: none;
+        }
+
+        .product-assignment-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .product-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .product-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .product-item:last-child {
+            border-bottom: none;
+        }
+
+        .product-checkbox {
+            margin-right: 15px;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary-blue);
+        }
+
+        .product-thumb {
+            width: 45px;
+            height: 45px;
+            background-color: #e9ecef;
+            border-radius: 6px;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+            color: #adb5bd;
+            border: 1px solid #dee2e6;
+        }
+
+        .product-info {
+            flex-grow: 1;
+        }
+
+        .product-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .product-meta {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .product-price {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .btn-save {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-save:hover {
+            opacity: 0.9;
+        }
+
+        /* Responsive */
+        @media (max-width: 1100px) {
+            .container-split {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 80px;
+            }
+
+            .sidebar-brand,
+            .nav-link span {
+                display: none;
+            }
+
+            .topbar,
+            .main-content {
+                margin-left: 80px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            Step<span>Zone</span>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="dashboard.html" class="nav-link">
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="products.html" class="nav-link">
+                    <span>Products</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="categories.html" class="nav-link active">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="orders.html" class="nav-link">
+                    <span>Orders</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="payments.html" class="nav-link">
+                    <span>Payments</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="reports.html" class="nav-link">
+                    <span>Reports & Analytics</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="offers.html" class="nav-link">
+                    <span>Offers & Coupons</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="reviews.html" class="nav-link">
+                    <span>Reviews</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="sales-reports.html" class="nav-link">
+                    <i class="fas fa-star"></i>
+                    <span>Sales Reports</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="users.html" class="nav-link">
+                    <span>User Management</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="settings.html" class="nav-link">
+                    <span>Admin Settings</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <div class="search-container">
+            <input type="text" placeholder="Search categories, products...">
+        </div>
+        <div class="topbar-right">
+<div class="user-profile">
+    <div class="user-avatar" id="adminAvatar"></div>
+    <div class="user-info">
+        <div id="adminName"></div>
+        <div>Super Admin</div>
+    </div>
+</div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <div class="section-header">
+            <h2>Category Management</h2>
+        </div>
+
+        <div class="container-split">
+            <!-- LEFT PANEL: CATEGORIES LIST -->
+            <div class="card">
+                <div class="controls">
+                    <button class="btn-add">+ Add Category</button>
+                    <input type="text" class="table-search" placeholder="Search categories...">
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 40px;"></th>
+                                <th>Category</th>
+                                <th>Products</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="categoryTableBody"></tbody>
+                    </table>
+                </div>
+
+                <div class="pagination">
+                    <div>Showing 1 to 5 of 5 categories</div>
+                    <div class="page-nav">
+                        <a href="#" class="page-link active">1</a>
+                        <a href="#" class="page-link">Next</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT PANEL: ASSIGN PRODUCTS -->
+            <div class="card">
+                <div class="card-title">Assign Products to Category</div>
+
+                <div class="form-group">
+                    <label>Category Name</label>
+<input type="text" class="prefilled-input" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label>Search Products</label>
+                    <input type="text" class="table-search" placeholder="Search by name..." style="width: 100%;">
+                </div>
+
+                <div class="product-assignment-list" id="productAssignmentList"></div>
+
+                <button class="btn-save">Save Changes</button>
+            </div>
+        </div>
+    </main>
+    <script src="admin-common.js"></script>
+<script>
+console.log("Admin token:", token);
+let selectedCategoryId = null;
+
+
+// ✅ LOAD PRODUCTS FUNCTION (MISSING ONE)
+async function loadProducts(categoryId, categoryName) {
+
+  const res = await fetch("http://localhost:5000/api/admin/products", {
+    headers: { Authorization: "Bearer " + token }
+  });
+
+  const data = await res.json();
+  const products = data.products || data;
+
+  const container = document.getElementById("productAssignmentList");
+  container.innerHTML = "";
+
+  products.forEach(p => {
+
+  const checked = 
+  p.category?.toLowerCase() === categoryName?.toLowerCase()
+  ? "checked"
+  : "";
+
+    container.innerHTML += `
+      <div class="product-item">
+        <input type="checkbox" 
+               value="${p._id}" 
+               class="product-checkbox" 
+               ${checked}>
+        <div class="product-thumb">IMG</div>
+        <div class="product-info">
+          <div class="product-name">${p.name}</div>
+          <div class="product-meta">₹${p.price}</div>
+        </div>
+      </div>
+    `;
+  });
+}
+
+// Load Categories
+async function loadCategories() {
+  const res = await fetch("http://localhost:5000/api/admin/categories", {
+    headers: { Authorization: "Bearer " + token }
+  });
+
+  const categories = await res.json();
+  const tbody = document.getElementById("categoryTableBody");
+  tbody.innerHTML = "";
+
+  if (!categories.length) {
+  tbody.innerHTML = `
+    <tr>
+      <td colspan="5" style="text-align:center; padding:20px;">
+        No categories found
+      </td>
+    </tr>
+  `;
+  return;
+}
+
+  categories.forEach(cat => {
+    const tr = document.createElement("tr");
+
+    tr.innerHTML = `
+      <td><input type="checkbox"></td>
+      <td style="font-weight:600; cursor:pointer;"
+          onclick="selectCategory('${cat._id}', '${cat.name}')">
+          ${cat.name}
+      </td>
+      <td>${cat.productCount || 0} Products</td>
+      <td>${cat.isActive ? 
+            '<span class="status-active">●</span>' : 
+            'Inactive'}
+      </td>
+      <td class="actions">
+          <span class="action-icon" onclick="deleteCategory('${cat._id}')">🗑</span>
+      </td>
+    `;
+
+    tbody.appendChild(tr);
+  });
+}
+
+// Save Assignments
+document.querySelector(".btn-save").addEventListener("click", async () => {
+  const checkedBoxes = document.querySelectorAll(".product-checkbox:checked");
+  const productIds = Array.from(checkedBoxes).map(cb => cb.value);
+
+  await fetch("http://localhost:5000/api/admin/categories/assign-products", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token
+    },
+    body: JSON.stringify({
+      categoryId: selectedCategoryId,
+      productIds
+    })
+  });
+
+  if (!selectedCategoryId) {
+  alert("Please select a category first");
+  return;
+}
+
+  alert("Products updated");
+  loadCategories();
+});
+
+async function selectCategory(id, name) {
+  selectedCategoryId = id;
+  document.querySelector(".prefilled-input").value = name;
+  await loadProducts(id, name);
+}
+
+async function deleteCategory(id) {
+  if (!confirm("Delete this category?")) return;
+
+  await fetch(`http://localhost:5000/api/admin/categories/${id}`, {
+    method: "DELETE",
+    headers: { Authorization: "Bearer " + token }
+  });
+
+  loadCategories();
+}
+
+loadCategories();
+</script>
+</body>
+</html>

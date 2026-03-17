@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Success - StepZone</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Using Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@300;400;500;700&family=Great+Vibes&display=swap"
+        rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* --- Order Success Page Internal Styles --- */
+        body {
+            background-color: #df9ba6bc;
+            /* Matching StepZone background theme from Checkout/Cart */
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .success-page-wrapper {
+            padding: 100px 0;
+            min-height: calc(100vh - 600px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .success-container {
+            max-width: 600px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .success-card {
+            background-color: #ffffff;
+            border-radius: 20px;
+            padding: 60px 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            text-align: center;
+        }
+
+        .success-icon {
+            font-size: 5rem;
+            color: #d81b60;
+            /* StepZone Brand Pink */
+            margin-bottom: 30px;
+        }
+
+        .success-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #333;
+            margin: 0 0 10px 0;
+        }
+
+        .success-subtitle {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 40px;
+        }
+
+        .order-details-box {
+            background-color: #f9f9f9;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 40px;
+            display: inline-block;
+            text-align: left;
+            min-width: 280px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+
+        .detail-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #555;
+            margin-right: 20px;
+        }
+
+        .detail-value {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .continue-btn {
+            background-color: #d81b60;
+            color: #fff;
+            border: none;
+            padding: 18px 50px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(216, 27, 96, 0.2);
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .continue-btn:hover {
+            background-color: #ad1457;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(216, 27, 96, 0.3);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .primary-btn {
+            padding: 14px 36px;
+            background-color: #e91e63;
+            /* StepZone pink */
+            color: #fff;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 30px;
+            letter-spacing: 1px;
+            box-shadow: 0 8px 20px rgba(233, 30, 99, 0.35);
+            transition: all 0.3s ease;
+        }
+
+        .primary-btn:hover {
+            background-color: #d81b60;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px rgba(233, 30, 99, 0.45);
+        }
+
+
+        .detail-label {
+    min-width: 120px;
+}
+
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .success-card {
+                padding: 40px 20px;
+            }
+
+            .success-title {
+                font-size: 1.8rem;
+            }
+
+            .continue-btn {
+                width: 100%;
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body class="home-body">
+    <!-- Announcement Bar (EXACTLY from home.html) -->
+    <div class="announcement-bar">
+        <div class="announcement-text">
+            Invite Friends and get 50% off on your next purchase <a href="#" class="invite-link">Invite Now</a>
+        </div>
+        <div class="close-announcement"><i class="fas fa-times"></i></div>
+    </div>
+
+    <!-- Header Section (EXACTLY from home.html) -->
+    <header class="main-header">
+        <div class="header-left">
+            <div class="logo"><a href="home.html" style="color: black;text-decoration: none;">StepZone</a></div>
+
+        </div>
+
+        <nav class="header-center">
+            <ul class="nav-links">
+                <li><a href="womens_product.html">Women</a></li>
+                <li><a href="kids_product.html">Kids</a></li>
+                <li><a href="products.html">Shop</a></li>
+                <li><a href="#">Contact us</a></li>
+            </ul>
+        </nav>
+
+        <div class="header-right">
+            <div class="search-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" placeholder="Search here" class="search-input">
+            </div>
+            <div class="header-icons">
+                <a href="#" class="icon-link"><i class="far fa-heart"></i></a>
+                <a href="cart.html" class="icon-link"><i class="fas fa-shopping-cart"></i></a>
+                <a href="#" class="profile-link">
+                    <div class="avatar-circle"><i class="fas fa-user"></i></div>
+                    <span class="username">Anne Doe</span>
+                </a>
+            </div>
+            <div class="mobile-menu-trigger">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <main class="success-page-wrapper">
+        <div class="success-container">
+            <div class="success-card">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h1 class="success-title">Order Placed Successfully</h1>
+                <p class="success-subtitle">Thank you for shopping with StepZone!</p>
+                <p class="success-note" style="color: #d81b60;">Your order has been confirmed and will be shipped soon.</p>
+
+<div class="order-details-box">
+
+<div class="detail-row">
+<span class="detail-label">Order ID:</span>
+<span class="detail-value" id="orderId"></span>
+</div>
+
+<div class="detail-row">
+<span class="detail-label">Est. Delivery:</span>
+<span class="detail-value" id="deliveryDate"></span>
+</div>
+
+</div>
+                <div class="action-buttons">
+                    <a href="home.html" class="primary-btn">Continue Shopping</a>
+                <a id="summaryBtn" class="primary-btn">Summary Details</a>                
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer (EXACTLY from home.html) -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <!-- Top Section -->
+            <div class="footer-top">
+                <!-- Brand -->
+                <div class="footer-brand-section">
+                    <h2 class="footer-logo">StepZone</h2>
+                </div>
+
+                <!-- Navigation Columns -->
+                <div class="footer-links-container">
+                    <div class="footer-column">
+                        <h3>Women</h3>
+                        <ul>
+                            <li><a href="#">All Women</a></li>
+                            <li><a href="#">Sandals</a></li>
+                            <li><a href="#">Flip Flops</a></li>
+                            <li><a href="#">Flats</a></li>
+                            <li><a href="#">Sneakers</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>Kids</h3>
+                        <ul>
+                            <li><a href="#">All Kids</a></li>
+                            <li><a href="#">Shoes</a></li>
+                            <li><a href="#">Sandals</a></li>
+                            <li><a href="#">Boots</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>Shopping</h3>
+                        <ul>
+                            <li><a href="cart.html">Your Cart</a></li>
+                            <li><a href="#">Your Orders</a></li>
+                            <li><a href="#">Wishlist</a></li>
+                            <li><a href="#">Shipping Details</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>More Links</h3>
+                        <ul>
+                            <li><a href="#">Blogs</a></li>
+                            <li><a href="#">Gift Center</a></li>
+                            <li><a href="#">Buying Guides</a></li>
+                            <li><a href="#">New Arrivals</a></li>
+                            <li><a href="#">Clearance</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Stay in Touch -->
+                <div class="footer-newsletter">
+                    <h3>Stay in Touch</h3>
+                    <p>Subscribe to our newsletter for exclusive offers.</p>
+                    <div class="newsletter-form">
+                        <input type="email" placeholder="Enter your email">
+                        <button type="submit"><i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Section -->
+            <div class="footer-bottom">
+                <div class="footer-legal">
+                    <a href="#">Terms & Conditions</a>
+                    <span>|</span>
+                    <a href="#">Privacy Policy</a>
+                </div>
+                <div class="footer-social">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script>
+document.addEventListener("DOMContentLoaded", async () => {
+
+  const params = new URLSearchParams(window.location.search);
+  const orderId = params.get("orderId");
+
+  if (!orderId) {
+    alert("No Order ID found");
+    return;
+  }
+
+  // Show Order ID immediately
+document.getElementById("orderId").textContent = orderId;
+
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    alert("Please login first");
+    window.location.href = "login.html";
+    return;
+  }
+
+  try {
+    const response = await fetch(`http://localhost:5000/api/orders/${orderId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      alert(data.message);
+      return;
+    }
+
+    const order = data.order; 
+
+    // Set Delivery Date properly
+    if (order.deliveryDate) {
+      const deliveryDate = new Date(order.deliveryDate);
+      document.getElementById("deliveryDate").innerText =
+        deliveryDate.toDateString();
+    } else {
+      document.getElementById("deliveryDate").innerText = "Not Available";
+    }
+
+    document.getElementById("summaryBtn").href =
+  `summary.html?orderId=${orderId}`;
+
+  } catch (error) {
+    console.error("Error:", error);
+    alert("Something went wrong");
+  }
+
+});
+</script>
+</body>
+</html>

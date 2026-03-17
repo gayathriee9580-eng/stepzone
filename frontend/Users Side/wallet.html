@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Wallet - StepZone</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Using Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@300;400;500;700&family=Great+Vibes&display=swap"
+        rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* --- Wallet Page Internal Styles --- */
+        body {
+            background-color: #fdf6f7;
+            /* Soft pastel pink background */
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            color: #444;
+        }
+
+        .wallet-page-wrapper {
+            padding: 60px 0;
+            min-height: calc(100vh - 500px);
+        }
+
+        .wallet-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+
+        /* Common Card Style */
+        .wallet-card {
+            background-color: #ffffff;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+        }
+
+        /* --- Wallet Overview Section --- */
+        .wallet-overview-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 30px;
+            background: linear-gradient(135deg, #fff 0%, #fff9fb 100%);
+        }
+
+        .balance-info {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        .wallet-icon-box {
+            width: 70px;
+            height: 70px;
+            background-color: #fce4ec;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #d81b60;
+            font-size: 2rem;
+        }
+
+        .balance-details h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            margin: 0 0 5px 0;
+            color: #333;
+        }
+
+        .current-balance {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #d81b60;
+            margin: 5px 0;
+        }
+
+        .balance-desc {
+            font-size: 0.9rem;
+            color: #888;
+            margin: 0;
+        }
+
+        .wallet-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn-wallet {
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-add-money {
+            background-color: #d81b60;
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(216, 27, 96, 0.2);
+        }
+
+        .btn-add-money:hover {
+            background-color: #ad1457;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(216, 27, 96, 0.3);
+        }
+
+        .btn-offers {
+            background-color: #fff;
+            color: #d81b60;
+            border: 2px solid #d81b60;
+        }
+
+        .btn-offers:hover {
+            background-color: #fce4ec;
+            transform: translateY(-2px);
+        }
+
+        /* --- Transaction History Section --- */
+        .history-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .history-title i {
+            font-size: 1.4rem;
+            color: #d81b60;
+        }
+
+        .transaction-list-wrapper {
+            overflow-x: auto;
+        }
+
+        .transaction-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .transaction-table th {
+            padding: 15px;
+            border-bottom: 2px solid #fce4ec;
+            color: #333;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .transaction-table td {
+            padding: 18px 15px;
+            border-bottom: 1px solid #f9f9f9;
+            vertical-align: middle;
+            font-size: 0.95rem;
+        }
+
+        .transaction-row:hover {
+            background-color: #fdfdfd;
+        }
+
+        .tx-id {
+            font-weight: 600;
+            color: #555;
+            font-family: monospace;
+            background-color: #f5f5f5;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .tx-description {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .tx-meta {
+            display: block;
+            font-size: 0.8rem;
+            color: #999;
+            margin-top: 4px;
+        }
+
+        .tx-amount {
+            font-weight: 700;
+        }
+
+        .amount-credit {
+            color: #2e7d32;
+        }
+
+        .amount-debit {
+            color: #c62828;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            display: inline-block;
+        }
+
+        .status-success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-pending {
+            background-color: #fff3e0;
+            color: #ef6c00;
+        }
+
+        .status-failed {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            color: #444;
+            text-decoration: none;
+            margin-bottom: 24px;
+        }
+
+        .back-btn i {
+            font-size: 14px;
+        }
+
+        .back-btn:hover {
+            color: #e91e63;
+            /* StepZone primary pink */
+        }
+
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .wallet-overview-card {
+                flex-direction: column;
+                text-align: center;
+                padding: 30px 20px;
+            }
+
+            .balance-info {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+
+            .current-balance {
+                font-size: 2rem;
+            }
+
+            .wallet-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn-wallet {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .wallet-card {
+                padding: 20px;
+            }
+
+            .transaction-table th,
+            .transaction-table td {
+                padding: 12px 10px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+
+<body class="home-body">
+    <!-- Announcement Bar (EXACTLY from home.html) -->
+    <div class="announcement-bar">
+        <div class="announcement-text">
+            Invite Friends and get 50% off on your next purchase <a href="#" class="invite-link">Invite Now</a>
+        </div>
+        <div class="close-announcement"><i class="fas fa-times"></i></div>
+    </div>
+
+    <!-- Header Section (EXACTLY from home.html) -->
+    <header class="main-header">
+        <div class="header-left">
+            <div class="logo"><a href="home.html" style="color: black;text-decoration: none;">StepZone</a></div>
+        </div>
+
+        <nav class="header-center">
+            <ul class="nav-links">
+                <li><a href="womens_product.html">Women</a></li>
+                <li><a href="kids_product.html">Kids</a></li>
+                <li><a href="products.html">Shop</a></li>
+                <li><a href="#">Contact us</a></li>
+            </ul>
+        </nav>
+
+        <div class="header-right">
+            <div class="search-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" placeholder="Search here" class="search-input">
+            </div>
+            <div class="header-icons">
+                <a href="wishlist.html" class="icon-link"><i class="far fa-heart"></i></a>
+                <a href="cart.html" class="icon-link"><i class="fas fa-shopping-cart"></i></a>
+                <a href="#" class="profile-link">
+                    <div class="avatar-circle"><i class="fas fa-user"></i></div>
+                    <span class="username">Anne Doe</span>
+                </a>
+            </div>
+            <div class="mobile-menu-trigger">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <main class="wallet-page-wrapper">
+        <div class="wallet-container">
+            <a href="profile.html" class="back-btn">
+
+                <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 21 21">
+                    <g fill="none" fill-rule="evenodd" stroke="currentColor" stroke-linecap="round"
+                        stroke-linejoin="round" stroke-width="1">
+                        <path d="M6.499 6.498L3.5 9.5l3 3" />
+                        <path d="M8.5 15.5h5q3 0 3-3c0-3-1-3-3-3h-10" />
+                    </g>
+                </svg>
+            </a>
+            <!-- WALLET OVERVIEW SECTION -->
+            <div class="wallet-card wallet-overview-card">
+                <div class="balance-info">
+                    <div class="wallet-icon-box">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <div class="balance-details">
+                        <h2>My Wallet</h2>
+<div class="current-balance" id="walletBalance">₹0.00</div>
+                        <p class="balance-desc">Available balance for your purchases</p>
+                    </div>
+                </div>
+                <div class="wallet-actions">
+
+<button class="btn-wallet btn-add-money" id="addMoneyBtn"><i class="fas fa-plus-circle" onclick="addMoney()"></i> Add Money</button>
+
+
+<button class="btn-wallet btn-offers"><i class="fas fa-tags"></i> View Offers</button>
+                </div>
+            </div>
+
+            <!-- TRANSACTION HISTORY SECTION -->
+            <div class="wallet-card history-card">
+                <h2 class="history-title"><i class="fas fa-history"></i> Transaction History</h2>
+                <div class="transaction-list-wrapper">
+                    <table class="transaction-table">
+                        <thead>
+                            <tr>
+                                <th>Transaction ID</th>
+                                <th>Date & Time</th>
+                                <th>Description</th>
+                                <th>Method</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Row 1 -->
+                            <tr class="transaction-row">
+                                <td><span class="tx-id">TXN982341022</span></td>
+                                <td>Oct 12, 2023 <span class="tx-meta">10:24 AM</span></td>
+                                <td>
+                                    <span class="tx-description">Order Payment</span>
+                                    <span class="tx-meta">Order #SZ-ORD-8823</span>
+                                </td>
+                                <td>Wallet</td>
+                                <td><span class="tx-amount amount-debit">-$499.00</span></td>
+                                <td><span class="status-badge status-success">Success</span></td>
+                            </tr>
+                            <!-- Row 2 -->
+                            <tr class="transaction-row">
+                                <td><span class="tx-id">TXN982341021</span></td>
+                                <td>Oct 10, 2023 <span class="tx-meta">02:15 PM</span></td>
+                                <td>
+                                    <span class="tx-description">Wallet Top-up</span>
+                                    <span class="tx-meta">Credit from Primary Bank</span>
+                                </td>
+                                <td>Razorpay</td>
+                                <td><span class="tx-amount amount-credit">+$1,000.00</span></td>
+                                <td><span class="status-badge status-success">Success</span></td>
+                            </tr>
+                            <!-- Row 3 -->
+                            <tr class="transaction-row">
+                                <td><span class="tx-id">TXN982341020</span></td>
+                                <td>Oct 08, 2023 <span class="tx-meta">09:45 AM</span></td>
+                                <td>
+                                    <span class="tx-description">Refund Processed</span>
+                                    <span class="tx-meta">Order #SZ-ORD-7712</span>
+                                </td>
+                                <td>Wallet</td>
+                                <td><span class="tx-amount amount-credit">+$120.50</span></td>
+                                <td><span class="status-badge status-pending">Pending</span></td>
+                            </tr>
+                            <!-- Row 4 -->
+                            <tr class="transaction-row">
+                                <td><span class="tx-id">TXN982341019</span></td>
+                                <td>Oct 05, 2023 <span class="tx-meta">11:00 AM</span></td>
+                                <td>
+                                    <span class="tx-description">Wallet Top-up</span>
+                                    <span class="tx-meta">UPI Payment</span>
+                                </td>
+                                <td>GPay</td>
+                                <td><span class="tx-amount amount-credit">+$500.00</span></td>
+                                <td><span class="status-badge status-failed">Failed</span></td>
+                            </tr>
+                            <!-- Row 5 -->
+                            <tr class="transaction-row">
+                                <td><span class="tx-id">TXN982341018</span></td>
+                                <td>Sep 28, 2023 <span class="tx-meta">04:30 PM</span></td>
+                                <td>
+                                    <span class="tx-description">Order Payment</span>
+                                    <span class="tx-meta">Order #SZ-ORD-6654</span>
+                                </td>
+                                <td>Wallet</td>
+                                <td><span class="tx-amount amount-debit">-$250.00</span></td>
+                                <td><span class="status-badge status-success">Success</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer (EXACTLY from home.html) -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <!-- Top Section -->
+            <div class="footer-top">
+                <!-- Brand -->
+                <div class="footer-brand-section">
+                    <h2 class="footer-logo">StepZone</h2>
+                </div>
+
+                <!-- Navigation Columns -->
+                <div class="footer-links-container">
+                    <div class="footer-column">
+                        <h3>Women</h3>
+                        <ul>
+                            <li><a href="#">All Women</a></li>
+                            <li><a href="#">Sandals</a></li>
+                            <li><a href="#">Flip Flops</a></li>
+                            <li><a href="#">Flats</a></li>
+                            <li><a href="#">Sneakers</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>Kids</h3>
+                        <ul>
+                            <li><a href="#">All Kids</a></li>
+                            <li><a href="#">Shoes</a></li>
+                            <li><a href="#">Sandals</a></li>
+                            <li><a href="#">Boots</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>Shopping</h3>
+                        <ul>
+                            <li><a href="cart.html">Your Cart</a></li>
+                            <li><a href="wishlist.html">Your Wishlist</a></li>
+                            <li><a href="wallet.html">StepZone Wallet</a></li>
+                            <li><a href="#">Shipping Details</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>More Links</h3>
+                        <ul>
+                            <li><a href="#">Blogs</a></li>
+                            <li><a href="#">Gift Center</a></li>
+                            <li><a href="#">Buying Guides</a></li>
+                            <li><a href="#">New Arrivals</a></li>
+                            <li><a href="#">Clearance</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Stay in Touch -->
+                <div class="footer-newsletter">
+                    <h3>Stay in Touch</h3>
+                    <p>Subscribe to our newsletter for exclusive offers.</p>
+                    <div class="newsletter-form">
+                        <input type="email" placeholder="Enter your email">
+                        <button type="submit"><i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Section -->
+            <div class="footer-bottom">
+                <div class="footer-legal">
+                    <a href="#">Terms & Conditions</a>
+                    <span>|</span>
+                    <a href="#">Privacy Policy</a>
+                </div>
+                <div class="footer-social">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- <script>
+document.addEventListener("DOMContentLoaded", loadWallet);
+
+async function loadWallet() {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("Please login first");
+    window.location.href = "login.html";
+    return;
+  }
+
+  try {
+    const res = await fetch("http://localhost:5000/api/wallet/balance", {
+  headers: { "Authorization": `Bearer ${token}` }
+});
+    const wallet = await res.json();
+
+    // Update balance
+    const balanceEl = document.querySelector(".current-balance");
+    balanceEl.innerText = `₹${wallet.balance.toFixed(2)}`;
+
+    // Update transactions
+    const tbody = document.querySelector(".transaction-table tbody");
+    tbody.innerHTML = ""; // Clear existing rows
+
+    wallet.transactions.forEach(tx => {
+      const tr = document.createElement("tr");
+      tr.classList.add("transaction-row");
+
+      const statusClass = tx.status === "Success" ? "status-success" :
+                          tx.status === "Pending" ? "status-pending" :
+                          "status-failed";
+      const amountClass = tx.amount >= 0 ? "amount-credit" : "amount-debit";
+
+      tr.innerHTML = `
+        <td><span class="tx-id">${tx._id}</span></td>
+        <td>${new Date(tx.date).toLocaleDateString()} <span class="tx-meta">${new Date(tx.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span></td>
+        <td>
+          <span class="tx-description">${tx.description}</span>
+          ${tx.orderId ? `<span class="tx-meta">Order #${tx.orderId}</span>` : ""}
+        </td>
+        <td>${tx.method}</td>
+        <td><span class="tx-amount ${amountClass}">${tx.amount >=0 ? '+' : '-'}₹${Math.abs(tx.amount).toFixed(2)}</span></td>
+        <td><span class="status-badge ${statusClass}">${tx.status}</span></td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+  } catch (err) {
+    console.error("Wallet load error:", err);
+  }
+}
+
+document.getElementById("addMoneyBtn").addEventListener("click", async () => {
+  const amount = parseFloat(prompt("Enter amount to add to your wallet:"));
+  if (!amount || amount <= 0) return;
+
+  const token = localStorage.getItem("token");
+
+  try {
+    const res = await fetch("http://localhost:5000/api/wallet/add", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({ amount })
+    });
+
+    const result = await res.json();
+    if (res.ok) {
+      alert(`₹${amount.toFixed(2)} added to wallet successfully!`);
+      loadWallet(); // Refresh balance & transactions
+    } else {
+      alert(result.message || "Failed to add money.");
+    }
+
+  } catch (err) {
+    console.error("Add money error:", err);
+  }
+});
+
+
+
+
+</script> -->
+
+
+
+<script>
+document.addEventListener("DOMContentLoaded", initWallet);
+
+async function initWallet() {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("Please login first");
+    window.location.href = "login.html";
+    return;
+  }
+
+  // Load balance & transactions
+  await loadWallet();
+
+  // Add Money Button
+  const addBtn = document.getElementById("addMoneyBtn");
+  addBtn.addEventListener("click", async () => {
+    const amount = parseFloat(prompt("Enter amount to add to your wallet:"));
+    if (!amount || amount <= 0) return;
+
+    try {
+      const res = await fetch("http://localhost:5000/api/wallet/topup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ amount })
+      });
+
+      const result = await res.json();
+      if (res.ok) {
+        alert(`₹${amount.toFixed(2)} added to wallet successfully!`);
+        await loadWallet(); // Refresh balance & transactions
+      } else {
+        alert(result.error || "Failed to add money.");
+      }
+
+    } catch (err) {
+      console.error("Add money error:", err);
+      alert("Something went wrong while adding money.");
+    }
+  });
+}
+
+// ---------------- Load Wallet Function ----------------
+async function loadWallet() {
+  const token = localStorage.getItem("token");
+
+  try {
+    const res = await fetch("http://localhost:5000/api/wallet/balance", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      }
+    });
+
+    const wallet = await res.json();
+
+    if (!res.ok) {
+      console.log(wallet);
+      throw new Error("Failed to fetch wallet data");
+    }
+
+    // ✅ SAFE BALANCE
+    const balance = wallet.balance || 0;
+
+    document.querySelector(".current-balance").innerText =
+      `₹${Number(balance).toFixed(2)}`;
+
+    // ✅ SAFE TRANSACTIONS
+    const transactions = wallet.transactions || [];
+
+    const tbody = document.querySelector(".transaction-table tbody");
+    tbody.innerHTML = "";
+
+    transactions.forEach(tx => {
+      const tr = document.createElement("tr");
+
+      const statusClass =
+        tx.status === "Success" ? "status-success" :
+        tx.status === "Pending" ? "status-pending" :
+        "status-failed";
+
+      const amountClass =
+        tx.type === "credit" ? "amount-credit" : "amount-debit";
+
+      tr.innerHTML = `
+        <td>${tx._id || ""}</td>
+        <td>${tx.date ? new Date(tx.date).toLocaleString() : ""}</td>
+        <td>${tx.description || ""}</td>
+        <td>${tx.method || ""}</td>
+        <td class="${amountClass}">
+          ${tx.type === "credit" ? "+" : "-"}₹${Math.abs(tx.amount || 0).toFixed(2)}
+        </td>
+        <td class="${statusClass}">
+          ${tx.status || ""}
+        </td>
+      `;
+
+      tbody.appendChild(tr);
+    });
+
+    console.log("Wallet loaded successfully");
+
+  } catch (err) {
+    console.error("Wallet load error:", err);
+    alert("Failed to load wallet data.");
+  }
+}
+
+// ---------------- Use Wallet for Payment ----------------
+// Call this function from your payment page where Wallet is selected
+async function payWithWallet(orderId, totalAmount) {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("Please login first");
+    window.location.href = "login.html";
+    return;
+  }
+
+  try {
+    const res = await fetch("http://localhost:5000/api/wallet/use", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({ orderId, amount: totalAmount })
+    });
+
+    const result = await res.json();
+
+    if (result.success) {
+      alert("Payment successful via Wallet!");
+      await loadWallet(); // refresh wallet balance & transactions
+      window.location.href = "success.html?orderId=" + orderId;
+    } else {
+      alert(result.message || "Wallet payment failed.");
+    }
+
+  } catch (err) {
+    console.error("Wallet payment error:", err);
+    alert("Something went wrong during wallet payment.");
+  }
+}
+
+async function addMoney() {
+  const token = localStorage.getItem("token");
+  const amount = document.getElementById("amountInput").value;
+
+  try {
+    const response = await fetch("http://localhost:5000/api/wallet/add", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+      body: JSON.stringify({ amount })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message);
+    }
+
+    alert("Money added successfully");
+
+    loadWallet(); // refresh wallet balance
+
+  } catch (error) {
+    console.error(error);
+    alert("Error adding money");
+  }
+}
+
+</script>
+</body>
+</html>

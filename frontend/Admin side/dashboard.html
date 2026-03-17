@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StepZone | Admin Dashboard</title>
+    <style>
+        :root {
+            --sidebar-width: 260px;
+            --topbar-height: 70px;
+            --primary-blue: #e092d1;
+            --sidebar-bg: #1a1d21;
+            --sidebar-text: #adb5bd;
+            --sidebar-hover: #ffffff;
+            --body-bg: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-dark: #202124;
+            --text-muted: #5f6368;
+            --border-color: #dee2e6;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--body-bg);
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            background-color: var(--sidebar-bg);
+            position: fixed;
+            left: 0;
+            top: 0;
+            color: white;
+            padding: 20px 0;
+            z-index: 1000;
+        }
+
+        .sidebar-brand {
+            padding: 0 25px 30px;
+            font-size: 24px;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar-brand span {
+            color: var(--primary-blue);
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            padding: 2px 15px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: var(--sidebar-text);
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: var(--transition);
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background-color: rgba(34, 116, 223, 0.708);
+            color: var(--sidebar-hover);
+        }
+
+        .nav-link.active {
+            background-color: var(--primary-blue);
+            color: #fff;
+        }
+
+        .nav-link i {
+            margin-right: 12px;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Topbar Styles */
+        .topbar {
+            margin-left: var(--sidebar-width);
+            height: var(--topbar-height);
+            background-color: var(--card-bg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background-color: #f1f3f4;
+            padding: 8px 15px;
+            border-radius: 8px;
+            width: 350px;
+        }
+
+        .search-box input {
+            border: none;
+            background: transparent;
+            outline: none;
+            padding-left: 10px;
+            width: 100%;
+            font-size: 14px;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background-color: var(--primary-blue);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 30px;
+        }
+
+        .section-header {
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-header h2 {
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        /* Grid Layouts */
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 25px;
+            margin-bottom: 35px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 25px;
+            margin-bottom: 35px;
+        }
+
+        /* Metric Cards */
+        .metric-card {
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .metric-title {
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .metric-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .metric-change {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .change-up {
+            color: #1e8e3e;
+        }
+
+        .change-down {
+            color: #d93025;
+        }
+
+        /* Chart/Visualization Components */
+        .card {
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            margin-bottom: 25px;
+        }
+
+        .card-header {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        /* CSS Bar Chart */
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            height: 200px;
+            padding: 20px 0;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .bar-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 10%;
+        }
+
+        .bar {
+            width: 100%;
+            background-color: var(--primary-blue);
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+            transition: height 0.5s ease;
+        }
+
+        .bar-label {
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* CSS Pie/Circular Display */
+        .gauge-container {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px 0;
+        }
+
+        .gauge-item {
+            text-align: center;
+        }
+
+        .gauge {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: conic-gradient(var(--primary-blue) 0% 75%, #e9ecef 75% 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin: 0 auto 15px;
+        }
+
+        .gauge::after {
+            content: '';
+            position: absolute;
+            width: 90px;
+            height: 90px;
+            background-color: white;
+            border-radius: 50%;
+        }
+
+        .gauge-text {
+            position: relative;
+            z-index: 10;
+            font-weight: 700;
+            font-size: 20px;
+        }
+
+        /* Tables */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            padding: 15px;
+            background-color: #f8f9fa;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-paid {
+            background-color: #e6f4ea;
+            color: #1e8e3e;
+        }
+
+        .status-pending {
+            background-color: #fef7e0;
+            color: #b05a00;
+        }
+
+        .status-shipped {
+            background-color: #e8f0fe;
+            color: #1a73e8;
+        }
+
+        .status-low {
+            background-color: #f6e6e6;
+            color: #d93025;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary-blue);
+            border-radius: 10px;
+        }
+
+        /* Domain Specific */
+        .category-tag {
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-right: 5px;
+        }
+
+        .tag-men {
+            border: 1px solid #1a73e8;
+            color: #1a73e8;
+        }
+
+        .tag-women {
+            border: 1px solid #ea4335;
+            color: #ea4335;
+        }
+
+        .tag-kids {
+            border: 1px solid #fbbc04;
+            color: #fbbc04;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 80px;
+            }
+
+            .sidebar-brand,
+            .nav-link span {
+                display: none;
+            }
+
+            .topbar,
+            .main-content {
+                margin-left: 80px;
+            }
+
+            .search-box {
+                width: 200px;
+            }
+
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            Step<span>Zone</span>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="dashboard.html" class="nav-link active">
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="products.html" class="nav-link">
+                    <span>Products</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="categories.html" class="nav-link">
+                    <span>Categories</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="orders.html" class="nav-link">
+                    <span>Orders</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="payments.html" class="nav-link">
+                    <span>Payments</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="reports.html" class="nav-link">
+                    <span>Reports & Analytics</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="offers.html" class="nav-link">
+                    <span>Offers & Coupons</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="reviews.html" class="nav-link">
+                    <span>Reviews</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="sales-reports.html" class="nav-link">
+                    <span>Sales Reports</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="users.html" class="nav-link">
+                    <span>User Management</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="settings.html" class="nav-link">
+                    <span>Admin Settings</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+        <div class="search-box">
+            <input type="text" placeholder="Search orders, products...">
+        </div>
+        <div class="topbar-right">
+            <div class="user-profile">
+<div class="user-avatar" id="adminAvatar"></div>
+                <div class="user-info">
+<div id="adminName" style="font-size: 14px; font-weight: 600;"></div>
+                    <div style="font-size: 12px; color: var(--text-muted);">Super Admin</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <!-- DASHBOARD OVERVIEW -->
+        <section id="dashboard">
+            <div class="section-header">
+                <h2>Dashboard Overview</h2>
+                <div style="color: var(--text-muted); font-size: 14px;">Feb 06, 2026</div>
+            </div>
+
+            <!-- METRIC CARDS -->
+<div class="grid-4">
+
+    <div class="metric-card">
+        <div class="metric-title">Total Orders</div>
+        <div class="metric-value" id="totalOrders">0</div>
+    </div>
+
+    <div class="metric-card">
+        <div class="metric-title">Total Revenue</div>
+        <div class="metric-value" id="totalRevenue">0</div>
+    </div>
+
+    <div class="metric-card">
+        <div class="metric-title">Active Users</div>
+        <div class="metric-value" id="totalUsers">0</div>
+    </div>
+
+    <div class="metric-card">
+        <div class="metric-title">Total Products</div>
+        <div class="metric-value" id="totalProducts">0</div>
+    </div>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <!-- ORDERS OVERVIEW -->
+              <div class="card">
+  <div class="card-header">
+    <div class="card-title">Orders Status</div>
+  </div>
+  <div id="orderStatusContainer"></div>
+</div>
+</div>
+            <!-- ANALYTICS VISUALIZATION -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Monthly Revenue (Last 6 Months)</div>
+                </div>
+<div class="bar-chart" id="revenueChart"></div>
+                <div style="margin-top: 15px; text-align: center; font-size: 12px; color: var(--text-muted);">
+                    Data represents revenue in USD ($). Growth trend: <strong>+12%</strong>
+                </div>
+            </div>
+
+            <!-- TABLES SECTION -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Recent Orders</div>
+                    <a href="#"
+                        style="font-size: 13px; color: var(--primary-blue); text-decoration: none; font-weight: 600;">View
+                        All</a>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Product</th>
+                                <th>Category</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+<tbody id="recentOrdersTable"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- PRODUCT STOCK TABLE -->
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Inventory Alerts</div>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Size</th>
+                                    <th>Stock</th>
+                                    <th>Level</th>
+                                </tr>
+                            </thead>
+                           <tbody id="inventoryAlertsTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">Category Distribution</div>
+  </div>
+
+  <div style="padding: 10px 0;">
+    <div id="categoryDistributionContainer"></div>
+  </div>
+</div>
+</section>
+
+        <!-- FOOTER -->
+<footer
+            style="margin-top: 50px; text-align: center; padding-bottom: 30px; color: var(--text-muted); font-size: 13px;">
+            &copy; 2026 StepZone Footwear Admin Panel. All Rights Reserved. Created for StepZone academic project.
+        </footer>
+    </main>
+    
+   <script>
+const token = localStorage.getItem("adminToken");
+
+if (!token) {
+  alert("Session expired. Please login again.");
+  window.location.href = "admin-login.html";
+}
+
+// Load all dashboard data
+async function loadDashboard() {
+  await loadMetrics();
+  await loadRecentOrders();
+  await loadInventoryAlerts();
+  await loadCategoryDistribution();
+  await loadOrderStatus();  
+  await loadMonthlyRevenue();
+}
+
+const name = localStorage.getItem("adminName") || "Admin";
+document.getElementById("adminName").innerText = name;
+// Initials generate
+const initials = name.split(" ").map(n => n[0]).join("").toUpperCase();
+
+document.getElementById("adminAvatar").innerText = initials;
+
+// 1️⃣ Metrics
+async function loadMetrics() {
+  const res = await fetch("http://localhost:5000/api/admin/dashboard-metrics", {
+    headers: { Authorization: "Bearer " + token }
+  });
+
+  const data = await res.json();
+
+  document.getElementById("totalOrders").innerText = data.totalOrders;
+  document.getElementById("totalRevenue").innerText = "₹" + data.totalRevenue;
+  document.getElementById("totalUsers").innerText = data.totalUsers;
+  document.getElementById("totalProducts").innerText = data.totalProducts;
+}
+
+// 2️⃣ Recent Orders
+async function loadRecentOrders() {
+  try {
+    const res = await fetch("http://localhost:5000/api/admin/recent-orders", {
+      headers: { Authorization: "Bearer " + token }
+    });
+
+    const orders = await res.json();
+
+    const tbody = document.getElementById("recentOrdersTable");
+    tbody.innerHTML = "";
+
+    if (!Array.isArray(orders) || orders.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6">No recent orders</td></tr>`;
+      return;
+    }
+
+    orders.forEach(order => {
+      const tr = document.createElement("tr");
+
+      // ✅ IMPORTANT — DEFINE VARIABLES FIRST
+      const productName = order.items?.[0]?.product?.name || "N/A";
+      const category = order.items?.[0]?.product?.category || "N/A";
+
+      tr.innerHTML = `
+        <td>${order._id.slice(-6)}</td>
+        <td>${productName}</td>
+        <td>${category}</td>
+        <td>₹${order.totalAmount}</td>
+        <td>${order.status}</td>
+        <td>${new Date(order.createdAt).toLocaleDateString()}</td>
+      `;
+
+      tbody.appendChild(tr);
+    });
+
+  } catch (error) {
+    console.error("Load recent orders failed:", error);
+  }
+}
+
+// 3. Inventory Alerts
+async function loadInventoryAlerts() {
+  try {
+    const res = await fetch("http://localhost:5000/api/admin/inventory-alerts", {
+      headers: { Authorization: "Bearer " + token }
+    });
+
+    const alerts = await res.json();
+
+    const tbody = document.getElementById("inventoryAlertsTable");
+    tbody.innerHTML = "";
+
+    if (!Array.isArray(alerts) || alerts.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="4">No low stock products</td></tr>`;
+      return;
+    }
+
+    alerts.forEach(item => {
+      const tr = document.createElement("tr");
+
+            tr.innerHTML = `
+            <td>${item.productName}</td>
+            <td>${item.size}</td>
+            <td>${item.stock}</td>
+            <td><span class="status-low">${item.level}</span></td>
+            `;
+
+      tbody.appendChild(tr);
+    });
+
+  } catch (error) {
+    console.error("Inventory alerts error:", error);
+  }
+}
+
+// 4. Category Distribution
+async function loadCategoryDistribution() {
+  try {
+    const res = await fetch("http://localhost:5000/api/admin/category-distribution", {
+      headers: { Authorization: "Bearer " + token }
+    });
+
+    const data = await res.json();
+
+    const container = document.getElementById("categoryDistributionContainer");
+    container.innerHTML = "";
+
+    data.forEach(item => {
+      const div = document.createElement("div");
+      div.classList.add("category-item");
+
+      div.innerHTML = `
+        <div style="display:flex; justify-content:space-between;">
+          <span>${item.categoryName}</span>
+          <span>${item.percentage}%</span>
+        </div>
+        <div style="background:#eee; height:6px; border-radius:5px;">
+          <div style="
+            width:${item.percentage}%;
+            background:${item.color};
+            height:6px;
+            border-radius:5px;">
+          </div>
+        </div>
+      `;
+
+      container.appendChild(div);
+    });
+
+  } catch (error) {
+    console.error("Category distribution error:", error);
+  }
+}
+
+// 5. Monthly Revenue (Bar Chart)
+async function loadMonthlyRevenue() {
+
+  const res = await fetch("http://localhost:5000/api/admin/monthly-revenue", {
+    headers: { Authorization: "Bearer " + token }
+  });
+
+  const revenue = await res.json();
+
+  const chart = document.getElementById("revenueChart");
+  chart.innerHTML = "";
+
+if (!revenue.length) return;
+const maxRevenue = Math.max(...revenue.map(r => r.revenue));
+
+  revenue.forEach(item => {
+
+    const height = (item.revenue / maxRevenue) * 180;
+
+    const bar = `
+      <div class="bar-container">
+        <div class="bar" style="height:${height}px;"></div>
+        <div class="bar-label">${item.month}</div>
+        <div style="font-size:10px;font-weight:600;">₹${item.revenue}</div>
+      </div>
+    `;
+
+    chart.innerHTML += bar;
+
+  });
+
+}
+
+async function loadOrderStatus() {
+  try {
+    const res = await fetch("http://localhost:5000/api/admin/order-status-stats", {
+      headers: { Authorization: "Bearer " + token }
+    });
+
+    const data = await res.json();
+
+    const container = document.getElementById("orderStatusContainer");
+    container.innerHTML = "";
+
+    const statuses = [
+      { name: "Completed", value: data.completed, color: "#1e8e3e" },
+      { name: "Processing", value: data.processing, color: "#1a73e8" },
+      { name: "Returned", value: data.returned, color: "#fbbc04" },
+      { name: "Cancelled", value: data.cancelled, color: "#d93025" }
+    ];
+
+    statuses.forEach(status => {
+      const div = document.createElement("div");
+      div.style.marginBottom = "20px";
+
+      div.innerHTML = `
+        <div style="display:flex; justify-content:space-between; font-size:14px;">
+          <span>${status.name}</span>
+          <span>${status.value}%</span>
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar"
+               style="width:${status.value}%; background-color:${status.color};">
+          </div>
+        </div>
+      `;
+
+      container.appendChild(div);
+    });
+
+  } catch (error) {
+    console.error("Order status error:", error);
+  }
+}
+
+loadDashboard();
+</script>
+</body>
+</html>

@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment - StepZone</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Using Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@300;400;500;700&family=Great+Vibes&display=swap"
+        rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <style>
+        /* --- Payment Page Internal Styles --- */
+        body {
+            background-color: #fdf6f7;
+            /* Soft pastel pink background */
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            color: #444;
+        }
+
+        .payment-page-wrapper {
+            padding: 60px 0;
+            min-height: calc(100vh - 500px);
+        }
+
+        .payment-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        /* Common Card Style */
+        .payment-card {
+            background-color: #ede7e7eb;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            color: #333;
+            margin: 0 0 25px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title i {
+            color: #d81b60;
+            font-size: 1.2rem;
+        }
+
+        /* Left Side: Payment Options */
+        .payment-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .payment-option {
+            border: 2px solid #f0f0f0;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .payment-option:hover {
+            border-color: #fce4ec;
+            background-color: #fff9fa;
+        }
+
+        .payment-option.selected {
+            border-color: #d81b60;
+            background-color: #fff0f3;
+        }
+
+        .method-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .method-icon {
+            width: 45px;
+            height: 45px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #d81b60;
+            font-size: 1.4rem;
+        }
+
+        .method-name {
+            font-weight: 600;
+            font-size: 1.05rem;
+            color: #333;
+        }
+
+        .selection-indicator {
+            width: 22px;
+            height: 22px;
+            border: 2px solid #ddd;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .payment-option.selected .selection-indicator {
+            border-color: #d81b60;
+            background-color: #d81b60;
+        }
+
+        .payment-option.selected .selection-indicator i {
+            display: block;
+            color: #fff;
+            font-size: 0.7rem;
+        }
+
+        .selection-indicator i {
+            display: none;
+        }
+
+        .pay-btn-container {
+            margin-top: 15px;
+        }
+
+        .pay-now-btn {
+            width: 100%;
+            background-color: #d81b60;
+            color: #fff;
+            border: none;
+            padding: 18px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(216, 27, 96, 0.2);
+        }
+
+        .pay-now-btn:hover {
+            background-color: #ad1457;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(216, 27, 96, 0.3);
+        }
+
+        /* Right Side: Order Summary */
+        .order-summary-card {
+            top: 20px;
+        }
+
+        .product-item {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .product-thumbnail {
+            width: 80px;
+            height: 100px;
+            background-color: #fce4ec;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .product-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-details {
+            flex-grow: 1;
+        }
+
+        .product-details h4 {
+            margin: 0;
+            font-size: 1rem;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .product-meta {
+            font-size: 0.85rem;
+            color: #888;
+            margin: 5px 0;
+        }
+
+        .product-price-qty {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            color: #333;
+            margin-top: 5px;
+        }
+
+        /* Coupon Section */
+        .coupon-section {
+            margin: 25px 0;
+        }
+
+        .coupon-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .coupon-input {
+            flex-grow: 1;
+            padding: 12px 15px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            outline: none;
+            font-size: 0.9rem;
+        }
+
+        .apply-btn {
+            background-color: #444;
+            color: #fff;
+            border: none;
+            padding: 0 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .apply-btn:hover {
+            background-color: #333;
+        }
+
+        .active-coupons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .coupon-badge {
+            background-color: #fce4ec;
+            color: #d81b60;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .remove-coupon {
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        /* Price Breakdown */
+        .price-breakdown {
+            border-top: 1px solid #f0f0f0;
+            padding-top: 20px;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+            color: #555;
+        }
+
+        .price-row.discount {
+            color: #2e7d32;
+            font-weight: 600;
+        }
+
+        .price-row.grand-total {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #f0f0f0;
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #d81b60;
+        }
+
+        .summary-totals {
+            text-align: right;
+        }
+
+.summary-row,
+.final-total {
+    display: flex;
+    justify-content: space-between;  /* 🔥 pushes price to right */
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.summary-row span:first-child,
+.final-total span:first-child {
+    text-align: left;
+}
+
+.summary-row span:last-child,
+.final-total span:last-child {
+    text-align: right;
+    font-weight: 500;
+}
+
+.coupon-section {
+    margin: 25px 0;
+}
+
+.coupon-input-group {
+    display: flex;
+    gap: 10px;
+}
+
+.coupon-input {
+    flex-grow: 1;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 50px;
+    outline: none;
+    font-size: 0.95rem;
+    transition: all 0.3s;
+}
+
+.coupon-input:focus {
+    border-color: #d81b60;
+    box-shadow: 0 0 5px rgba(216,27,96,0.3);
+}
+
+.apply-btn {
+    background-color: #d81b60;
+    color: #fff;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.apply-btn:hover {
+    background-color: #ad1457;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(216,27,96,0.3);
+}
+
+.active-coupons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+    .coupon-success-box{
+    background:#e8f5e9;
+    color:#2e7d32;
+    border:1px solid #c8e6c9;
+    padding:12px 15px;
+    border-radius:8px;
+    font-size:0.9rem;
+    font-weight:600;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-top:10px;
+    }
+
+.coupon-badge {
+    background-color: #fde0eb;
+    color: #d81b60;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.remove-coupon {
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+}
+
+.remove-coupon:hover {
+    color: #ad1457;
+}
+
+.available-coupons-box{
+margin-top:20px;
+border:1px dashed #ddd;
+padding:15px;
+border-radius:10px;
+background:#dbd7d7e6;
+}
+
+.available-coupons-box h4{
+margin-bottom:10px;
+font-size:14px;
+color:#555;
+}
+
+.coupon-card{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:10px;
+border:1px solid #eee;
+border-radius:8px;
+margin-bottom:8px;
+background:#fafafa;
+}
+
+.coupon-card button{
+background:#d81b60;
+color:white;
+border:none;
+padding:6px 12px;
+border-radius:20px;
+cursor:pointer;
+font-size:12px;
+}
+
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .payment-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .payment-page-wrapper {
+                padding: 30px 0;
+            }
+
+            .payment-card {
+                padding: 20px;
+            }
+
+            .section-title {
+                font-size: 1.4rem;
+            }
+
+            .pay-now-btn {
+                padding: 15px;
+            }
+        }
+    </style>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+</head>
+
+<body class="home-body">
+    <!-- Announcement Bar (EXACTLY from home.html) -->
+    <div class="announcement-bar">
+        <div class="announcement-text">
+            Invite Friends and get 50% off on your next purchase <a href="#" class="invite-link">Invite Now</a>
+        </div>
+        <div class="close-announcement"><i class="fas fa-times"></i></div>
+    </div>
+
+    <!-- Header Section (EXACTLY from home.html) -->
+    <header class="main-header">
+        <div class="header-left">
+            <div class="logo"><a href="home.html" style="color: black;text-decoration: none;">StepZone</a></div>
+        </div>
+
+        <nav class="header-center">
+            <ul class="nav-links">
+                <li><a href="womens_product.html">Women</a></li>
+                <li><a href="kids_product.html">Kids</a></li>
+                <li><a href="products.html">Shop</a></li>
+                <li><a href="#">Contact us</a></li>
+            </ul>
+        </nav>
+
+        <div class="header-right">
+            <div class="search-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" placeholder="Search here" class="search-input">
+            </div>
+            <div class="header-icons">
+                <a href="wishlist.html" class="icon-link"><i class="far fa-heart"></i></a>
+                <a href="cart.html" class="icon-link"><i class="fas fa-shopping-cart"></i></a>
+                <a href="#" class="profile-link">
+                    <div class="avatar-circle"><i class="fas fa-user"></i></div>
+                    <span class="username">Anne Doe</span>
+                </a>
+            </div>
+            <div class="mobile-menu-trigger">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <main class="payment-page-wrapper">
+        <div class="payment-container">
+            <!-- Left Side: Payment Options -->
+            <div class="payment-left">
+                <div class="payment-card">
+                    <h2 class="section-title"><i class="fas fa-credit-card"></i> Payment Methods</h2>
+                    <div class="payment-methods">
+                        <!-- Razorpay Card -->
+                        <div class="payment-option selected" data-method="Razorpay">
+                            <div class="method-info">
+                                <span class="method-icon"><i class="fas fa-shield-alt"></i></span>
+                                <span class="method-name">Razorpay</span>
+                            </div>
+                            <div class="selection-indicator"><i class="fas fa-check"></i></div>
+                        </div>
+
+                        <!-- GPay Card -->
+                 <div class="payment-option" data-method="Wallet">
+                                <div class="method-info">
+                                <span class="method-icon"> <i class="fas fa-wallet"></i></span>
+                                <span class="method-name">Wallet</span>
+                            </div>
+                            <div class="selection-indicator"><i class="fas fa-check"></i></div>
+                        </div>
+
+                        <!-- Cash on Delivery Card -->
+                        <div class="payment-option" data-method="Cash On Delivery">
+                            <div class="method-info">
+                                <span class="method-icon"><i class="fas fa-hand-holding-usd"></i></span>
+                                <span class="method-name">Cash on Delivery</span>
+                            </div>
+                            <div class="selection-indicator"><i class="fas fa-check"></i></div>
+                        </div>
+                    </div>
+                    <div class="pay-btn-container">
+<button type="button" class="pay-now-btn" id="pay-button">Pay & Continue</button>                    
+</div>
+
+                </div>
+            </div>
+
+            <!-- Right Side: Order Summary -->
+            <div class="payment-right">
+                <div class="payment-card order-summary-card">
+                    <h2 class="section-title"><i class="fas fa-shopping-bag"></i> Order Summary</h2>
+<div class="product-list" id="productList"></div>                        <!-- Product 1 -->
+                       
+                 
+
+                    <!-- Coupon Section -->
+                    <div class="coupon-section">
+                        <div class="coupon-input-group">
+                          <input type="text" id="couponCode" class="coupon-input" placeholder="Enter Coupon Code">
+<button class="apply-btn" id="applyCouponBtn">Apply</button></div>
+<div id="couponSuccessBox" class="coupon-success-box" style="display:none;">
+<i class="fas fa-check-circle"></i>
+<span id="couponSuccessText"></span>
+</div>
+<div class="active-coupons" id="activeCoupons"></div></div>
+<div class="available-coupons-box">
+<h4>Available Coupons</h4>
+<div id="availableCoupons"></div>
+</div>
+
+                    <!-- Price Breakdown -->
+<div class="summary-totals">
+  <div class="summary-row">
+    <span>Subtotal</span>
+    <span id="subtotal"></span>
+  </div>
+
+  <div class="summary-row">
+    <span>Delivery</span>
+    <span id="delivery"></span>
+  </div>
+
+  <div class="summary-row" style="color: #2e7d32;">
+    <span>Discount</span>
+    <span id="discount"></span>
+  </div>
+
+  <hr class="divider">
+
+  <div class="final-total" style="font-weight: bold;">
+    <span>Total</span>
+    <span class="total-amount" style="text-align: right; font-weight: bold;" id="total"></span>
+  </div>
+</div>
+     </div>                    </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer (EXACTLY from home.html) -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <!-- Top Section -->
+            <div class="footer-top">
+                <!-- Brand -->
+                <div class="footer-brand-section">
+                    <h2 class="footer-logo">StepZone</h2>
+                </div>
+
+                <!-- Navigation Columns -->
+                <div class="footer-links-container">
+                    <div class="footer-column">
+                        <h3>Women</h3>
+                        <ul>
+                            <li><a href="#">All Women</a></li>
+                            <li><a href="#">Sandals</a></li>
+                            <li><a href="#">Flip Flops</a></li>
+                            <li><a href="#">Flats</a></li>
+                            <li><a href="#">Sneakers</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>Kids</h3>
+                        <ul>
+                            <li><a href="#">All Kids</a></li>
+                            <li><a href="#">Shoes</a></li>
+                            <li><a href="#">Sandals</a></li>
+                            <li><a href="#">Boots</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>Shopping</h3>
+                        <ul>
+                            <li><a href="cart.html">Your Cart</a></li>
+                            <li><a href="wishlist.html">Your Wishlist</a></li>
+                            <li><a href="#">Your Orders</a></li>
+                            <li><a href="#">Shipping Details</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>More Links</h3>
+                        <ul>
+                            <li><a href="#">Blogs</a></li>
+                            <li><a href="#">Gift Center</a></li>
+                            <li><a href="#">Buying Guides</a></li>
+                            <li><a href="#">New Arrivals</a></li>
+                            <li><a href="#">Clearance</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Stay in Touch -->
+                <div class="footer-newsletter">
+                    <h3>Stay in Touch</h3>
+                    <p>Subscribe to our newsletter for exclusive offers.</p>
+                    <div class="newsletter-form">
+                        <input type="email" placeholder="Enter your email">
+                        <button type="submit"><i class="fas fa-arrow-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Section -->
+            <div class="footer-bottom">
+                <div class="footer-legal">
+                    <a href="#">Terms & Conditions</a>
+                    <span>|</span>
+                    <a href="#">Privacy Policy</a>
+                </div>
+                <div class="footer-social">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script>
+window.autoApplyCoupon = (code) => {
+    document.getElementById("couponCode").value = code;
+    document.getElementById("applyCouponBtn").click();
+};
+
+
+let cartItems = []; 
+let appliedCoupon = null;
+document.addEventListener("DOMContentLoaded", async function () {
+let shippingData = null; 
+
+const productList = document.getElementById("productList"); // ⚡ MUST
+const options = document.querySelectorAll('.payment-option');
+const payButton = document.getElementById('pay-button');
+const token = localStorage.getItem("token");
+console.log("Shipping Data:", localStorage.getItem("shippingDetails"));
+
+if (!token) {
+    window.location.href = "login.html";
+    return;
+  }
+
+  try {
+
+// Get shipping details from checkout page
+shippingData = JSON.parse(localStorage.getItem("shippingDetails"));
+
+if (!shippingData) {
+  alert("Please select shipping address first.");
+  window.location.href = "checkout.html";
+  return;
+}
+
+console.log("Selected Shipping Address:", shippingData);
+
+} catch (err) {
+  console.error(err);
+}
+
+
+const res = await fetch("http://localhost:5000/api/cart", {
+  headers: { Authorization: "Bearer " + token }
+});
+const data = await res.json();
+cartItems = data.products || [];
+
+cartItems.forEach(item => {
+  const product = item.product; // ✅ get the nested product object
+  const div = document.createElement("div");
+  div.className = "product-item";
+  div.innerHTML = `
+    <div class="product-thumbnail">
+<img src="${product.image?.trim() || 'images/no-image.png'}" alt="${product.name}">
+    </div>
+    <div class="product-details">
+      <h4>${product.name}</h4>
+      <div class="product-meta">Qty: ${item.quantity}</div>
+      <div class="product-price-qty">₹${product.price} x ${item.quantity} = ₹${product.price * item.quantity}</div>
+    </div>
+  `;
+  productList.appendChild(div);
+});
+
+// Calculate subtotal dynamically using discountedPrice
+let subtotal = 0;
+cartItems.forEach(item => {
+  subtotal += item.discountedPrice * item.quantity; // use discountedPrice from cart
+});
+document.getElementById("subtotal").innerText = "₹" + subtotal;
+
+const delivery = Number(localStorage.getItem("deliveryCharge")) || 0;
+const discountValue = appliedCoupon ? appliedCoupon.discount : Number(localStorage.getItem("discount")) || 0;
+const total = subtotal + delivery - discountValue;
+
+document.getElementById("delivery").innerText = "₹" + delivery;
+document.getElementById("discount").innerText = "-₹" + discountValue;
+document.getElementById("total").innerText = "₹" + total;
+
+  // ---------------- Fetch Wallet Balance ----------------
+  try {
+    const walletRes = await fetch("http://localhost:5000/api/wallet/balance", {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    const walletData = await walletRes.json();
+    document.getElementById("wallet-balance").innerText = "₹" + walletData.balance;
+  } catch (err) {
+  }
+
+  // ---------------- Coupon Apply ----------------
+
+const applyBtn = document.getElementById("applyCouponBtn");
+
+applyBtn.addEventListener("click", async () => {
+
+  const code = document.getElementById("couponCode").value.trim();
+  if(!code){
+    alert("Enter coupon code");
+    return;
+  }
+
+  if(appliedCoupon){
+alert("Coupon already applied");
+return;
+}
+
+
+  // Calculate subtotal dynamically from cartItems
+  let subtotal = 0;
+  cartItems.forEach(item => {
+    subtotal += item.discountedPrice * item.quantity;
+  });
+
+  try {
+    const res = await fetch("http://localhost:5000/api/coupons/apply", {
+      method:"POST",
+        headers:{
+        "Content-Type":"application/json",
+        Authorization: "Bearer " + token
+        },
+      body: JSON.stringify({ code, cartTotal: subtotal })
+    });
+
+    const data = await res.json();
+
+    if(!data.success){
+      alert(data.message);
+      return;
+    }
+
+        appliedCoupon = data; 
+        localStorage.setItem("discount", data.discount);  // 🔥 store discount
+        localStorage.setItem("couponCode", data.code);    // optional, store code
+        updateFinalTotal();   
+        showActiveCoupon(code); 
+
+  } catch(err) {
+    console.log(err);
+    alert("Error applying coupon");
+  }
+});
+
+async function loadAvailableCoupons(){
+
+const container = document.getElementById("availableCoupons");
+if(!container) return;
+
+try{
+
+const res = await fetch("http://localhost:5000/api/coupons");
+const data = await res.json();
+
+container.innerHTML = "";
+
+data.coupons.forEach(coupon=>{
+
+const discountText = coupon.discountType === "percentage"
+? `${coupon.discountValue}% OFF`
+: `₹${coupon.discountValue} OFF`;
+
+const div = document.createElement("div");
+div.className = "coupon-card";
+
+div.innerHTML = `
+
+<span>
+<strong>${coupon.code}</strong> - ${discountText}  
+<small>(Min ₹${coupon.minOrderAmount})</small>
+</span>
+
+<button onclick="autoApplyCoupon('${coupon.code}')">
+Apply
+</button>
+`;
+
+container.appendChild(div);
+
+});
+
+}catch(err){
+console.log("Coupon fetch error",err);
+}
+}
+
+
+function autoApplyCoupon(code){
+
+document.getElementById("couponCode").value = code;
+
+document.getElementById("applyCouponBtn").click();
+
+}
+
+
+  // ---------------- Payment Option Selection ----------------
+  options.forEach(option => {
+    option.addEventListener('click', function () {
+
+      options.forEach(opt => opt.classList.remove('selected'));
+      this.classList.add('selected');
+
+      const method = this.getAttribute('data-method');
+
+      if (method === 'Cash On Delivery') {
+        payButton.textContent = 'Confirm Order (COD)';
+      } else {
+        payButton.textContent = 'Pay with ' + method;
+      }
+    });
+  });
+
+  // ---------------- Pay Button Click ----------------
+payButton.addEventListener("click", async () => {
+
+    // ... validate shippingData and payment method ...
+
+    payButton.disabled = true;
+    payButton.innerText = "Processing...";
+
+    let paymentMethod = document.querySelector(".payment-option.selected")?.getAttribute("data-method") || "Razorpay";
+
+const orderData = {
+    shippingDetails: shippingData, // ✅ use shippingData
+    deliveryCharge: Number(localStorage.getItem("deliveryCharge")) || 0,
+    discount: appliedCoupon ? appliedCoupon.discount : 0,
+    paymentMethod,
+    couponCode: appliedCoupon ? appliedCoupon.code : null
+};
+
+    try {
+        let backendOrderRes = await fetch("http://localhost:5000/api/orders/create", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + token
+            },
+            body: JSON.stringify(orderData)
+        });
+
+        const backendOrder = await backendOrderRes.json();
+        if (!backendOrderRes.ok) throw new Error(backendOrder.message);
+
+        const orderId = backendOrder.orderId; // ✅ important
+
+        // ------------------ Razorpay ------------------
+        if (paymentMethod === "Razorpay") {
+
+            // 1️⃣ Create Razorpay order using backend orderId
+            const razorRes = await fetch("http://localhost:5000/api/orders/create-razorpay", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + token
+                },
+                body: JSON.stringify({ orderId }) // <-- send backend orderId
+            });
+
+            const razorData = await razorRes.json();
+            if (!razorRes.ok) throw new Error(razorData.message);
+
+            const options = {
+                key: razorData.key,
+                amount: razorData.amount,
+                currency: "INR",
+                order_id: razorData.razorpayOrderId,
+                name: "StepZone",
+                description: "Sneaker Purchase",
+                prefill: {
+                    name: shippingData.fullName,
+                    email: shippingData.email || "",
+                    contact: shippingData.phone || ""
+                },
+                handler: async function(response) {
+                    // Verify payment
+                    const verifyRes = await fetch("http://localhost:5000/api/orders/verify-razorpay", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: "Bearer " + token
+                        },
+                        body: JSON.stringify({
+                            orderId, // backend orderId
+                            razorpayPaymentId: response.razorpay_payment_id,
+                            razorpayOrderId: response.razorpay_order_id,
+                            razorpaySignature: response.razorpay_signature
+                        })
+                    });
+
+                    const verifyData = await verifyRes.json();
+                    if (!verifyRes.ok) throw new Error(verifyData.message);
+
+                    // Clear cart & redirect
+    ["cartItems","shippingDetails","subtotal","deliveryCharge","discount","finalTotal"]
+    .forEach(key => localStorage.removeItem(key));
+
+    window.location.href = "success.html?orderId=" + orderId;
+},
+                theme: { color: "#2e7d32" }
+            };
+
+            const rzp = new Razorpay(options);
+            rzp.open();
+            return;
+
+        } else {
+
+
+
+        // Clear cart & storage
+        ["cartItems","shippingDetails","subtotal","deliveryCharge","discount","finalTotal"].forEach(key => localStorage.removeItem(key));
+
+        window.location.href = "success.html?orderId=" + orderId;
+        }
+
+    } catch (error) {
+        console.error("Order creation error:", error);
+        alert(error.message);
+        payButton.disabled = false;
+        payButton.innerText = "Pay & Continue";
+    }
+
+});
+
+  await loadAvailableCoupons();
+
+
+});
+
+function updateFinalTotal() {
+
+    const delivery = Number(localStorage.getItem("deliveryCharge")) || 0;
+    const discountValue = appliedCoupon ? appliedCoupon.discount : 0;
+
+    let subtotal = 0;
+    cartItems.forEach(item => {
+        subtotal += (item.discountedPrice || item.product.price) * item.quantity;
+    });
+
+    // round values
+    subtotal = Number(subtotal.toFixed(2));
+    const discountRounded = Number(discountValue.toFixed(2));
+    const total = Number((subtotal + delivery - discountRounded).toFixed(2));
+
+    document.getElementById("subtotal").innerText = "₹" + subtotal;
+    document.getElementById("discount").innerText = "-₹" + discountRounded;
+    document.getElementById("total").innerText = "₹" + total;
+}
+
+
+function showActiveCoupon(code) {
+
+const container = document.getElementById("activeCoupons");
+const successBox = document.getElementById("couponSuccessBox");
+const successText = document.getElementById("couponSuccessText");
+
+// show success message
+successBox.style.display = "flex";
+successText.innerText = `${code} applied successfully 🎉`;
+
+// create coupon badge
+container.innerHTML = `
+<div class="coupon-badge">
+${code}
+<i class="fas fa-times remove-coupon" onclick="removeCoupon(this)"></i>
+</div>
+`;
+
+}
+
+function removeCoupon(el) {
+
+const badge = el.parentElement;
+badge.remove();
+
+const successBox = document.getElementById("couponSuccessBox");
+successBox.style.display = "none";
+
+appliedCoupon = null;
+
+localStorage.setItem("discount", 0);
+
+document.getElementById("discount").innerText = "₹0";
+
+updateFinalTotal();
+
+}
+
+
+</script>
+</body>
+</html>
