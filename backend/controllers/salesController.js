@@ -5,6 +5,7 @@ const User = require("../models/User");
 // GET all orders (optionally filter by date)
 exports.getSales = async (req, res) => {
   try {
+    console.log("NEW GETSALES RUNNING");
     let { startDate, endDate } = req.query;
 
     const filter = {};
@@ -16,14 +17,15 @@ exports.getSales = async (req, res) => {
     }
 
     const orders = await Order.find(filter)
-      .populate("user", "name")        // get customer name
-      .populate("items.product", "title price") // get product details
+      .populate("user", "name")
+      .populate("items.product", "name image images price")
       .sort({ createdAt: -1 });
 
-    // summary metrics
+    console.log("POPULATED PRODUCT:", orders[0]?.items?.[0]?.product);
+
     const totalOrders = orders.length;
     const totalRevenue = orders.reduce((sum, o) => sum + o.totalAmount, 0);
-    const completedOrders = orders.filter(o => o.status === "Completed").length;
+    const completedOrders = orders.filter(o => o.status === "Delivered").length;
     const pendingOrders = orders.filter(o => o.status === "Pending").length;
 
     res.json({ orders, totalOrders, totalRevenue, completedOrders, pendingOrders });
@@ -41,7 +43,7 @@ exports.getSalesData = async (req, res) => {
 
     const totalRevenue = orders.reduce((sum, o) => sum + o.totalAmount, 0);
 
-    const completedOrders = orders.filter(o => o.status === "Completed").length;
+    const completedOrders = orders.filter(o => o.status === "Delivered").length;
 
     const pendingOrders = orders.filter(o => o.status === "Pending").length;
 

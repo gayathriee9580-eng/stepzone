@@ -13,14 +13,14 @@ const User = require("../models/User");
 exports.getReviews = async (req, res) => {
   try {
     const reviews = await Review.find()
-      .populate("user", "name")           // fetch user name
-      .populate("product", "title")       // fetch product title
+      .populate("user", "name")
+      .populate("product", "name images")
       .sort({ createdAt: -1 });
 
-    res.json(reviews);
+    res.json({ success: true, reviews });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server Error" });
+    console.error("Get reviews error:", error);
+    res.status(500).json({ success: false, message: "Server Error" });
   }
 };
 
@@ -37,18 +37,25 @@ exports.updateReviewStatus = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
+    const allowedStatuses = ["Pending", "Approved", "Rejected"];
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({ success: false, message: "Invalid status" });
+    }
+
     const review = await Review.findByIdAndUpdate(
       id,
       { status },
       { new: true }
     );
 
-    if (!review) return res.status(404).json({ message: "Review not found" });
+    if (!review) {
+      return res.status(404).json({ success: false, message: "Review not found" });
+    }
 
-    res.json({ message: "Status updated", review });
+    res.json({ success: true, message: "Status updated", review });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server Error" });
+    console.error("Update review status error:", error);
+    res.status(500).json({ success: false, message: "Server Error" });
   }
 };
 
@@ -62,10 +69,16 @@ exports.updateReviewStatus = async (req, res) => {
 exports.deleteReview = async (req, res) => {
   try {
     const { id } = req.params;
-    await Review.findByIdAndDelete(id);
-    res.json({ message: "Review deleted" });
+
+    const review = await Review.findByIdAndDelete(id);
+
+    if (!review) {
+      return res.status(404).json({ success: false, message: "Review not found" });
+    }
+
+    res.json({ success: true, message: "Review deleted" });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server Error" });
+    console.error("Delete review error:", error);
+    res.status(500).json({ success: false, message: "Server Error" });
   }
 };

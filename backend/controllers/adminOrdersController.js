@@ -13,7 +13,8 @@ exports.getAllOrders = async (req, res) => {
   try {
     const orders = await Order.find()
       .populate("user", "name email")             
-      .populate("items.product", "name price image"); 
+      .populate("items.product", "name price image images");
+
     res.json({ success: true, orders });          // always send an array inside orders
   } catch (err) {
     console.error("Get orders error:", err);
@@ -33,8 +34,10 @@ exports.getAllOrders = async (req, res) => {
 exports.getSingleOrder = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id)
-      .populate("userId", "name email");
-    if (!order) return res.status(404).json({ success: false, message: "Order not found" });
+  .populate("user", "name email")
+  .populate("items.product", "name price image images");
+  
+      if (!order) return res.status(404).json({ success: false, message: "Order not found" });
     res.json(order);
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -51,12 +54,13 @@ exports.getSingleOrder = async (req, res) => {
 // Response: Updated order
 exports.updateOrderStatus = async (req, res) => {
   const { status } = req.body;
+  const allowedStatuses = ["Pending", "Confirmed", "Packed", "Shipped", "Delivered", "Cancelled"];
+
   try {
     const order = await Order.findById(req.params.id);
     if (!order) return res.status(404).json({ success: false, message: "Order not found" });
 
     order.status = status;
-    order.updatedAt = Date.now();
     await order.save();
     res.json({ success: true, order });
   } catch (err) {

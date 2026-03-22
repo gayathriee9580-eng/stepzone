@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const productSchema = new mongoose.Schema({
   name: { type: String, required: true },
   price: { type: Number, required: true },
+  image: { type: String, default: "" },   // old products support
   images: [{ type: String, required: true }],  // change from "image" to "images"
   category: { type: String, enum: ["women", "kids"], required: true },
   brand: { type: String },
