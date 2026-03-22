@@ -1,6 +1,6 @@
 const Cart = require("../models/cart");
 const mongoose = require("mongoose");
-const Product = require("../models/Product");
+const Product = require("../models/product");
 const { getApplicableOffer } = require("../utils/offerutils");
 
 // Add product to cart

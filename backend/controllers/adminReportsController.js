@@ -1,5 +1,5 @@
 const Order = require("../models/order");
-const Product = require("../models/Product");
+const Product = require("../models/product");
 const Category = require("../models/Category");
 const dayjs = require("dayjs");
 
