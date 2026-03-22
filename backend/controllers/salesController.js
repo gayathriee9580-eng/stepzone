@@ -36,25 +36,27 @@ exports.getSales = async (req, res) => {
 };
 
 exports.getSalesData = async (req, res) => {
-
-    const orders = await Order.find();
+  try {
+    const orders = await Order.find()
+      .populate("user", "name")
+      .populate("items.product", "name image images price");
 
     const totalOrders = orders.length;
-
     const totalRevenue = orders.reduce((sum, o) => sum + o.totalAmount, 0);
-
     const completedOrders = orders.filter(o => o.status === "Delivered").length;
-
     const pendingOrders = orders.filter(o => o.status === "Pending").length;
 
     res.json({
-        totalOrders,
-        totalRevenue,
-        completedOrders,
-        pendingOrders,
-        orders
+      totalOrders,
+      totalRevenue,
+      completedOrders,
+      pendingOrders,
+      orders
     });
-
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server Error" });
+  }
 };
 
 
