@@ -554,7 +554,7 @@ const selectFilter = document.querySelector(".select-filter");
 let reviews = [];
 let selectedReview = null;
 
-const BASE_URL = "http://16.171.151.84:5000/api/admin/reviews";
+const BASE_URL = "/api/admin/reviews";
 
 function getStars(rating = 0) {
   let html = "";
@@ -640,7 +640,7 @@ async function loadReviews() {
 
 async function updateStatus(id, status) {
   try {
-    await fetch(`${BASE_URL}/${id}/status`, {
+    await fetch(`/api/admin/reviews/${id}/status`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -659,7 +659,7 @@ async function deleteReview(id) {
   if (!confirm("Are you sure you want to delete this review?")) return;
 
   try {
-    await fetch(`${BASE_URL}/${id}`, {
+    await fetch(`/api/admin/reviews/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` }
     });
@@ -675,7 +675,7 @@ filterInput.addEventListener("input", () => {
 
   renderTable(reviews.filter(r =>
     (r.user?.name || "").toLowerCase().includes(query) ||
-    (r.product?.name || r.product?.title || "").toLowerCase().includes(query)
+    (r.product?.name || "").toLowerCase().includes(query)
   ));
 });
 
@@ -711,7 +711,7 @@ function showReviewDetails(review) {
   buttons[1].onclick = () => updateStatus(review._id, "Approved");
 }
 
-loadReviews();
+document.addEventListener("DOMContentLoaded", loadReviews);
 </script>
 </body>
 </html>

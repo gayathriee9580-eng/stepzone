@@ -677,7 +677,7 @@ document.getElementById("adminAvatar").innerText = initials;
 
 // 1️⃣ Metrics
 async function loadMetrics() {
-  const res = await fetch(`${API_BASE_URL}/api/admin/dashboard-metrics`, {
+  const res = await fetch(`/api/admin/dashboard-metrics`, {
     headers: { Authorization: "Bearer " + token }
   });
 
@@ -692,7 +692,7 @@ async function loadMetrics() {
 // 2️⃣ Recent Orders
 async function loadRecentOrders() {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/admin/recent-orders`, {
+    const res = await fetch(`/api/admin/recent-orders`, {
       headers: { Authorization: "Bearer " + token }
     });
 
@@ -768,7 +768,7 @@ async function loadInventoryAlerts() {
 // 4. Category Distribution
 async function loadCategoryDistribution() {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/admin/category-distribution`, {
+    const res = await fetch(`/api/admin/category-distribution`, {
       headers: { Authorization: "Bearer " + token }
     });
 
@@ -807,7 +807,7 @@ async function loadCategoryDistribution() {
 // 5. Monthly Revenue (Bar Chart)
 async function loadMonthlyRevenue() {
 
-  const res = await fetch(`${API_BASE_URL}/api/admin/monthly-revenue`, {
+  const res = await fetch(`/api/admin/monthly-revenue`, {
     headers: { Authorization: "Bearer " + token }
   });
 
@@ -839,7 +839,7 @@ const maxRevenue = Math.max(...revenue.map(r => r.revenue));
 
 async function loadOrderStatus() {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/admin/order-status-stats`, {
+    const res = await fetch(`/api/admin/order-status-stats`, {
       headers: { Authorization: "Bearer " + token }
     });
 

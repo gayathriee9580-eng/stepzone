@@ -808,7 +808,7 @@ async function loadAdminProfile(){
 
 try{
 
-const res = await fetch(`${API}/settings/profile`,{
+const res = await fetch(`/api/settings/profile`,{
 headers:{
 "Authorization":`Bearer ${token}`
 }
@@ -856,7 +856,7 @@ return;
 
 try{
 
-const res = await fetch(`${API}/settings/profile`,{
+const res = await fetch(`/api/settings/profile`,{
 
 method:"PUT",
 
@@ -909,7 +909,7 @@ return;
 
 try{
 
-const res = await fetch(`${API}/settings/change-password`,{
+const res = await fetch(`/api/settings/change-password`,{
 
 method:"PUT",
 

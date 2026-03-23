@@ -232,7 +232,7 @@ async function loadOffers() {
         // }
 
         // Fetch Kids Products from Backend
-fetch("http://16.171.151.84:5000/api/products/kids")
+fetch("/api/products/kids")
             .then(res => res.json())
             .then(products => {
                 const container = document.getElementById("productsContainer");
