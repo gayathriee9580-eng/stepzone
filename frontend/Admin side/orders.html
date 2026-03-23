@@ -831,7 +831,7 @@ function applyFilters() {
 
 async function loadOrders() {
   try {
-    const res = await fetch("http://16.171.151.84:5000/api/admin/orders", {
+    const res = await fetch("/api/admin/orders", {
       headers: {
         Authorization: "Bearer " + token
       }
@@ -863,7 +863,7 @@ async function cancelOrder(id) {
   if (!confirm("Are you sure you want to cancel this order?")) return;
 
   try {
-    const res = await fetch(`http://16.171.151.84:5000/api/admin/orders/${id}/cancel`, {
+    const res = await fetch(`/api/admin/orders/${id}/cancel`, {
       method: "PATCH",
       headers: {
         Authorization: "Bearer " + token

@@ -978,7 +978,7 @@ document.querySelector(".header-right .btn-primary").addEventListener("click", (
 
 async function loadTopProducts() {
   try {
-const res = await fetch(`${API_BASE_URL}/api/admin/sales/top-products`, {
+const res = await fetch(`/api/admin/sales/top-products`, {
           headers: {
         Authorization: "Bearer " + token
       }

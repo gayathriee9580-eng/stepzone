@@ -403,7 +403,7 @@ const productId = urlParams.get("id");
 
 async function loadProduct() {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/admin/products`, {
+    const res = await fetch(`/api/admin/products`, {
       headers: { Authorization: "Bearer " + token }
     });
 
@@ -431,7 +431,7 @@ document.getElementById("editProductForm").addEventListener("submit", async func
   const stock = document.getElementById("editStock").value;
 
   try {
-    const res = await fetch(`${API_BASE_URL}/api/admin/products/${productId}`, {
+    const res = await fetch(`/api/admin/products/${productId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

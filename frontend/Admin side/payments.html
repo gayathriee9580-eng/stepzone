@@ -487,7 +487,7 @@ let payments = [];
 
 async function loadPayments() {
   try {
-    const res = await fetch("http://16.171.151.84:5000/api/admin/payments", {
+    const res = await fetch("/api/admin/payments", {
       headers: {
         Authorization: "Bearer " + token
       }

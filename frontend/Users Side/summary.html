@@ -689,7 +689,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     try {
 
-        const response = await fetch(`http://16.171.151.84:5000/api/orders/${orderId}`, {
+        const response = await fetch(`/api/orders/${orderId}`, {
             headers: { Authorization: "Bearer " + token }
         });
 
@@ -825,7 +825,7 @@ return "₹" + Number(price).toLocaleString("en-IN");
 
                 try {
 
-                    const res = await fetch("http://16.171.151.84:5000/api/orders/cancel-item", {
+                    const res = await fetch("/api/orders/cancel-item", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
@@ -917,7 +917,7 @@ async function cancelFullOrder(orderId) {
 
     const token = localStorage.getItem("token");
 
-    const response = await fetch("http://16.171.151.84:5000/api/orders/cancel-full", {
+    const response = await fetch("/api/orders/cancel-full", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

@@ -742,7 +742,7 @@ console.log("Selected Shipping Address:", shippingData);
 }
 
 
-const res = await fetch("http://16.171.151.84:5000/api/cart", {
+const res = await fetch("/api/cart", {
   headers: { Authorization: "Bearer " + token }
 });
 const data = await res.json();
@@ -782,7 +782,7 @@ document.getElementById("total").innerText = "₹" + total;
 
   // ---------------- Fetch Wallet Balance ----------------
   try {
-    const walletRes = await fetch("http://16.171.151.84:5000/api/wallet/balance", {
+    const walletRes = await fetch("/api/wallet/balance", {
       headers: { Authorization: `Bearer ${token}` }
     });
 
@@ -816,7 +816,7 @@ return;
   });
 
   try {
-    const res = await fetch("http://16.171.151.84:5000/api/coupons/apply", {
+    const res = await fetch("/api/coupons/apply", {
       method:"POST",
         headers:{
         "Content-Type":"application/json",
@@ -851,7 +851,7 @@ if(!container) return;
 
 try{
 
-const res = await fetch("http://16.171.151.84:5000/api/coupons");
+const res = await fetch("/api/coupons");
 const data = await res.json();
 
 container.innerHTML = "";
@@ -935,7 +935,7 @@ const orderData = {
 };
 
     try {
-        let backendOrderRes = await fetch("http://16.171.151.84:5000/api/orders/create", {
+        let backendOrderRes = await fetch("/api/orders/create", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -953,7 +953,7 @@ const orderData = {
         if (paymentMethod === "Razorpay") {
 
             // 1️⃣ Create Razorpay order using backend orderId
-            const razorRes = await fetch("http://16.171.151.84:5000/api/orders/create-razorpay", {
+            const razorRes = await fetch("/api/orders/create-razorpay", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -979,7 +979,7 @@ const orderData = {
                 },
                 handler: async function(response) {
                     // Verify payment
-                    const verifyRes = await fetch("http://16.171.151.84:5000/api/orders/verify-razorpay", {
+                    const verifyRes = await fetch("/api/orders/verify-razorpay", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",

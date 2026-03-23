@@ -482,7 +482,7 @@ localStorage.setItem("shippingDetails", JSON.stringify(shippingDetails));
 
 
 //Save Address To Database When User Clicks Place Order
-await fetch("http://16.171.151.84:5000/api/address", {
+await fetch("/api/address", {
   method: "POST",
   headers: {
     "Content-Type": "application/json",
@@ -496,7 +496,7 @@ await fetch("http://16.171.151.84:5000/api/address", {
   if (!token) return alert("Login first!");
 
   try {
-    const res = await fetch("http://16.171.151.84:5000/api/cart", {
+    const res = await fetch("/api/cart", {
       headers: { Authorization: "Bearer " + token }
     });
     const data = await res.json();
@@ -538,7 +538,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (!token) return alert("Login first!");
 
   try {
-    const res = await fetch("http://16.171.151.84:5000/api/cart", {
+    const res = await fetch("/api/cart", {
       headers: { Authorization: "Bearer " + token }
     });
 

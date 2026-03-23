@@ -353,7 +353,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}/api/orders/${orderId}`, {
+    const response = await fetch(`/api/orders/${orderId}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }

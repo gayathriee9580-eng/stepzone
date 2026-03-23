@@ -556,7 +556,7 @@ async function loadCart() {
 }
 
   try {
-    const res = await fetch("http://16.171.151.84:5000/api/cart", {
+    const res = await fetch("/api/cart", {
       headers: {
         "Authorization": `Bearer ${token}`
       }
@@ -695,7 +695,7 @@ async function removeFromCart(productId) {
   const token = localStorage.getItem("token");
 
   try {
-    const res = await fetch(`${API_BASE_URL}/api/cart/${productId}`, {
+    const res = await fetch(`/api/cart/${productId}`, {
       method: "DELETE",
       headers: {
         "Authorization": `Bearer ${token}`
@@ -719,7 +719,7 @@ async function updateQuantity(productId, change) {
   const token = localStorage.getItem("token");
 
   try {
-    const res = await fetch(`${API_BASE_URL}/api/cart/update/${productId}`, {
+    const res = await fetch(`/api/cart/update/${productId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

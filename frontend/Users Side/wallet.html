@@ -484,95 +484,6 @@
             </div>
         </div>
     </footer>
-    <!-- <script>
-document.addEventListener("DOMContentLoaded", loadWallet);
-
-async function loadWallet() {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    alert("Please login first");
-    window.location.href = "login.html";
-    return;
-  }
-
-  try {
-    const res = await fetch("http://16.171.151.84:5000/api/wallet/balance", {
-  headers: { "Authorization": `Bearer ${token}` }
-});
-    const wallet = await res.json();
-
-    // Update balance
-    const balanceEl = document.querySelector(".current-balance");
-    balanceEl.innerText = `₹${wallet.balance.toFixed(2)}`;
-
-    // Update transactions
-    const tbody = document.querySelector(".transaction-table tbody");
-    tbody.innerHTML = ""; // Clear existing rows
-
-    wallet.transactions.forEach(tx => {
-      const tr = document.createElement("tr");
-      tr.classList.add("transaction-row");
-
-      const statusClass = tx.status === "Success" ? "status-success" :
-                          tx.status === "Pending" ? "status-pending" :
-                          "status-failed";
-      const amountClass = tx.amount >= 0 ? "amount-credit" : "amount-debit";
-
-      tr.innerHTML = `
-        <td><span class="tx-id">${tx._id}</span></td>
-        <td>${new Date(tx.date).toLocaleDateString()} <span class="tx-meta">${new Date(tx.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span></td>
-        <td>
-          <span class="tx-description">${tx.description}</span>
-          ${tx.orderId ? `<span class="tx-meta">Order #${tx.orderId}</span>` : ""}
-        </td>
-        <td>${tx.method}</td>
-        <td><span class="tx-amount ${amountClass}">${tx.amount >=0 ? '+' : '-'}₹${Math.abs(tx.amount).toFixed(2)}</span></td>
-        <td><span class="status-badge ${statusClass}">${tx.status}</span></td>
-      `;
-      tbody.appendChild(tr);
-    });
-
-  } catch (err) {
-    console.error("Wallet load error:", err);
-  }
-}
-
-document.getElementById("addMoneyBtn").addEventListener("click", async () => {
-  const amount = parseFloat(prompt("Enter amount to add to your wallet:"));
-  if (!amount || amount <= 0) return;
-
-  const token = localStorage.getItem("token");
-
-  try {
-    const res = await fetch("http://16.171.151.84:5000/api/wallet/add", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      },
-      body: JSON.stringify({ amount })
-    });
-
-    const result = await res.json();
-    if (res.ok) {
-      alert(`₹${amount.toFixed(2)} added to wallet successfully!`);
-      loadWallet(); // Refresh balance & transactions
-    } else {
-      alert(result.message || "Failed to add money.");
-    }
-
-  } catch (err) {
-    console.error("Add money error:", err);
-  }
-});
-
-
-
-
-</script> -->
-
-
-
 <script>
 document.addEventListener("DOMContentLoaded", initWallet);
 
@@ -594,7 +505,7 @@ async function initWallet() {
     if (!amount || amount <= 0) return;
 
     try {
-      const res = await fetch("http://16.171.151.84:5000/api/wallet/topup", {
+      const res = await fetch("/api/wallet/topup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -623,7 +534,7 @@ async function loadWallet() {
   const token = localStorage.getItem("token");
 
   try {
-    const res = await fetch("http://16.171.151.84:5000/api/wallet/balance", {
+    const res = await fetch("/api/wallet/balance", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -696,7 +607,7 @@ async function payWithWallet(orderId, totalAmount) {
   }
 
   try {
-    const res = await fetch("http://16.171.151.84:5000/api/wallet/use", {
+    const res = await fetch("/api/wallet/use", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

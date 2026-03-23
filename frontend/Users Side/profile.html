@@ -582,7 +582,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // ✅ Load Profile
   try {
-    const res = await fetch("http://16.171.151.84:5000/api/users/profile", {
+    const res = await fetch("/api/users/profile", {
       headers: { Authorization: "Bearer " + token }
     });
 
@@ -616,7 +616,7 @@ async function loadAddresses() {
   const token = localStorage.getItem("token");
 
   try {
-    const res = await fetch("http://16.171.151.84:5000/api/address", {
+    const res = await fetch("/api/address", {
       headers: { Authorization: "Bearer " + token }
     });
 
@@ -685,7 +685,7 @@ const updatedData = {
   dob: inputs[3].value
 };
 
-  const res = await fetch("http://16.171.151.84:5000/api/users/profile", {
+  const res = await fetch("/api/users/profile", {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -731,7 +731,7 @@ async function changePassword() {
 
   try {
 
-    const res = await fetch("http://16.171.151.84:5000/api/users/change-password", {
+    const res = await fetch("/api/users/change-password", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

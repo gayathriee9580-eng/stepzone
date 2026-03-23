@@ -639,7 +639,7 @@ if (!token) {
 
 async function fetchReports() {
   try {
-    const res = await fetch("http://16.171.151.84:5000/api/admin/reports", {
+    const res = await fetch("/api/admin/reports", {
       headers: {
         Authorization: `Bearer ${token}`
       }

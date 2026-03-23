@@ -324,7 +324,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   if (token && wishlistBtn && heartIcon) {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/wishlist`, {
+      const res = await fetch(`/api/wishlist`, {
         headers: {
           "Authorization": `Bearer ${token}`
         }
@@ -356,7 +356,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/cart`, {
+      const response = await fetch(`/api/cart`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -386,7 +386,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
 
       try {
-        const response = await fetch(`${API_BASE_URL}/api/wishlist`, {
+        const response = await fetch(`/api/wishlist`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -421,7 +421,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 async function loadProduct(productId) {
     try {
-        const res = await fetch(`http://16.171.151.84:5000/api/products/${productId}`);
+        const res = await fetch(`/api/products/${productId}`);
         if (!res.ok) throw new Error("Product not found");
 
         const product = await res.json();
@@ -485,7 +485,7 @@ img.src = getProductImage({ image: product.images[i] });                }
 }
 
 async function loadSimilarProducts(productId){
-    const res = await fetch(`http://16.171.151.84:5000/api/products/similar/${productId}`);
+    const res = await fetch(`/api/products/similar/${productId}`);
     const products = await res.json();
 
     const container = document.getElementById("similarContainer");
@@ -511,7 +511,7 @@ container.innerHTML = products.map(p => `
 }
 
 async function loadAlsoLike(category){
-    const res = await fetch(`http://16.171.151.84:5000/api/products/category/${category}`);
+    const res = await fetch(`/api/products/category/${category}`);
     const products = await res.json();
 
     const container = document.getElementById("alsoLikeContainer");
@@ -551,7 +551,7 @@ async function addSimilarToCart(productId) {
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}/api/cart`, {
+    const response = await fetch(`/api/cart`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -582,7 +582,7 @@ async function addToWishlist(productId) {
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}/api/wishlist`, {
+    const response = await fetch(`/apiapi/wishlist`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

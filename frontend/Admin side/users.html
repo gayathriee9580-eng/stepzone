@@ -439,9 +439,10 @@ font-size:14px;
             </table>
         </div>
     </main>
-  <script src="admin-common.js"></script>
+ <script src="admin-common.js"></script>
 <script src="../common.js"></script>
 <script>
+
 if (!token) {
   window.location.href = "admin-login.html";
 }
@@ -451,7 +452,7 @@ const tableBody = document.getElementById("usersTable");
 
 async function loadUsers() {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/admin/users`, {
+    const res = await fetch(`/api/admin/users`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -459,7 +460,6 @@ async function loadUsers() {
 
     const data = await res.json();
     allUsers = data.users || data;
-
     displayUsers(allUsers);
   } catch (err) {
     console.error("Failed to load users:", err);
@@ -541,14 +541,12 @@ function applyFilters() {
 
 async function toggleBlock(id) {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/admin/users/${id}/block`, {
+    const res = await fetch(`/api/admin/users/${id}/block`, {
       method: "PUT",
       headers: {
         Authorization: `Bearer ${token}`
       }
     });
-
-
 
     const data = await res.json();
 
@@ -568,7 +566,7 @@ async function deleteUser(id) {
   if (!confirm("Delete this user?")) return;
 
   try {
-    const res = await fetch(`${API_BASE_URL}/api/admin/users/${id}`, {
+    const res = await fetch(`/api/admin/users/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`
@@ -589,7 +587,7 @@ async function deleteUser(id) {
   }
 }
 
-loadUsers();
+document.addEventListener("DOMContentLoaded", loadUsers);
 </script>
 </body>
 </html>

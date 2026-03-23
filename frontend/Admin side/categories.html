@@ -569,7 +569,7 @@ let selectedCategoryId = null;
 // Load Products
 async function loadProducts(categoryName) {
   try {
-    const res = await fetch("http://16.171.151.84:5000/api/admin/products", {
+    const res = await fetch("/api/admin/products", {
       headers: { Authorization: "Bearer " + token }
     });
 
@@ -612,7 +612,7 @@ async function loadProducts(categoryName) {
 // Load Categories
 async function loadCategories() {
   try {
-    const res = await fetch("http://16.171.151.84:5000/api/admin/categories", {
+    const res = await fetch("/api/admin/categories", {
       headers: { Authorization: "Bearer " + token }
     });
 
@@ -673,7 +673,7 @@ async function deleteCategory(id) {
   if (!confirm("Delete this category?")) return;
 
   try {
-    await fetch(`http://16.171.151.84:5000/api/admin/categories/${id}`, {
+    await fetch(`/api/admin/categories/${id}`, {
       method: "DELETE",
       headers: { Authorization: "Bearer " + token }
     });
@@ -695,7 +695,7 @@ document.querySelector(".btn-save").addEventListener("click", async () => {
   const productIds = Array.from(checkedBoxes).map(cb => cb.value);
 
   try {
-    await fetch("http://16.171.151.84:5000/api/admin/categories/assign-products", {
+    await fetch("/api/admin/categories/assign-products", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

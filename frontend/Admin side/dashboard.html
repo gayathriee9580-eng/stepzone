@@ -733,7 +733,7 @@ async function loadRecentOrders() {
 // 3. Inventory Alerts
 async function loadInventoryAlerts() {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/admin/inventory-alerts`, {
+    const res = await fetch(`/api/admin/inventory-alerts`, {
       headers: { Authorization: "Bearer " + token }
     });
 

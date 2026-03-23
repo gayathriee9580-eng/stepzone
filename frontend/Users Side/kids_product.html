@@ -199,7 +199,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 async function loadOffers() {
   try {
-    const res = await fetch("http://16.171.151.84:5000/api/offers");
+    const res = await fetch("/api/offers");
     offers = await res.json();
     console.log("Offers loaded:", offers);
   } catch (err) {
@@ -259,7 +259,7 @@ fetch("http://16.171.151.84:5000/api/products/kids")
 async function loadKidsProducts() {
   try {
     
-    const res = await fetch("http://16.171.151.84:5000/api/products/kids");
+    const res = await fetch("/api/products/kids");
     const products = await res.json();
 
     const container = document.getElementById("productsContainer");
@@ -272,7 +272,7 @@ async function loadKidsProducts() {
 
 async function loadOffers() {
   try {
-    const res = await fetch("http://16.171.151.84:5000/api/offers");
+    const res = await fetch("/api/offers");
     offers = await res.json();
   } catch (err) {
     console.error("Error loading offers:", err);
@@ -357,7 +357,7 @@ async function toggleWishlist(iconElement) {
     if (!token) return;
 
     try {
-        const res = await fetch("http://16.171.151.84:5000/api/wishlist", {
+        const res = await fetch("/api/wishlist", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -405,7 +405,7 @@ async function addToCart(productId) {
   }
 
   try {
-    const response = await fetch("http://16.171.151.84:5000/api/cart", {
+    const response = await fetch("/api/cart", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -434,7 +434,7 @@ async function initializeWishlist() {
   if (!token) return;
 
   try {
-    const res = await fetch("http://16.171.151.84:5000/api/wishlist", {
+    const res = await fetch("/api/wishlist", {
       headers: {
         "Authorization": `Bearer ${token}`
       }

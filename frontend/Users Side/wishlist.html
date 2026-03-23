@@ -448,7 +448,7 @@ async function loadWishlistPage() {
     }
 
     try {
-        const res = await fetch("http://16.171.151.84:5000/api/wishlist", {
+        const res = await fetch("/api/wishlist", {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`
@@ -513,7 +513,7 @@ async function removeFromWishlist(productId) {
   const token = localStorage.getItem("token");
 
   try {
-    const res = await fetch(`${API_BASE_URL}/api/wishlist`, {
+    const res = await fetch(`/api/wishlist`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -546,7 +546,7 @@ async function addToCart(productId) {
   }
 
   try {
-    const response = await fetch("http://16.171.151.84:5000/api/cart", {
+    const response = await fetch("/api/cart", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
