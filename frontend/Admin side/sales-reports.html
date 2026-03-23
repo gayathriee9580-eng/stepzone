@@ -835,7 +835,7 @@ function getStatusBadge(status) {
 
 async function loadSales(startDate, endDate) {
   try {
-let url = `${API_BASE_URL}/api/admin/sales`;
+let url = `/api/admin/sales`;
     if (startDate && endDate) {
       url += `?startDate=${startDate}&endDate=${endDate}`;
     }

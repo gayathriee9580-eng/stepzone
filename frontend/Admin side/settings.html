@@ -804,144 +804,114 @@ alert("Admin not logged in");
 window.location.href = "login.html";
 }
 
-async function loadAdminProfile(){
+async function loadAdminProfile() {
+  try {
+    const res = await fetch(`/api/admin/settings/profile`, {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
 
-try{
+    if (!res.ok) {
+      throw new Error("Failed to fetch admin profile");
+    }
 
-const res = await fetch(`/api/settings/profile`,{
-headers:{
-"Authorization":`Bearer ${token}`
-}
-});
+    const admin = await res.json();
 
-if(!res.ok){
-throw new Error("Failed to fetch admin profile");
-}
+    document.getElementById("adminName").value = admin.name || "";
+    document.getElementById("adminEmail").value = admin.email || "";
+    document.getElementById("adminRole").value = admin.role || "";
 
-const admin = await res.json();
+    const initials = admin.name
+      ? admin.name.split(" ").map(n => n[0]).join("").toUpperCase()
+      : "AD";
 
-document.getElementById("adminName").value = admin.name || "";
-document.getElementById("adminEmail").value = admin.email || "";
-document.getElementById("adminRole").value = admin.role || "";
+    document.getElementById("adminAvatar").innerText = initials;
+    document.getElementById("profileAvatar").innerText = initials;
 
-
-
-const initials = admin.name
-? admin.name.split(" ").map(n => n[0]).join("").toUpperCase()
-: "AD";
-
-document.getElementById("adminAvatar").innerText = initials;
-document.getElementById("profileAvatar").innerText = initials;
-
-}catch(err){
-
-console.error(err);
-alert("Failed to load admin profile");
-
+  } catch (err) {
+    console.error(err);
+    alert("Failed to load admin profile");
+  }
 }
 
+async function updateProfile() {
+  const name = document.getElementById("adminName").value;
+  const email = document.getElementById("adminEmail").value;
+
+  if (!name || !email) {
+    alert("Name and Email required");
+    return;
+  }
+
+  try {
+    const res = await fetch(`/api/admin/settings/profile`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({ name, email })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.message || "Profile update failed");
+      return;
+    }
+
+    alert("Profile updated successfully");
+    loadAdminProfile();
+
+  } catch (err) {
+    console.error(err);
+    alert("Server error");
+  }
 }
 
+async function changePassword() {
+  const currentPassword = document.getElementById("currentPassword").value;
+  const newPassword = document.getElementById("newPassword").value;
+  const confirmPassword = document.getElementById("confirmPassword").value;
 
+  if (!currentPassword || !newPassword || !confirmPassword) {
+    alert("All fields required");
+    return;
+  }
 
-async function updateProfile(){
+  if (newPassword !== confirmPassword) {
+    alert("Passwords do not match");
+    return;
+  }
 
-const name = document.getElementById("adminName").value;
-const email = document.getElementById("adminEmail").value;
+  try {
+    const res = await fetch(`/api/admin/settings/change-password`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({ currentPassword, newPassword })
+    });
 
-if(!name || !email){
-alert("Name and Email required");
-return;
-}
+    const data = await res.json();
 
-try{
+    if (!res.ok) {
+      alert(data.message || "Password change failed");
+      return;
+    }
 
-const res = await fetch(`/api/settings/profile`,{
+    alert("Password changed successfully");
 
-method:"PUT",
+    document.getElementById("currentPassword").value = "";
+    document.getElementById("newPassword").value = "";
+    document.getElementById("confirmPassword").value = "";
 
-headers:{
-"Content-Type":"application/json",
-"Authorization":`Bearer ${token}`
-},
-
-body:JSON.stringify({name,email})
-
-});
-
-const data = await res.json();
-
-if(!res.ok){
-alert(data.message || "Profile update failed");
-return;
-}
-
-alert("Profile updated successfully");
-
-loadAdminProfile();
-
-}catch(err){
-
-console.error(err);
-alert("Server error");
-
-}
-
-}
-
-
-
-async function changePassword(){
-
-const currentPassword = document.getElementById("currentPassword").value;
-const newPassword = document.getElementById("newPassword").value;
-const confirmPassword = document.getElementById("confirmPassword").value;
-
-if(!currentPassword || !newPassword || !confirmPassword){
-alert("All fields required");
-return;
-}
-
-if(newPassword !== confirmPassword){
-alert("Passwords do not match");
-return;
-}
-
-try{
-
-const res = await fetch(`/api/settings/change-password`,{
-
-method:"PUT",
-
-headers:{
-"Content-Type":"application/json",
-"Authorization":`Bearer ${token}`
-},
-
-body:JSON.stringify({currentPassword,newPassword})
-
-});
-
-const data = await res.json();
-
-if(!res.ok){
-alert(data.message || "Password change failed");
-return;
-}
-
-alert("Password changed successfully");
-
-document.getElementById("currentPassword").value = "";
-document.getElementById("newPassword").value = "";
-document.getElementById("confirmPassword").value = "";
-
-}catch(err){
-
-console.error(err);
-alert("Server error");
-
-}
-
+  } catch (err) {
+    console.error(err);
+    alert("Server error");
+  }
 }
 
 
