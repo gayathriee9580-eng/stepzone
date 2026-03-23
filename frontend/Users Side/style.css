@@ -2446,7 +2446,9 @@ img {
   }
 }
 
+/* ===== FINAL FIX FOR HOME CARDS ===== */
 @media (max-width: 768px) {
+
   .product-grid {
     display: grid !important;
     grid-template-columns: 1fr !important;
@@ -2454,31 +2456,21 @@ img {
   }
 
   .product-card {
+    display: block !important;   /* 🔥 IMPORTANT FIX */
     width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
   }
 
-  .product-img,
-  .product-card img {
+  .product-img {
     width: 100% !important;
     height: auto !important;
     object-fit: cover !important;
   }
 
   .product-info {
-    padding: 14px !important;
-  }
-
-  .product-info h3 {
-    font-size: 1.05rem !important;
-    line-height: 1.35 !important;
-    height: auto !important;
+    text-align: center;
   }
 
   .add-cart-btn {
     width: 100% !important;
-    white-space: normal !important;
   }
 }
-
