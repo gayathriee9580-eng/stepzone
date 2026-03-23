@@ -2354,3 +2354,94 @@ img {
         white-space: nowrap;
     }
 }
+
+/* ===== FINAL MOBILE OVERRIDE - KEEP THIS AT VERY END ===== */
+@media (max-width: 768px) {
+  .product-grid,
+  .listing-grid,
+  .related-products,
+  .offers-grid,
+  .blogs-grid,
+  .testimonials-grid,
+  .categories-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .product-card,
+  .offer-card,
+  .testimonial-card,
+  .category-card,
+  .blog-card {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+
+  .product-img,
+  .card-image,
+  .card-image img,
+  .product-card img,
+  .blog-img {
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    object-fit: cover;
+  }
+
+  .product-info,
+  .card-body {
+    padding: 14px !important;
+  }
+
+  .product-info h3,
+  .card-title {
+    font-size: 1.05rem !important;
+    line-height: 1.35 !important;
+    height: auto !important;
+  }
+
+  .add-cart-btn,
+  .card-cart-btn,
+  .btn-primary,
+  .btn-secondary {
+    width: 100% !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+  }
+
+  .section-container {
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+
+  .section-title {
+    font-size: 2rem !important;
+    line-height: 1.2 !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-header {
+    padding: 10px 12px !important;
+  }
+
+  .logo {
+    font-size: 1.2rem !important;
+  }
+
+  .header-icons {
+    gap: 10px !important;
+  }
+
+  .product-grid,
+  .listing-grid,
+  .related-products,
+  .offers-grid,
+  .blogs-grid,
+  .testimonials-grid,
+  .categories-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
