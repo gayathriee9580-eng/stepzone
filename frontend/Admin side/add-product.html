@@ -445,46 +445,64 @@
     </main>
 
     <script src="admin-common.js"></script>
+    <script src="../common.js"></script>
     <script>
-
-document.getElementById("addProductForm").addEventListener("submit", async function(e) {
+document.getElementById("addProductForm").addEventListener("submit", async function (e) {
   e.preventDefault();
 
-const formData = new FormData();
-formData.append("name", document.getElementById("p-name").value);
-formData.append("category", document.getElementById("p-category").value);
+  const token = localStorage.getItem("adminToken");
+  if (!token) {
+    window.location.href = "admin-login.html";
+    return;
+  }
 
-const price = Math.max(0, Number(document.getElementById("p-price").value));
-formData.append("price", price);
+  const formData = new FormData();
+  formData.append("name", document.getElementById("p-name").value.trim());
+  formData.append("category", document.getElementById("p-category").value);
 
-const stock = Math.max(0, Number(document.getElementById("p-stock").value));
-formData.append("stock", stock);
-// sizes checkboxes
-const sizeElements = document.querySelectorAll(".checkbox-group input:checked");
-const sizes = Array.from(sizeElements).map(el => el.value);
-formData.append("sizes", JSON.stringify(sizes));
+  const price = Math.max(0, Number(document.getElementById("p-price").value));
+  formData.append("price", price);
 
-// Images
-const images = document.getElementById("p-images").files;
-for (let i = 0; i < images.length; i++) {
-  formData.append("images", images[i]); // "images" = name in multer
+  const stock = Math.max(0, Number(document.getElementById("p-stock").value));
+  formData.append("stock", stock);
+
+  const sizeElements = document.querySelectorAll(".checkbox-group input:checked");
+  const sizes = Array.from(sizeElements).map(el => el.value);
+  formData.append("sizes", JSON.stringify(sizes));
+
+  if (sizes.length === 0) {
+  alert("Please select at least one size");
+  return;
 }
 
-// Send request
-fetch("http://localhost:5000/api/admin/products", {
-  method: "POST",
-  headers: {
-    Authorization: "Bearer " + token
-  },
-  body: formData
-})
-.then(res => res.json())
-.then(data => {
-  alert("Product Added Successfully!");
-  window.location.href = "products.html";
-})
-.catch(err => console.error(err));
-})
+  const images = document.getElementById("p-images").files;
+  for (let i = 0; i < images.length; i++) {
+    formData.append("images", images[i]);
+  }
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/admin/products`, {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + token
+      },
+      body: formData
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.message || "Failed to add product");
+      return;
+    }
+
+    alert("Product Added Successfully!");
+    window.location.href = "products.html";
+  } catch (err) {
+    console.error(err);
+    alert("Something went wrong while adding product");
+  }
+});
 
 </script>
 </body>

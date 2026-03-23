@@ -170,9 +170,10 @@
         <button type="button" class="verify-btn" id="verifyBtn">Verify Code</button>
         <p id="message"></p>
 
-        <a href="otp.html" class="resend-code" id="resendCode">Resend Code</a>
+        <a href="#" class="resend-code" id="resendCode">Resend Code</a>
     </div>
 
+    <script src="../common.js"></script>
     <script>
         const otpBoxes = document.querySelectorAll('.otp-digit-box');
         const verifyBtn = document.getElementById('verifyBtn');
@@ -216,7 +217,7 @@
             }
 
             try {
-                const res = await fetch('http://localhost:5000/api/verify-otp', {
+                const res = await fetch(`${API_BASE_URL}/api/verify-otp`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ otpId, otp, email })
@@ -226,9 +227,8 @@
                     message.style.color = 'green';
                     message.textContent = 'OTP verified successfully!';
                     setTimeout(() => {
-                        localStorage.removeItem('otpId');
-                        localStorage.removeItem('email');
-                        window.location.href = 'login.html';
+                    alert("Verification successful! Please login.");
+                    window.location.href = 'login.html';
                     }, 1000);
                 } else {
                     message.style.color = 'red';
@@ -239,7 +239,14 @@
                 message.textContent = 'Error verifying OTP. Try again.';
                 console.error(err);
             }
-        });
+
+                otpBoxes[otpBoxes.length - 1].addEventListener('input', () => {
+                const otp = Array.from(otpBoxes).map(box => box.value).join('');
+                if (otp.length === 6) {
+                    verifyBtn.click();
+                }
+                });
+                        });
 
         // Resend Code
         resendCode.addEventListener('click', async (e) => {
@@ -251,7 +258,7 @@
             }
 
             try {
-                const res = await fetch('http://localhost:5000/api/send-otp', {
+                const res = await fetch(`${API_BASE_URL}/api/send-otp`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email })

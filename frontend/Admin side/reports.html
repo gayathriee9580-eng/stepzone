@@ -626,19 +626,20 @@
             </div>
         </div>
     </main>
-    <script src="admin-common.js"></script>
+  <script src="admin-common.js"></script>
+<script src="../common.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 let salesChart;
+window.reportData = null;
+
 if (!token) {
   window.location.href = "admin-login.html";
 }
 
-// Fetch reports from backend
 async function fetchReports() {
   try {
-
-    const res = await fetch("http://localhost:5000/api/admin/reports", {
+    const res = await fetch("http://16.171.151.84:5000/api/admin/reports", {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -646,62 +647,74 @@ async function fetchReports() {
 
     const data = await res.json();
 
-    if (!data.success) throw new Error("Failed");
+    if (!data.success) throw new Error("Failed to load reports");
 
+    window.reportData = data;
     renderReports(data);
-
   } catch (err) {
-    console.error(err);
-    alert("Failed to load reports. Check backend server.");
+    console.error("Reports load error:", err);
+
+    document.getElementById("totalRevenue").innerText = "₹0";
+    document.getElementById("totalOrders").innerText = "0";
+    document.getElementById("monthlySales").innerText = "₹0";
+    document.getElementById("avgOrderValue").innerText = "₹0";
+
+    document.getElementById("topProductsTable").innerHTML = `
+      <tr><td colspan="4" style="text-align:center; padding:20px; color:red;">Failed to load report data</td></tr>
+    `;
+
+    document.getElementById("monthlyPerformanceTable").innerHTML = `
+      <tr><td colspan="4" style="text-align:center; padding:20px; color:red;">Failed to load report data</td></tr>
+    `;
   }
 }
 
-// Render all dynamic sections
 function renderReports(data) {
+  const summary = data.summary || {};
 
-    window.reportData = data;
+  document.getElementById("totalRevenue").innerText =
+    `₹${(summary.totalRevenue || 0).toLocaleString()}`;
 
-  // SUMMARY CARDS
-const summary = data.summary;
+  document.getElementById("totalOrders").innerText =
+    (summary.totalOrders || 0).toLocaleString();
 
-document.getElementById("totalRevenue").innerText =
-  `₹${summary.totalRevenue.toLocaleString()}`;
+  document.getElementById("monthlySales").innerText =
+    `₹${(summary.monthlySales || 0).toLocaleString()}`;
 
-document.getElementById("totalOrders").innerText =
-  summary.totalOrders.toLocaleString();
+  document.getElementById("avgOrderValue").innerText =
+    `₹${Math.round(summary.avgOrderValue || 0).toLocaleString()}`;
 
-document.getElementById("monthlySales").innerText =
-  `₹${summary.monthlySales.toLocaleString()}`;
+  renderSalesChart(data, "daily");
 
-document.getElementById("avgOrderValue").innerText =
-  `₹${Math.round(summary.avgOrderValue).toLocaleString()}`;
-
-    renderSalesChart(data , "daily");
-
-  // CATEGORY SALES
-const vChart = document.getElementById("categoryChart");
+  const vChart = document.getElementById("categoryChart");
   vChart.innerHTML = "";
-data.categorySales.forEach(cat => {
-  const group = document.createElement("div");
-  group.classList.add("v-bar-group");
 
-  group.innerHTML = `
-    <div class="v-bar" style="height:${cat.sold * 10}px"></div>
-    <div class="v-label">${cat.name}</div>
-  `;
+  const categorySales = data.categorySales || [];
+  const maxSold = Math.max(...categorySales.map(c => c.sold || 0), 1);
 
-  vChart.appendChild(group);
-});
+  categorySales.forEach(cat => {
+    const height = ((cat.sold || 0) / maxSold) * 180;
 
-  // PAYMENT METHODS
-const distBar = document.getElementById("paymentDistribution");
-const legend = document.getElementById("paymentLegend");
+    const group = document.createElement("div");
+    group.classList.add("v-bar-group");
+
+    group.innerHTML = `
+      <div class="v-bar" style="height:${height}px" title="${cat.name}: ${cat.sold} sold"></div>
+      <div class="v-label">${cat.name}</div>
+    `;
+
+    vChart.appendChild(group);
+  });
+
+  const distBar = document.getElementById("paymentDistribution");
+  const legend = document.getElementById("paymentLegend");
   distBar.innerHTML = "";
   legend.innerHTML = "";
-data.paymentDistribution.forEach(pm => {
+
+  (data.paymentDistribution || []).forEach(pm => {
     const seg = document.createElement("div");
     seg.classList.add("dist-segment");
-    seg.style.width = pm.percentage + "%";
+    seg.style.width = `${pm.percentage}%`;
     seg.style.backgroundColor = pm.color;
     distBar.appendChild(seg);
 
@@ -711,37 +724,37 @@ data.paymentDistribution.forEach(pm => {
     legend.appendChild(legItem);
   });
 
-  // TOP PRODUCTS TABLE
-  const topProductsBody = document.querySelector(".reports-grid .card:nth-child(1) tbody");
+  const topProductsBody = document.getElementById("topProductsTable");
   topProductsBody.innerHTML = "";
-  data.topProducts.forEach(prod => {
+
+  (data.topProducts || []).forEach(prod => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>${prod.name}</td>
-      <td>${prod.category}</td>
-      <td>${prod.sold}</td>
-      <td>₹${prod.revenue.toLocaleString()}</td>
+      <td>${prod.name || "N/A"}</td>
+      <td>${prod.category || "N/A"}</td>
+      <td>${prod.sold || 0}</td>
+      <td>₹${(prod.revenue || 0).toLocaleString()}</td>
     `;
     topProductsBody.appendChild(tr);
   });
 
-  // MONTHLY PERFORMANCE
-  const monthPerfBody = document.querySelector(".reports-grid .card:nth-child(2) tbody");
+  const monthPerfBody = document.getElementById("monthlyPerformanceTable");
   monthPerfBody.innerHTML = "";
-  data.monthlyPerformance.forEach(month => {
+
+  (data.monthlyPerformance || []).forEach(month => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>${month.month}</td>
-      <td>${month.orders}</td>
-      <td>₹${month.revenue.toLocaleString()}</td>
-      <td><span class="${month.growth >=0 ? 'growth-pos':'growth-neg'}">${month.growth >=0 ? '+' : ''}${month.growth}%</span></td>
+      <td>${month.month || "N/A"}</td>
+      <td>${month.orders || 0}</td>
+      <td>₹${(month.revenue || 0).toLocaleString()}</td>
+      <td><span class="${month.growth >= 0 ? 'growth-pos' : 'growth-neg'}">${month.growth >= 0 ? '+' : ''}${month.growth || 0}%</span></td>
     `;
     monthPerfBody.appendChild(tr);
   });
 }
 
-
 function renderSalesChart(data, type = "daily") {
+  if (!data) return;
 
   const ctx = document.getElementById("salesChart").getContext("2d");
 
@@ -749,27 +762,26 @@ function renderSalesChart(data, type = "daily") {
   let revenues = [];
 
   if (type === "daily") {
-    labels = data.dailySales.map(d => d.label);
-    revenues = data.dailySales.map(d => d.revenue);
+    labels = (data.dailySales || []).map(d => d.label);
+    revenues = (data.dailySales || []).map(d => d.revenue);
   }
 
   if (type === "weekly") {
-    labels = data.weeklySales.map(w => w.label);
-    revenues = data.weeklySales.map(w => w.revenue);
+    labels = (data.weeklySales || []).map(w => w.label);
+    revenues = (data.weeklySales || []).map(w => w.revenue);
   }
 
   if (type === "monthly") {
-    labels = data.monthlySales.map(m => m.label);
-    revenues = data.monthlySales.map(m => m.revenue);
+    labels = (data.monthlySales || []).map(m => m.label);
+    revenues = (data.monthlySales || []).map(m => m.revenue);
   }
 
   if (salesChart) salesChart.destroy();
 
   salesChart = new Chart(ctx, {
     type: "line",
-
     data: {
-      labels: labels,
+      labels,
       datasets: [{
         label: `${type} Sales`,
         data: revenues,
@@ -779,7 +791,6 @@ function renderSalesChart(data, type = "daily") {
         fill: true
       }]
     },
-
     options: {
       responsive: true,
       plugins: {
@@ -792,22 +803,15 @@ function renderSalesChart(data, type = "daily") {
       }
     }
   });
-
 }
 
-// Load reports on page load
 document.addEventListener("DOMContentLoaded", () => {
-
   fetchReports();
 
   document.getElementById("salesFilter").addEventListener("change", function () {
-
-    const selected = this.value;
-
-    renderSalesChart(window.reportData, selected);
-
+    if (!window.reportData) return;
+    renderSalesChart(window.reportData, this.value);
   });
-
 });
 </script>
 </body>

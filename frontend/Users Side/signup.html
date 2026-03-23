@@ -34,6 +34,7 @@
             Already have an account? <a href="login.html" class="login-link">Login</a>
         </div>
     </div>
+    <script src="../common.js"></script>
 <script>
   document.getElementById("signupForm").addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -48,8 +49,12 @@
     return alert("Passwords do not match");
   }
 
+  if (password.length < 6) {
+  return alert("Password must be at least 6 characters");
+}
+
   try {
-    const response = await fetch("http://localhost:5000/api/auth/signup", {
+    const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, phone, password })
@@ -58,8 +63,8 @@
     const data = await response.json();
 
     if(response.ok) {
-      alert("Signup successful");
-      window.location.href = "login.html";
+alert("Signup successful! Please login.");
+window.location.href = "login.html";
     } else {
       alert(data.message || "Signup failed");
     }

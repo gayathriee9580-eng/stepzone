@@ -677,7 +677,6 @@
         </div>
         <div class="topbar-right">
             <div class="user-profile">
-<div class="user-profile">
     <div class="user-avatar" id="adminAvatar"></div>
     <div class="user-info">
         <div id="adminName"></div>
@@ -815,7 +814,11 @@
 </div>
 </main>
 <script src="admin-common.js"></script>
+<script src="../common.js"></script>
 <script>
+if (!token) {
+  window.location.href = "admin-login.html";
+}
 
 const tbody = document.querySelector("table tbody");
 const productsList = document.getElementById("products-container");
@@ -823,125 +826,144 @@ const summaryDetails = document.getElementById("summary-details");
 const panelStatus = document.getElementById("panel-status");
 const downloadInvoiceBtn = document.getElementById("download-invoice-btn");
 
+function getStatusBadge(status) {
+  if (status === "Pending") return "badge-pending";
+  if (["Confirmed", "Packed", "Shipped", "Delivered"].includes(status)) return "badge-paid";
+  if (status === "Cancelled") return "badge-cancelled";
+  return "badge-pending";
+}
+
 async function loadSales(startDate, endDate) {
-
   try {
-
-    let url = `http://localhost:5000/api/admin/sales`;
-
+let url = `${API_BASE_URL}/api/admin/sales`;
     if (startDate && endDate) {
       url += `?startDate=${startDate}&endDate=${endDate}`;
     }
 
-    const res = await fetch(url,{
-      headers:{ "Authorization":`Bearer ${token}` }
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}` }
     });
 
     const data = await res.json();
 
-    // METRICS
-    document.getElementById("totalOrders").textContent = data.totalOrders;
-
+    document.getElementById("totalOrders").textContent = data.totalOrders || 0;
     document.getElementById("totalRevenue").textContent =
-      "₹" + data.totalRevenue.toLocaleString();
-
+      "₹" + (data.totalRevenue || 0).toLocaleString();
     document.getElementById("completedOrders").textContent =
-      data.completedOrders;
-
+      data.completedOrders || 0;
     document.getElementById("pendingOrders").textContent =
-      data.pendingOrders;
+      data.pendingOrders || 0;
 
-    // TABLE
     tbody.innerHTML = "";
 
-    data.orders.forEach(order => {
+    if (!data.orders || !data.orders.length) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="7" style="text-align:center; padding:20px;">No sales data found</td>
+        </tr>
+      `;
+      return;
+    }
 
+    data.orders.forEach(order => {
       const tr = document.createElement("tr");
 
       tr.innerHTML = `
-      <td>#SZ-${order._id.slice(-6)}</td>
-      <td>${order.user?.name || "Unknown"}</td>
-      <td>${new Date(order.createdAt).toLocaleDateString()}</td>
-      <td>${order.paymentMethod || "N/A"}</td>
-      <td>₹${order.totalAmount.toLocaleString()}</td>
-      <td>
-        <span class="badge ${
-          order.status === "Confirmed"
-            ? "badge-paid"
-            : order.status === "Pending"
-            ? "badge-pending"
-            : "badge-cancelled"
-        }">
-          ${order.status}
-        </span>
-      </td>
-      <td class="action-btns">
-        <a href="invoice.html?order=${order._id}" class="btn-icon">
-          <i class="far fa-eye"></i>
-        </a>
-      </td>
+        <td>#SZ-${order._id.slice(-6)}</td>
+        <td>${order.user?.name || "Unknown"}</td>
+        <td>${order.createdAt ? new Date(order.createdAt).toLocaleDateString() : "N/A"}</td>
+        <td>${order.paymentMethod || "N/A"}</td>
+        <td>₹${(order.totalAmount || 0).toLocaleString()}</td>
+        <td>
+          <span class="badge ${getStatusBadge(order.status)}">
+            ${order.status || "N/A"}
+          </span>
+        </td>
+        <td class="action-btns">
+          <a href="invoice.html?order=${order._id}" class="btn-icon">
+            <i class="far fa-eye"></i>
+          </a>
+        </td>
       `;
 
+      tr.addEventListener("click", () => showOrderSummary(order));
       tbody.appendChild(tr);
-
-      tr.addEventListener("click",()=>showOrderSummary(order));
     });
 
-  } catch(err) {
-    console.error("Sales load error:",err);
+    if (data.orders.length > 0) {
+      showOrderSummary(data.orders[0]);
+    }
+
+  } catch (err) {
+    console.error("Sales load error:", err);
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="7" style="text-align:center; padding:20px; color:red;">
+          Failed to load sales data
+        </td>
+      </tr>
+    `;
   }
 }
 
-function showOrderSummary(order){
+function showOrderSummary(order) {
+  console.log("FULL ORDER:", order);
+  console.log("PRODUCT:", order.items?.[0]?.product);
+  console.log("IMAGES:", order.items?.[0]?.product?.images);
+  productsList.innerHTML = "";
 
-  productsList.innerHTML="";
+  (order.items || []).forEach(p => {
+    const div = document.createElement("div");
+    div.className = "product-item";
 
-  order.items.forEach(p=>{
-
-    const div=document.createElement("div");
-
-    div.className="product-item";
-
-    div.innerHTML=`
-    <div class="product-img">
-      <i class="fas fa-shoe-prints"></i>
-    </div>
-    <div class="product-info">
-      <span class="name">${p.product?.title || "Product"}</span>
-      <span class="qty-price">Qty: ${p.quantity}</span>
-    </div>
+    div.innerHTML = `
+<div class="product-img">
+  <img 
+    src="${getProductImage(p.product)}" 
+    alt="${p.product?.name || 'Product'}"
+    style="width:100%; height:100%; object-fit:cover; border-radius:8px;"
+  />
+</div>
+      <div class="product-info">
+        <span class="name">${p.product?.name || "Product"}</span>
+        <span class="qty-price">Qty: ${p.quantity || 1}</span>
+      </div>
     `;
 
     productsList.appendChild(div);
   });
 
-  summaryDetails.innerHTML=`
-  <div class="summary-row">
-    <span>Subtotal</span>
-    <span>₹${order.totalAmount}</span>
-  </div>
-  <div class="summary-row total">
-    <span>Total</span>
-    <span>₹${order.totalAmount}</span>
-  </div>
+  summaryDetails.innerHTML = `
+    <div class="summary-row">
+      <span>Subtotal</span>
+      <span>₹${order.subtotal || order.totalAmount || 0}</span>
+    </div>
+    <div class="summary-row">
+      <span>Delivery Charge</span>
+      <span>₹${order.deliveryCharge || 0}</span>
+    </div>
+    <div class="summary-row">
+      <span>Discount</span>
+      <span>₹${order.discount || 0}</span>
+    </div>
+    <div class="summary-row total">
+      <span>Total</span>
+      <span>₹${order.totalAmount || 0}</span>
+    </div>
   `;
 
-  panelStatus.innerHTML=`
-  <span class="badge ${
-    order.status==="Completed"
-      ?"badge-paid"
-      :"badge-pending"
-  }">
-  ${order.status}
-  </span>
+  panelStatus.innerHTML = `
+    <span class="badge ${getStatusBadge(order.status)}">
+      ${order.status || "N/A"}
+    </span>
   `;
 
-  downloadInvoiceBtn.onclick=()=>{
-    window.open(`invoice.html?order=${order._id}`,"_blank");
+  downloadInvoiceBtn.onclick = () => {
+    window.open(`invoice.html?order=${order._id}`, "_blank");
   };
 }
 
-const dateInputs=document.querySelectorAll(".date-filter input");
+const dateInputs = document.querySelectorAll(".date-filter input");
 const today = new Date();
 const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
 
@@ -950,47 +972,44 @@ dateInputs[1].value = today.toISOString().split("T")[0];
 
 loadSales(dateInputs[0].value, dateInputs[1].value);
 
-document.querySelector(".header-right .btn-primary").addEventListener("click",()=>{
-  loadSales(dateInputs[0].value,dateInputs[1].value);
+document.querySelector(".header-right .btn-primary").addEventListener("click", () => {
+  loadSales(dateInputs[0].value, dateInputs[1].value);
 });
 
-async function loadTopProducts(){
+async function loadTopProducts() {
+  try {
+const res = await fetch(`${API_BASE_URL}/api/admin/sales/top-products`, {
+          headers: {
+        Authorization: "Bearer " + token
+      }
+    });
 
- try{
+    const data = await res.json();
+    const products = data.products || data;
 
-  const res = await fetch("http://localhost:5000/api/admin/sales/top-products",{
-   headers:{
-    "Authorization":"Bearer "+localStorage.getItem("adminToken")
-   }
-  });
+    const topBody = document.getElementById("topProductsBody");
+    topBody.innerHTML = "";
 
-  const products = await res.json();
+    if (!products.length) {
+      topBody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No top products found</td></tr>`;
+      return;
+    }
 
-  const tbody = document.getElementById("topProductsBody");
-
-  tbody.innerHTML="";
-
-  products.forEach((p,index)=>{
-
-   const tr=document.createElement("tr");
-
-   tr.innerHTML=`
-     <td>${index+1}</td>
-     <td>${p.name}</td>
-     <td>${p.totalSold}</td>
-     <td>₹${p.revenue}</td>
-   `;
-
-   tbody.appendChild(tr);
-
-  });
-
- }catch(err){
-  console.log("Top products load error:",err);
- }
-
+    products.forEach((p, index) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${index + 1}</td>
+        <td>${p.name || "N/A"}</td>
+        <td>${p.totalSold || 0}</td>
+        <td>₹${(p.revenue || 0).toLocaleString()}</td>
+      `;
+      topBody.appendChild(tr);
+    });
+  } catch (err) {
+    console.log("Top products load error:", err);
+  }
 }
-loadSales();
+
 loadTopProducts();
 
 </script>

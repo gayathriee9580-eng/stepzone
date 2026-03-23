@@ -288,146 +288,140 @@
             </div>
         </div>
     </footer>
-    <script>
-
-    function updateMainImage(el, src){
-    document.getElementById("main-image").src = src;
-    // document.getElementById("main-image").alt = product.name;
-
-    document.querySelectorAll(".thumb").forEach(t => t.classList.remove("active"));
-    el.classList.add("active");
+    <script src="../common.js"></script>
+   <script>
+function updateMainImage(el, src){
+  document.getElementById("main-image").src = src;
+  document.querySelectorAll(".thumb").forEach(t => t.classList.remove("active"));
+  el.classList.add("active");
 }
 
 function openTab(evt, tabId){
-    document.querySelectorAll(".tab-content").forEach(tc => tc.classList.remove("active"));
-    document.querySelectorAll(".tab-link").forEach(tl => tl.classList.remove("active"));
-
-    document.getElementById(tabId).classList.add("active");
-    evt.currentTarget.classList.add("active");
+  document.querySelectorAll(".tab-content").forEach(tc => tc.classList.remove("active"));
+  document.querySelectorAll(".tab-link").forEach(tl => tl.classList.remove("active"));
+  document.getElementById(tabId).classList.add("active");
+  evt.currentTarget.classList.add("active");
 }
-
 
 document.addEventListener("DOMContentLoaded", async () => {
-
-const urlParams = new URLSearchParams(window.location.search);
-const productId = urlParams.get("id"); // gets ID from URL
-const userId = localStorage.getItem("user_id"); // from login
+  const urlParams = new URLSearchParams(window.location.search);
+  const productId = urlParams.get("id");
+  const token = localStorage.getItem("token");
 
   if (!productId) {
-        console.error("No product ID found in URL");
-        return;
-    }
-
-    const product = await loadProduct(productId);
-    if (!product) return;
-
-    await loadSimilarProducts(productId);
-    await loadAlsoLike(product.category);
-
-const token = localStorage.getItem("token");
-
-if(token){
-    const res = await fetch("http://localhost:5000/api/wishlist", {
-        headers: { "Authorization": `Bearer ${token}` }
-    });
-
-const data = await res.json();
-const wishlist = data.products;  
-   if (Array.isArray(wishlist) && product?._id) {
-  const isWishlisted = wishlist.some(item => 
-    item?.productId === product._id
-  );
-
-  if (isWishlisted) {
-    heartIcon.textContent = "♥";
-    heartIcon.classList.add("active");
+    console.error("No product ID found in URL");
+    return;
   }
-}
-}
 
+  const product = await loadProduct(productId);
+  if (!product) return;
 
-  // ================= ADD TO CART =================
+  await loadSimilarProducts(productId);
+  await loadAlsoLike(product.category);
+
+  const wishlistBtn = document.getElementById("mainWishlistBtn");
+  const heartIcon = wishlistBtn?.querySelector("i");
+
+  if (token && wishlistBtn && heartIcon) {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/wishlist`, {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+
+      const data = await res.json();
+      const wishlist = data.products || [];
+
+      const isWishlisted = wishlist.some(item => {
+        const id = item?.productId?._id || item?.productId;
+        return id?.toString() === product._id?.toString();
+      });
+
+      if (isWishlisted) {
+        heartIcon.classList.remove("fa-regular");
+        heartIcon.classList.add("fa-solid");
+        wishlistBtn.classList.add("active");
+      }
+    } catch (err) {
+      console.error("Wishlist check error:", err);
+    }
+  }
+
   document.getElementById("mainAddToCart").addEventListener("click", async () => {
-
-    if (!userId) {
+    if (!token) {
       alert("Please login first");
+      window.location.href = "login.html";
       return;
     }
 
-  const response = await fetch(`http://localhost:5000/api/cart/${userId}/add`, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    productId: product._id,
-    name: product.name,
-    price: product.price,
-    image: product.image
-  })
-});
-
-if(response.ok){
-    alert("Added to Cart 🛒");
-} else {
-    const data = await response.json();
-    alert(data.message || "Failed to add to cart");
-}})
-
-
-  // ================= WISHLIST =================
-  const wishlistBtn = document.getElementById("mainWishlistBtn");
-
-if (wishlistBtn) {
-
-  const icon = wishlistBtn.querySelector("i");
-
-  wishlistBtn.addEventListener("click", async () => {
-
-    const token = localStorage.getItem("token");
-if (!token) { alert("Please login first"); return; }
-
     try {
+      const response = await fetch(`${API_BASE_URL}/api/cart`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ productId: product._id })
+      });
 
-      const response = await fetch(
-        "http://localhost:5000/api/wishlist/add",
-        {
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Added to Cart 🛒");
+      } else {
+        alert(data.message || "Failed to add to cart");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Error adding to cart");
+    }
+  });
+
+  if (wishlistBtn && heartIcon) {
+    wishlistBtn.addEventListener("click", async () => {
+      if (!token) {
+        alert("Please login first");
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/wishlist`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`
           },
-          body: JSON.stringify({
-            productId: product._id,
-            name: product.name,
-            price: product.price,
-            image: product.image
-          })
+          body: JSON.stringify({ productId: product._id })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          alert(data.message || "Something went wrong");
+          return;
         }
-      );
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        alert(data.message || "Something went wrong");
-        return;
+        if (data.message === "Added to wishlist") {
+          heartIcon.classList.remove("fa-regular");
+          heartIcon.classList.add("fa-solid");
+          wishlistBtn.classList.add("active");
+        } else {
+          heartIcon.classList.remove("fa-solid");
+          heartIcon.classList.add("fa-regular");
+          wishlistBtn.classList.remove("active");
+        }
+      } catch (error) {
+        console.error(error);
+        alert("Error updating wishlist");
       }
-
-      // Change icon after success
-      icon.classList.remove("fa-regular");
-      icon.classList.add("fa-solid");
-
-      alert("Added to Wishlist ❤️");
-
-    } catch (error) {
-      console.error(error);
-      alert("Error adding to wishlist");
-    }
-
-  });
-}});
+    });
+  }
+});
 
 async function loadProduct(productId) {
     try {
-        const res = await fetch(`http://localhost:5000/api/products/${productId}`);
+        const res = await fetch(`http://16.171.151.84:5000/api/products/${productId}`);
         if (!res.ok) throw new Error("Product not found");
 
         const product = await res.json();
@@ -464,15 +458,13 @@ async function loadProduct(productId) {
 
         // MAIN IMAGE
         const mainImage = document.getElementById("main-image");
-        if (mainImage) mainImage.src = product.image;
-
+if (mainImage) mainImage.src = getProductImage(product);
         // MULTIPLE IMAGES
         if (product.images && product.images.length) {
             const thumbs = document.querySelectorAll(".product-thumbnails .thumb img");
             thumbs.forEach((img, i) => {
                 if (product.images[i]) {
-                    img.src = product.images[i];
-                }
+img.src = getProductImage({ image: product.images[i] });                }
             });
         }
 
@@ -493,14 +485,14 @@ async function loadProduct(productId) {
 }
 
 async function loadSimilarProducts(productId){
-    const res = await fetch(`http://localhost:5000/api/products/similar/${productId}`);
+    const res = await fetch(`http://16.171.151.84:5000/api/products/similar/${productId}`);
     const products = await res.json();
 
     const container = document.getElementById("similarContainer");
 container.innerHTML = products.map(p => `
     <div class="product-card">
         <div class="card-image">
-            <img src="${p.image}" onclick="goToProduct('${p._id}')">
+<img src="${getProductImage(p)}" onclick="goToProduct('${p._id}')">
             <button class="card-wishlist" onclick="addToWishlist('${p._id}')">
                 <i class="fa-regular fa-heart"></i>
             </button>
@@ -519,7 +511,7 @@ container.innerHTML = products.map(p => `
 }
 
 async function loadAlsoLike(category){
-    const res = await fetch(`http://localhost:5000/api/products/category/${category}`);
+    const res = await fetch(`http://16.171.151.84:5000/api/products/category/${category}`);
     const products = await res.json();
 
     const container = document.getElementById("alsoLikeContainer");
@@ -527,7 +519,7 @@ async function loadAlsoLike(category){
  container.innerHTML = products.map(p => `
     <div class="product-card">
         <div class="card-image">
-            <img src="${p.image}" onclick="goToProduct('${p._id}')">
+<img src="${getProductImage(p)}" onclick="goToProduct('${p._id}')">
             <button class="card-wishlist" onclick="addToWishlist('${p._id}')">
                 <i class="fa-regular fa-heart"></i>
             </button>
@@ -547,6 +539,84 @@ async function loadAlsoLike(category){
 
 function goToProduct(id){
     window.location.href = `product_details.html?id=${id}`;
+}
+
+async function addSimilarToCart(productId) {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    alert("Please login first");
+    window.location.href = "login.html";
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/cart`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({ productId })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      alert("Added to Cart 🛒");
+    } else {
+      alert(data.message || "Failed to add to cart");
+    }
+  } catch (error) {
+    console.error("Add to cart error:", error);
+    alert("Error adding to cart");
+  }
+}
+
+async function addToWishlist(productId) {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    alert("Please login first");
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/wishlist`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({ productId })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      alert(data.message || "Something went wrong");
+      return;
+    }
+
+    // 🔥 IMPORTANT UI UPDATE
+    const btn = document.querySelector(`[onclick="addToWishlist('${productId}')"] i`);
+
+    if (btn) {
+      if (data.message === "Added to wishlist") {
+        btn.classList.remove("fa-regular");
+        btn.classList.add("fa-solid");
+        btn.style.color = "red";
+      } else {
+        btn.classList.remove("fa-solid");
+        btn.classList.add("fa-regular");
+        btn.style.color = "";
+      }
+    }
+
+  } catch (error) {
+    console.error("Wishlist error:", error);
+    alert("Error updating wishlist");
+  }
 }
 
 

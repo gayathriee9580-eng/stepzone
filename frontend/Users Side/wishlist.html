@@ -324,7 +324,7 @@
 
     <main class="wishlist-page-wrapper">
         <div class="wishlist-container">
-            <a href="profile.html" class="back-btn">
+<a href="profile.html" class="back-btn">Back</a>
 
                 <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 21 21">
                     <g fill="none" fill-rule="evenodd" stroke="currentColor" stroke-linecap="round"
@@ -437,6 +437,7 @@
         </div>
     </footer>
 </body>
+<script src="../common.js"></script>
 <script>
 async function loadWishlistPage() {
     const token = localStorage.getItem("token");
@@ -447,7 +448,7 @@ async function loadWishlistPage() {
     }
 
     try {
-        const res = await fetch("http://localhost:5000/api/wishlist", {
+        const res = await fetch("http://16.171.151.84:5000/api/wishlist", {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`
@@ -492,7 +493,7 @@ console.log("Wishlist API Response:", data);
             </div>
 
             <div class="card-img-wrapper">
-                <img src="${product.image}" alt="${product.name}">
+<img src="${getProductImage(product)}" alt="${product.name}">
             </div>
 
             <div class="card-content">
@@ -509,20 +510,30 @@ console.log("Wishlist API Response:", data);
 }
 
 async function removeFromWishlist(productId) {
-    const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
 
-    await fetch("http://localhost:5000/api/wishlist", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({ productId })
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/wishlist`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({ productId })
     });
 
-    loadWishlistPage();
-}
+    if (!res.ok) {
+      const data = await res.json();
+      alert(data.message || "Failed to update wishlist");
+      return;
+    }
 
+    loadWishlistPage();
+  } catch (err) {
+    console.error(err);
+    alert("Error updating wishlist");
+  }
+}
 
 
 async function addToCart(productId) {
@@ -535,7 +546,7 @@ async function addToCart(productId) {
   }
 
   try {
-    const response = await fetch("http://localhost:5000/api/cart", {
+    const response = await fetch("http://16.171.151.84:5000/api/cart", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -408,6 +408,25 @@
             color: var(--text-muted);
         }
 
+        .details-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            padding: 24px;
+            height: fit-content;
+        }
+
+        .order-confirmed {
+            background-color: #fff4e5;
+            color: #b26a00;
+            }
+
+            .order-packed {
+            background-color: #f3e8ff;
+            color: #7b1fa2;
+           }
+
         /* Responsive */
         @media (max-width: 1200px) {
             .orders-layout {
@@ -553,9 +572,13 @@
 <select id="statusFilter" class="select-filter">
   <option value="all">All Status</option>
   <option value="Pending">Pending</option>
+  <option value="Confirmed">Confirmed</option>
+  <option value="Packed">Packed</option>
   <option value="Shipped">Shipped</option>
   <option value="Delivered">Delivered</option>
+  <option value="Cancelled">Cancelled</option>
 </select>
+
 <select id="paymentFilter" class="select-filter">
   <option value="all">Payment: All</option>
   <option value="Paid">Paid</option>
@@ -563,7 +586,7 @@
 </select>
                     </div>
                     <div class="search-container" style="width: 250px;">
-                        <input type="text" placeholder="Search ID...">
+                        <input type="text" id="orderSearch" placeholder="Search ID...">
                     </div>
                 </div>
 
@@ -586,160 +609,84 @@
         </div>
 
             <!-- RIGHT: ORDER DETAILS PANEL -->
-            <div class="details-card" id="orderDetails">
-            </div>
+<div class="details-card" id="orderDetails">
+  <div class="placeholder">Select an order to view details</div>
+</div>
             </div>
         </div>
     </main>
-    <script src="admin-common.js"></script>
-   <script>
+ <script src="admin-common.js"></script>
+<script src="../common.js"></script>
+<script>
 
 if (!token) {
   window.location.href = "admin-login.html";
 }
-let orders = [];
 
-async function loadOrders() {
-  try {
-    const res = await fetch("http://localhost:5000/api/admin/orders", {
-      headers: { Authorization: "Bearer " + token }
-    });
+let allOrders = [];
+let filteredOrders = [];
 
-const data = await res.json();
-orders = data.orders || [];
-updateMetrics(orders); 
-
-    // 🔥 FILTER VALUES
-    const selectedStatus = document.getElementById("statusFilter").value;
-    const selectedPayment = document.getElementById("paymentFilter").value;
-
-    // STATUS FILTER
-    if (selectedStatus && selectedStatus !== "all") {
-      orders = orders.filter(o => o.status.toLowerCase() === selectedStatus.toLowerCase());
-    }
-
-    // PAYMENT FILTER
-    if (selectedPayment && selectedPayment !== "all") {
-      orders = orders.filter(o => o.paymentStatus.toLowerCase() === selectedPayment.toLowerCase());
-    }
-
-
-
-function updateMetrics(orders) {
-  const total = orders.length;
-  const pending = orders.filter(o => o.status === "Pending").length;
-  const delivered = orders.filter(o => o.status === "Delivered").length;
-  const cancelled = orders.filter(o => o.status === "Cancelled").length;
-
-  document.getElementById("totalOrders").innerText = total;
-  document.getElementById("pendingOrders").innerText = pending;
-  document.getElementById("deliveredOrders").innerText = delivered;
-  document.getElementById("cancelledOrders").innerText = cancelled;
+function updateMetrics(orderList) {
+  document.getElementById("totalOrders").innerText = orderList.length;
+  document.getElementById("pendingOrders").innerText =
+    orderList.filter(o => o.status === "Pending").length;
+  document.getElementById("deliveredOrders").innerText =
+    orderList.filter(o => o.status === "Delivered").length;
+  document.getElementById("cancelledOrders").innerText =
+    orderList.filter(o => o.status === "Cancelled").length;
 }
 
-    const tbody = document.getElementById("ordersTableBody");
-    tbody.innerHTML = "";
+function getStatusClass(status) {
+  if (status === "Pending") return "order-pending";
+  if (status === "Confirmed") return "order-confirmed";
+  if (status === "Packed") return "order-packed";
+  if (status === "Shipped") return "order-shipped";
+  if (status === "Delivered") return "order-delivered";
+  if (status === "Cancelled") return "order-cancelled";
+  return "";
+}
 
-    orders.forEach(order => {
-      let statusClass = "";
-      if (order.status === "Pending") statusClass = "order-pending";
-      else if (order.status === "Shipped") statusClass = "order-shipped";
-      else if (order.status === "Delivered") statusClass = "order-delivered";
-      else if (order.status === "Cancelled") statusClass = "order-cancelled";
+function getPaymentClass(paymentStatus) {
+  return paymentStatus === "Paid" ? "payment-paid" : "payment-pending";
+}
 
-      let paymentClass = order.paymentStatus === "Paid" ? "payment-paid" : "payment-pending";
+function renderOrdersTable(orderList) {
+  const tbody = document.getElementById("ordersTableBody");
+  tbody.innerHTML = "";
 
-      const tr = document.createElement("tr");
-
-      tr.innerHTML = `
-        <td style="font-weight:600;">#${order._id.slice(-6).toUpperCase()}</td>
-        <td>${order.user?.name || "N/A"}</td>
-        <td>${order.items.map(i => i.product?.name || "N/A").join(", ")}</td>
-        <td>${new Date(order.createdAt).toLocaleDateString()}</td>
-        <td><span class="badge ${statusClass}">${order.status}</span></td>
-        <td><span class="${paymentClass}">${order.paymentStatus}</span></td>
-        <td>₹${order.totalAmount}</td>
-        <td>
-          <span class="action-icon" onclick="viewOrder('${order._id}')">👁</span>
-          <span class="action-icon" onclick="cancelOrder('${order._id}')">↻</span>
-        </td>
-      `;
-
-      tbody.appendChild(tr);
-    });
-
-  } catch (err) {
-    console.error("Load orders error:", err);
+  if (!orderList.length) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="8" style="text-align:center; padding:20px;">No orders found</td>
+      </tr>
+    `;
+    return;
   }
-}
 
-async function cancelOrder(id) {
-  if (!confirm("Are you sure to cancel this order?")) return;
+  orderList.forEach(order => {
+    const tr = document.createElement("tr");
 
-  await fetch(`http://localhost:5000/api/admin/orders/${id}/cancel`, {
-    method: "PATCH",
-    headers: { Authorization: "Bearer " + token }
+    tr.innerHTML = `
+      <td style="font-weight:600;">#${order._id.slice(-6).toUpperCase()}</td>
+      <td>${order.user?.name || "N/A"}</td>
+      <td>${order.items?.map(i => i.product?.name || "N/A").join(", ") || "N/A"}</td>
+      <td>${order.createdAt ? new Date(order.createdAt).toLocaleDateString() : "N/A"}</td>
+      <td><span class="badge ${getStatusClass(order.status)}">${order.status || "N/A"}</span></td>
+      <td><span class="${getPaymentClass(order.paymentStatus)}">${order.paymentStatus || "N/A"}</span></td>
+      <td>₹${order.totalAmount ?? 0}</td>
+      <td>
+        <span class="action-icon" title="View" onclick="viewOrder('${order._id}')">👁</span>
+        <span class="action-icon" title="Cancel" onclick="cancelOrder('${order._id}')">✖</span>
+      </td>
+    `;
+
+    tbody.appendChild(tr);
   });
-
-  loadOrders();
 }
 
-function showOrderDetails(order) {
-  const detailsCard = document.getElementById("orderDetails");
-  
-  detailsCard.innerHTML = `
-    <div class="details-title">Order Details: #${order._id.slice(-6).toUpperCase()}</div>
-
-    <div class="detail-item">
-      <div class="detail-label">Customer</div>
-      <div class="detail-value">${order.userId?.name || "N/A"}</div>
-      <div style="font-size: 11px; color: var(--text-muted);">${order.userId?.email || "N/A"}</div>
-    </div>
-
-    <div class="detail-item">
-      <div class="detail-label">Delivery Address</div>
-      <div class="detail-value" style="font-size: 13px;">
-${order.shippingDetails?.address || "N/A"}, ${order.shippingDetails?.city || ""} ...
-      </div>
-    </div>
-
-    ${order.products.map(p => `
-      <div class="item-row">
-        <div class="item-img">${p.name.slice(0,4).toUpperCase()}</div>
-        <div class="product-info">
-          <div style="font-size: 13px; font-weight: 600;">${p.name}</div>
-          <div style="font-size: 11px; color: var(--text-muted);">Size: ${p.size || "-"} • Qty: ${p.quantity || 1}</div>
-          <div style="font-size: 13px; font-weight: 700; margin-top: 2px;">₹${p.price}</div>
-        </div>
-      </div>
-    `).join('')}
-
-    <div class="timeline">
-      <div class="timeline-item ${order.status !== "Pending" ? "active" : ""}">
-        <div class="timeline-label">Order Placed</div>
-        <div class="timeline-date">${new Date(order.createdAt).toLocaleString()}</div>
-      </div>
-      <div class="timeline-item ${order.status === "Paid" || order.status === "Shipped" || order.status === "Delivered" ? "active" : ""}">
-        <div class="timeline-label">Payment Verified</div>
-        <div class="timeline-date">${order.paymentStatus}</div>
-      </div>
-      <div class="timeline-item ${order.status === "Shipped" || order.status === "Delivered" ? "active" : ""}">
-        <div class="timeline-label">Shipped</div>
-        <div class="timeline-date">${order.status === "Shipped" || order.status === "Delivered" ? "Done" : "--"}</div>
-      </div>
-      <div class="timeline-item ${order.status === "Delivered" ? "active" : ""}">
-        <div class="timeline-label">Delivered</div>
-        <div class="timeline-date">${order.status === "Delivered" ? "Done" : "--"}</div>
-      </div>
-    </div>
-  `;
+function getImageUrl(item) {
+  return getProductImage(item?.product);
 }
-
-
-document.getElementById("statusFilter").addEventListener("change", loadOrders);
-document.getElementById("paymentFilter").addEventListener("change", loadOrders);
-
-loadOrders();
 
 function showOrderDetails(order) {
   const detailsCard = document.getElementById("orderDetails");
@@ -749,9 +696,9 @@ function showOrderDetails(order) {
     return;
   }
 
-  const address = order.shippingDetails
-    ? `${order.shippingDetails.address}, ${order.shippingDetails.city}, ${order.shippingDetails.state}, ${order.shippingDetails.country} - ${order.shippingDetails.pincode}`
-    : "N/A";
+const address = order.shippingDetails
+  ? `${order.shippingDetails.fullName || ""}, ${order.shippingDetails.address || ""}, ${order.shippingDetails.city || ""}, ${order.shippingDetails.state || ""}, ${order.shippingDetails.country || ""} - ${order.shippingDetails.pincode || ""}`
+  : "N/A";
 
   detailsCard.innerHTML = `
     <div class="details-title">Order Details: #${order._id.slice(-6).toUpperCase()}</div>
@@ -770,63 +717,179 @@ function showOrderDetails(order) {
     <div class="detail-item">
       <div class="detail-label">Products</div>
       <div class="detail-value">
-        ${order.items.map(item => `
-          <div class="item-row">
-<div class="item-img">
-  <img src="${item.product?.image || 'placeholder.png'}" alt="${item.product?.name}" style="width:40px; height:40px; object-fit:cover; border-radius:4px;" />
-</div>
-            <div class="product-info">
-              <div style="font-size: 13px; font-weight: 600;">${item.product?.name || "N/A"}</div>
-              <div style="font-size: 11px; color: var(--text-muted);">
-                Qty: ${item.quantity} • Price: ₹${item.price}
-              </div>
-            </div>
-          </div>
-        `).join('')}
+        ${(order.items || []).map(item => `
+  <div class="item-row">
+    <div class="item-img">
+      <img
+        src="${getImageUrl(item)}"
+        alt="${item.product?.name || 'Product'}"
+        style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;"
+        onerror="this.src='../Users Side/images/default.png'"
+      />
+    </div>
+    <div class="product-info">
+      <div style="font-size: 13px; font-weight: 600;">
+        ${item.product?.name || "N/A"}
+      </div>
+      <div style="font-size: 11px; color: var(--text-muted);">
+        Qty: ${item.quantity || 1} • Price: ₹${item.price || 0}
+      </div>
+    </div>
+  </div>
+        `).join("")}
       </div>
     </div>
 
     <div class="detail-item">
       <div class="detail-label">Payment Status</div>
-      <div class="detail-value">${order.paymentStatus}</div>
+      <div class="detail-value">${order.paymentStatus || "N/A"}</div>
     </div>
 
     <div class="detail-item">
       <div class="detail-label">Order Status</div>
-      <div class="detail-value">${order.status}</div>
+      <div class="detail-value">${order.status || "N/A"}</div>
     </div>
 
     <div class="detail-item">
       <div class="detail-label">Total Amount</div>
-      <div class="detail-value" style="font-weight: 700;">₹${order.totalAmount}</div>
+      <div class="detail-value" style="font-weight: 700;">₹${order.totalAmount ?? 0}</div>
     </div>
 
-    <div class="timeline">
-      <div class="timeline-item ${order.status !== "Pending" ? "active" : ""}">
-        <div class="timeline-label">Order Placed</div>
-        <div class="timeline-date">${new Date(order.createdAt).toLocaleString()}</div>
-      </div>
-      <div class="timeline-item ${order.status === "Paid" || order.status === "Shipped" || order.status === "Delivered" ? "active" : ""}">
-        <div class="timeline-label">Payment Verified</div>
-        <div class="timeline-date">${order.paymentStatus}</div>
-      </div>
-      <div class="timeline-item ${order.status === "Shipped" || order.status === "Delivered" ? "active" : ""}">
-        <div class="timeline-label">Shipped</div>
-        <div class="timeline-date">${order.status === "Shipped" || order.status === "Delivered" ? "Done" : "--"}</div>
-      </div>
-      <div class="timeline-item ${order.status === "Delivered" ? "active" : ""}">
-        <div class="timeline-label">Delivered</div>
-        <div class="timeline-date">${order.status === "Delivered" ? "Done" : "--"}</div>
-      </div>
-    </div>
+<div class="timeline">
+  <div class="timeline-item active">
+    <div class="timeline-label">Order Placed</div>
+    <div class="timeline-date">${order.createdAt ? new Date(order.createdAt).toLocaleString() : "--"}</div>
+  </div>
+
+  <div class="timeline-item ${order.paymentStatus === "Paid" ? "active" : ""}">
+    <div class="timeline-label">Payment Verified</div>
+    <div class="timeline-date">${order.paymentStatus || "--"}</div>
+  </div>
+
+  <div class="timeline-item ${["Confirmed", "Packed", "Shipped", "Delivered"].includes(order.status) ? "active" : ""}">
+    <div class="timeline-label">Confirmed</div>
+    <div class="timeline-date">${["Confirmed", "Packed", "Shipped", "Delivered"].includes(order.status) ? "Done" : "--"}</div>
+  </div>
+
+  <div class="timeline-item ${["Packed", "Shipped", "Delivered"].includes(order.status) ? "active" : ""}">
+    <div class="timeline-label">Packed</div>
+    <div class="timeline-date">${["Packed", "Shipped", "Delivered"].includes(order.status) ? "Done" : "--"}</div>
+  </div>
+
+  <div class="timeline-item ${["Shipped", "Delivered"].includes(order.status) ? "active" : ""}">
+    <div class="timeline-label">Shipped</div>
+    <div class="timeline-date">${["Shipped", "Delivered"].includes(order.status) ? "Done" : "--"}</div>
+  </div>
+
+  <div class="timeline-item ${order.status === "Delivered" ? "active" : ""}">
+    <div class="timeline-label">Delivered</div>
+    <div class="timeline-date">${order.status === "Delivered" && order.deliveryDate ? new Date(order.deliveryDate).toLocaleDateString() : "--"}</div>
+  </div>
+
+  <div class="timeline-item ${order.status === "Cancelled" ? "active" : ""}">
+    <div class="timeline-label">Cancelled</div>
+    <div class="timeline-date">${order.status === "Cancelled" ? "Cancelled" : "--"}</div>
+  </div>
+</div>
   `;
 }
-function viewOrder(id) {
-  const order = orders.find(o => o._id === id);
-  if (order) showOrderDetails(order);
+
+function applyFilters() {
+  const selectedStatus = document.getElementById("statusFilter").value;
+  const selectedPayment = document.getElementById("paymentFilter").value;
+  const searchValue = document.getElementById("orderSearch").value.trim().toLowerCase();
+
+  filteredOrders = allOrders.filter(order => {
+    const matchesStatus =
+      selectedStatus === "all" || order.status?.toLowerCase() === selectedStatus.toLowerCase();
+
+    const matchesPayment =
+      selectedPayment === "all" || order.paymentStatus?.toLowerCase() === selectedPayment.toLowerCase();
+
+    const shortId = order._id?.slice(-6).toLowerCase() || "";
+    const fullId = order._id?.toLowerCase() || "";
+    const customer = order.user?.name?.toLowerCase() || "";
+
+    const matchesSearch =
+      !searchValue ||
+      shortId.includes(searchValue) ||
+      fullId.includes(searchValue) ||
+      customer.includes(searchValue);
+
+    return matchesStatus && matchesPayment && matchesSearch;
+  });
+
+  renderOrdersTable(filteredOrders);
+  updateMetrics(filteredOrders);
+
+  if (filteredOrders.length > 0) {
+    showOrderDetails(filteredOrders[0]);
+  } else {
+    showOrderDetails(null);
+  }
 }
 
+async function loadOrders() {
+  try {
+    const res = await fetch("http://16.171.151.84:5000/api/admin/orders", {
+      headers: {
+        Authorization: "Bearer " + token
+      }
+    });
 
+    const data = await res.json();
+    allOrders = data.orders || [];
+
+    applyFilters();
+
+    if (allOrders.length > 0) {
+      showOrderDetails(allOrders[0]);
+    } else {
+      showOrderDetails(null);
+    }
+  } catch (err) {
+    console.error("Load orders error:", err);
+    document.getElementById("ordersTableBody").innerHTML = `
+      <tr>
+        <td colspan="8" style="text-align:center; padding:20px; color:red;">
+          Failed to load orders
+        </td>
+      </tr>
+    `;
+  }
+}
+
+async function cancelOrder(id) {
+  if (!confirm("Are you sure you want to cancel this order?")) return;
+
+  try {
+    const res = await fetch(`http://16.171.151.84:5000/api/admin/orders/${id}/cancel`, {
+      method: "PATCH",
+      headers: {
+        Authorization: "Bearer " + token
+      }
+    });
+
+    const data = await res.json();
+    alert(data.message || "Order cancelled successfully");
+
+    loadOrders();
+  } catch (err) {
+    console.error("Cancel order error:", err);
+    alert("Failed to cancel order");
+  }
+}
+
+function viewOrder(id) {
+  const order = allOrders.find(o => o._id === id);
+  showOrderDetails(order);
+}
+
+document.getElementById("statusFilter").addEventListener("change", applyFilters);
+document.getElementById("paymentFilter").addEventListener("change", applyFilters);
+document.getElementById("orderSearch").addEventListener("input", applyFilters);
+
+loadOrders();
 </script>
 </body>
 </html>

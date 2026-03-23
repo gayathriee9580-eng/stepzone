@@ -540,6 +540,7 @@ position:static;
             </div>
         </div>
     </footer>
+    <script src="../common.js"></script>
 
  <script>
 document.addEventListener("DOMContentLoaded", loadCart);
@@ -555,7 +556,7 @@ async function loadCart() {
 }
 
   try {
-    const res = await fetch("http://localhost:5000/api/cart", {
+    const res = await fetch("http://16.171.151.84:5000/api/cart", {
       headers: {
         "Authorization": `Bearer ${token}`
       }
@@ -615,7 +616,7 @@ cart.products.forEach(item => {
 
   div.innerHTML = `
     <div class="cart-item-img">
-<img src="${item.product.image || 'images/no-image.png'}">
+<img src="${getProductImage(item.product)}">
     </div>
 
     <div class="cart-item-info">
@@ -691,31 +692,53 @@ function updateCartCount(count) {
 }
 
 async function removeFromCart(productId) {
-  const token = localStorage.getItem("token")
+  const token = localStorage.getItem("token");
 
-  await fetch(`http://localhost:5000/api/cart/${productId}`, {
-    method: "DELETE",
-    headers: {
-      "Authorization": `Bearer ${token}`
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/cart/${productId}`, {
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      alert(data.message || "Failed to remove item");
+      return;
     }
-  });
 
-  loadCart();
+    loadCart();
+  } catch (err) {
+    console.error(err);
+    alert("Error removing item");
+  }
 }
 
 async function updateQuantity(productId, change) {
-  const token = localStorage.getItem("token")
+  const token = localStorage.getItem("token");
 
-  await fetch(`http://localhost:5000/api/cart/update/${productId}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`
-    },
-    body: JSON.stringify({ change })
-  });
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/cart/update/${productId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({ change })
+    });
 
-  loadCart();
+    if (!res.ok) {
+      const data = await res.json();
+      alert(data.message || "Failed to update quantity");
+      return;
+    }
+
+    loadCart();
+  } catch (err) {
+    console.error(err);
+    alert("Error updating quantity");
+  }
 }
 
 function goToCheckout() {

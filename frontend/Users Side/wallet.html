@@ -374,8 +374,9 @@
                 </div>
                 <div class="wallet-actions">
 
-<button class="btn-wallet btn-add-money" id="addMoneyBtn"><i class="fas fa-plus-circle" onclick="addMoney()"></i> Add Money</button>
-
+<button class="btn-wallet btn-add-money" id="addMoneyBtn">
+  <i class="fas fa-plus-circle"></i> Add Money
+</button>
 
 <button class="btn-wallet btn-offers"><i class="fas fa-tags"></i> View Offers</button>
                 </div>
@@ -397,66 +398,6 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Row 1 -->
-                            <tr class="transaction-row">
-                                <td><span class="tx-id">TXN982341022</span></td>
-                                <td>Oct 12, 2023 <span class="tx-meta">10:24 AM</span></td>
-                                <td>
-                                    <span class="tx-description">Order Payment</span>
-                                    <span class="tx-meta">Order #SZ-ORD-8823</span>
-                                </td>
-                                <td>Wallet</td>
-                                <td><span class="tx-amount amount-debit">-$499.00</span></td>
-                                <td><span class="status-badge status-success">Success</span></td>
-                            </tr>
-                            <!-- Row 2 -->
-                            <tr class="transaction-row">
-                                <td><span class="tx-id">TXN982341021</span></td>
-                                <td>Oct 10, 2023 <span class="tx-meta">02:15 PM</span></td>
-                                <td>
-                                    <span class="tx-description">Wallet Top-up</span>
-                                    <span class="tx-meta">Credit from Primary Bank</span>
-                                </td>
-                                <td>Razorpay</td>
-                                <td><span class="tx-amount amount-credit">+$1,000.00</span></td>
-                                <td><span class="status-badge status-success">Success</span></td>
-                            </tr>
-                            <!-- Row 3 -->
-                            <tr class="transaction-row">
-                                <td><span class="tx-id">TXN982341020</span></td>
-                                <td>Oct 08, 2023 <span class="tx-meta">09:45 AM</span></td>
-                                <td>
-                                    <span class="tx-description">Refund Processed</span>
-                                    <span class="tx-meta">Order #SZ-ORD-7712</span>
-                                </td>
-                                <td>Wallet</td>
-                                <td><span class="tx-amount amount-credit">+$120.50</span></td>
-                                <td><span class="status-badge status-pending">Pending</span></td>
-                            </tr>
-                            <!-- Row 4 -->
-                            <tr class="transaction-row">
-                                <td><span class="tx-id">TXN982341019</span></td>
-                                <td>Oct 05, 2023 <span class="tx-meta">11:00 AM</span></td>
-                                <td>
-                                    <span class="tx-description">Wallet Top-up</span>
-                                    <span class="tx-meta">UPI Payment</span>
-                                </td>
-                                <td>GPay</td>
-                                <td><span class="tx-amount amount-credit">+$500.00</span></td>
-                                <td><span class="status-badge status-failed">Failed</span></td>
-                            </tr>
-                            <!-- Row 5 -->
-                            <tr class="transaction-row">
-                                <td><span class="tx-id">TXN982341018</span></td>
-                                <td>Sep 28, 2023 <span class="tx-meta">04:30 PM</span></td>
-                                <td>
-                                    <span class="tx-description">Order Payment</span>
-                                    <span class="tx-meta">Order #SZ-ORD-6654</span>
-                                </td>
-                                <td>Wallet</td>
-                                <td><span class="tx-amount amount-debit">-$250.00</span></td>
-                                <td><span class="status-badge status-success">Success</span></td>
-                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -555,7 +496,7 @@ async function loadWallet() {
   }
 
   try {
-    const res = await fetch("http://localhost:5000/api/wallet/balance", {
+    const res = await fetch("http://16.171.151.84:5000/api/wallet/balance", {
   headers: { "Authorization": `Bearer ${token}` }
 });
     const wallet = await res.json();
@@ -603,7 +544,7 @@ document.getElementById("addMoneyBtn").addEventListener("click", async () => {
   const token = localStorage.getItem("token");
 
   try {
-    const res = await fetch("http://localhost:5000/api/wallet/add", {
+    const res = await fetch("http://16.171.151.84:5000/api/wallet/add", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -653,7 +594,7 @@ async function initWallet() {
     if (!amount || amount <= 0) return;
 
     try {
-      const res = await fetch("http://localhost:5000/api/wallet/topup", {
+      const res = await fetch("http://16.171.151.84:5000/api/wallet/topup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -682,7 +623,7 @@ async function loadWallet() {
   const token = localStorage.getItem("token");
 
   try {
-    const res = await fetch("http://localhost:5000/api/wallet/balance", {
+    const res = await fetch("http://16.171.151.84:5000/api/wallet/balance", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -721,7 +662,7 @@ async function loadWallet() {
         tx.type === "credit" ? "amount-credit" : "amount-debit";
 
       tr.innerHTML = `
-        <td>${tx._id || ""}</td>
+<td><span class="tx-id">${tx._id || ""}</span></td>        
         <td>${tx.date ? new Date(tx.date).toLocaleString() : ""}</td>
         <td>${tx.description || ""}</td>
         <td>${tx.method || ""}</td>
@@ -755,7 +696,7 @@ async function payWithWallet(orderId, totalAmount) {
   }
 
   try {
-    const res = await fetch("http://localhost:5000/api/wallet/use", {
+    const res = await fetch("http://16.171.151.84:5000/api/wallet/use", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -780,35 +721,35 @@ async function payWithWallet(orderId, totalAmount) {
   }
 }
 
-async function addMoney() {
-  const token = localStorage.getItem("token");
-  const amount = document.getElementById("amountInput").value;
+// async function addMoney() {
+//   const token = localStorage.getItem("token");
+//   const amount = document.getElementById("amountInput").value;
 
-  try {
-    const response = await fetch("http://localhost:5000/api/wallet/add", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + token
-      },
-      body: JSON.stringify({ amount })
-    });
+//   try {
+//     const response = await fetch("http://16.171.151.84:5000/api/wallet/add", {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//         "Authorization": "Bearer " + token
+//       },
+//       body: JSON.stringify({ amount })
+//     });
 
-    const data = await response.json();
+//     const data = await response.json();
 
-    if (!response.ok) {
-      throw new Error(data.message);
-    }
+//     if (!response.ok) {
+//       throw new Error(data.message);
+//     }
 
-    alert("Money added successfully");
+//     alert("Money added successfully");
 
-    loadWallet(); // refresh wallet balance
+//     loadWallet(); // refresh wallet balance
 
-  } catch (error) {
-    console.error(error);
-    alert("Error adding money");
-  }
-}
+//   } catch (error) {
+//     console.error(error);
+//     alert("Error adding money");
+//   }
+// }
 
 </script>
 </body>

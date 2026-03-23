@@ -490,6 +490,7 @@
             </div>
         </div>
     </footer>
+    <script src="../common.js"></script>
 <script>
 
 document.addEventListener("DOMContentLoaded", loadOrders);
@@ -500,8 +501,8 @@ async function loadOrders() {
 
   try {
 
-    const res = await fetch("http://localhost:5000/api/orders/my-orders", {
-      headers: { Authorization: "Bearer " + token }
+fetch(`${API_BASE_URL}/api/orders/my-orders`, {
+          headers: { Authorization: "Bearer " + token }
     });
 
     const data = await res.json();
@@ -510,6 +511,9 @@ async function loadOrders() {
     const ordersList = document.getElementById("ordersList");
     const orderCount = document.getElementById("orderCount");
     const totalAmountEl = document.getElementById("totalAmount");
+            if (totalAmountEl) {
+        totalAmountEl.innerText = "$0";
+        }
 
     ordersList.innerHTML = "";
 
@@ -549,7 +553,7 @@ if (!firstProduct) return;
         <div class="order-card">
 
           <div class="order-img-wrapper">
-            <img src="${firstProduct.image}" class="order-img">
+<img src="${getProductImage(firstProduct)}" class="order-img">
           </div>
 
           <div class="order-details">
@@ -567,7 +571,7 @@ if (!firstProduct) return;
 
           <div class="order-status-section">
             <span class="order-number">Order #${order._id.slice(-6)}</span>
-            <a href="order-details.html?id=${order._id}" class="view-details-link">
+<a href="summary.html?orderId=${order._id}" class="view-details-link">           
               View Order Details
             </a>
 

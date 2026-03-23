@@ -171,57 +171,72 @@
         </div>
 
         <!-- Send Code Button -->
-        <button type="button" class="send-btn" id="sendOtpBtn">Send Code</button>
+<button type="button" class="send-btn" id="sendOtpBtn" disabled>Send Code</button>
         <p id="message" style="color: red; font-size: 0.85rem;"></p>
 
         <!-- Footer Link -->
         <a href="#" class="change-email">Change Email</a>
     </div>
+<script src="../common.js"></script>
 
-    <script>
-        const emailInput = document.getElementById('emailAddress');
-        const sendBtn = document.getElementById('sendOtpBtn');
-        const validCheck = document.getElementById('validCheck');
-        const message = document.getElementById('message');
+<script>
+const emailInput = document.getElementById('emailAddress');
+const sendBtn = document.getElementById('sendOtpBtn');
+const validCheck = document.getElementById('validCheck');
+const message = document.getElementById('message');
 
-        emailInput.addEventListener('input', () => {
-            const value = emailInput.value.trim();
-            if (value.includes('@')) {
-                validCheck.style.display = 'flex';
-                sendBtn.disabled = false;
-            } else {
-                validCheck.style.display = 'none';
-                sendBtn.disabled = true;
-            }
-        });
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-        sendBtn.addEventListener('click', async () => {
-            const email = emailInput.value.trim();
-            if (!email.includes('@')) {
-                message.textContent = 'Please enter a valid email.';
-                return;
-            }
+emailInput.addEventListener('input', () => {
+  const value = emailInput.value.trim();
+  message.textContent = "";
 
-            try {
-                const res = await fetch('http://localhost:5000/api/send-otp', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email })
-                });
-                const data = await res.json();
-                if (data.success) {
-                    localStorage.setItem('otpId', data.otpId);
-                    localStorage.setItem('email', email);
-                    window.location.href = 'verify.html';
-                } else {
-                    message.textContent = data.message;
-                }
-            } catch (err) {
-                message.textContent = 'Error sending OTP. Try again.';
-                console.error(err);
-            }
-        });
-    </script>
+  if (emailPattern.test(value)) {
+    validCheck.style.display = 'flex';
+    sendBtn.disabled = false;
+  } else {
+    validCheck.style.display = 'none';
+    sendBtn.disabled = true;
+  }
+});
+
+sendBtn.addEventListener('click', async () => {
+  const email = emailInput.value.trim();
+
+  if (!emailPattern.test(email)) {
+    message.textContent = 'Please enter a valid email.';
+    return;
+  }
+
+  sendBtn.disabled = true;
+  sendBtn.innerText = "Sending...";
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/send-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      localStorage.setItem('otpId', data.otpId);
+      localStorage.setItem('email', email);
+      window.location.href = 'verify.html';
+    } else {
+      message.textContent = data.message;
+    }
+
+  } catch (err) {
+    message.textContent = 'Error sending OTP. Try again.';
+    console.error(err);
+  }
+
+  sendBtn.disabled = false;
+  sendBtn.innerText = "Send Code";
+});
+
+</script>
 </body>
-
 </html>

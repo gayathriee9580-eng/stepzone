@@ -447,6 +447,7 @@
         </div>
     </main>
     <script src="admin-common.js"></script>
+    <script src="../common.js"></script>
     <script>
 
 if (!token) {
@@ -455,7 +456,7 @@ if (!token) {
 
 async function loadProducts() {
   try {
-    const res = await fetch("http://localhost:5000/api/admin/products", {
+    const res = await fetch(`${API_BASE_URL}/api/admin/products`, {
       headers: { Authorization: "Bearer " + token }
     });
 
@@ -507,7 +508,7 @@ if (selectedCategory) {
 
       tr.innerHTML = `
         <td>
-          <img src="${product.image}" width="45" height="45" style="border-radius:8px;" />
+         <img src="${getProductImage(product)}" width="45" height="45" style="border-radius:8px;" />
         </td>
         <td><span style="font-weight:600;">${product.name}</span></td>
         <td>
@@ -539,7 +540,7 @@ if (selectedCategory) {
 async function deleteProduct(id) {
   if (!confirm("Are you sure to delete this product?")) return;
 
-  await fetch(`http://localhost:5000/api/admin/products/${id}`, {
+  await fetch(`${API_BASE_URL}/api/admin/products/${id}`, {
     method: "DELETE",
     headers: { Authorization: "Bearer " + token }
   });

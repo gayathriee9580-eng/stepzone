@@ -560,98 +560,154 @@ Select an offer to view details
 <button onclick="createOffer()" style="background:#e092d1;color:white;border:none;padding:10px 20px;border-radius:6px">Save</button>
 
 <button onclick="closeModal()" style="margin-left:10px">Cancel</button>
+</div>
+</div>
+</main>
 
-</div>
-
-</div>
-</div>
-    </main>
     <script src="admin-common.js"></script>
+    <script src="../common.js"></script>
     <script>
+async function loadOffers() {
+  try {
+    document.getElementById("offersTableBody").innerHTML =
+      "<tr><td colspan='7'>Loading...</td></tr>";
 
+    const res = await fetch("http://16.171.151.84:5000/api/admin/offers", {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
 
-async function loadOffers(){
+    const data = await res.json();
 
-document.getElementById("offersTableBody").innerHTML =
-"<tr><td colspan='7'>Loading...</td></tr>";
+    if (!res.ok) {
+      throw new Error(data.message || "Failed to load offers");
+    }
 
-const res = await fetch("http://localhost:5000/api/admin/offers",{
-headers:{
-Authorization:`Bearer ${token}`
-}
-});
-
-const data = await res.json();
-
-renderOffers(data.offers);
-
-}
-
-function renderOffers(offers){
-
-const tbody = document.getElementById("offersTableBody");
-
-tbody.innerHTML="";
-
-if(!offers || offers.length===0){
-tbody.innerHTML="<tr><td colspan='7'>No offers found</td></tr>";
-return;
+    renderOffers(data.offers || []);
+  } catch (error) {
+    console.error("Load offers error:", error);
+    document.getElementById("offersTableBody").innerHTML =
+      "<tr><td colspan='7' style='text-align:center;color:red;'>Failed to load offers</td></tr>";
+  }
 }
 
-offers.forEach(offer=>{
+let allOffers = [];
 
-const tr=document.createElement("tr");
-tr.style.cursor="pointer";
-tr.onclick=()=>showOfferDetails(offer);
+function renderOffers(offers) {
+  allOffers = offers || [];
+  const tbody = document.getElementById("offersTableBody");
+  tbody.innerHTML = "";
 
-let valueText="";
+  if (!allOffers.length) {
+    tbody.innerHTML = "<tr><td colspan='7'>No offers found</td></tr>";
+    return;
+  }
 
-if(offer.type==="product" || offer.type==="category"){
-valueText=offer.discountPercentage+"% OFF";
+  allOffers.forEach(offer => {
+    const tr = document.createElement("tr");
+    tr.style.cursor = "pointer";
+    tr.onclick = () => showOfferDetails(offer);
+
+    let valueText = `${offer.discountPercentage}% OFF`;
+    let categoryText = offer.category || "Product Offer";
+
+    let status = "Active";
+    let statusClass = "status-active";
+
+    const today = new Date();
+    today.setHours(0,0,0,0);
+
+    const expiry = new Date(offer.expiryDate);
+    expiry.setHours(0,0,0,0);
+
+    if (expiry < today) {
+      status = "Expired";
+      statusClass = "status-expired";
+    }
+
+    tr.innerHTML = `
+      <td style="font-weight:600">${offer.title}</td>
+      <td>${offer.type === "product" ? "Product Offer" : "Category Offer"}</td>
+      <td>${valueText}</td>
+      <td>${categoryText}</td>
+      <td style="font-size:12px;color:#5f6368">
+        ${new Date(offer.createdAt).toLocaleDateString()} -
+        ${new Date(offer.expiryDate).toLocaleDateString()}
+      </td>
+      <td><span class="badge ${statusClass}">${status}</span></td>
+      <td class="actions">
+        <span class="action-icon" onclick="event.stopPropagation(); deleteOffer('${offer._id}')">🗑</span>
+      </td>
+    `;
+
+    tbody.appendChild(tr);
+  });
 }
 
-let categoryText=offer.category || "Product Offer";
+document.querySelector(".table-search").addEventListener("input", function () {
+  const search = this.value.trim().toLowerCase();
 
-let status="Active";
-let statusClass="status-active";
+  const filtered = allOffers.filter(offer =>
+    (offer.title || "").toLowerCase().includes(search) ||
+    (offer.category || "").toLowerCase().includes(search) ||
+    (offer.type || "").toLowerCase().includes(search)
+  );
 
-const today=new Date();
-const expiry=new Date(offer.expiryDate);
+  const tbody = document.getElementById("offersTableBody");
+  tbody.innerHTML = "";
 
-if(expiry<today){
-status="Expired";
-statusClass="status-expired";
-}
+  if (!filtered.length) {
+    tbody.innerHTML = "<tr><td colspan='7'>No offers found</td></tr>";
+    return;
+  }
 
-tr.innerHTML=`
-<td style="font-weight:600">${offer.title}</td>
-<td>${offer.type === "product" ? "Product Offer" : "Category Offer"}</td>
-<td>${valueText}</td>
-<td>${categoryText}</td>
+  filtered.forEach(offer => {
+    const tr = document.createElement("tr");
+    tr.style.cursor = "pointer";
+    tr.onclick = () => showOfferDetails(offer);
 
-<td style="font-size:12px;color:#5f6368">
-${new Date(offer.createdAt).toLocaleDateString()} -
-${new Date(offer.expiryDate).toLocaleDateString()}
-</td>
+    let valueText = `${offer.discountPercentage}% OFF`;
+    let categoryText = offer.category || "Product Offer";
 
-<td><span class="badge ${statusClass}">${status}</span></td>
+    let status = "Active";
+    let statusClass = "status-active";
 
-<td class="actions">
-<span class="action-icon" onclick="editOffer('${offer._id}')">✎</span>
-<span class="action-icon" onclick="deleteOffer('${offer._id}')">🗑</span>
-</td>
-`;
+    const today = new Date();
+    today.setHours(0,0,0,0);
 
-tbody.appendChild(tr);
+    const expiry = new Date(offer.expiryDate);
+    expiry.setHours(0,0,0,0);
 
-});
+    if (expiry < today) {
+      status = "Expired";
+      statusClass = "status-expired";
+    }
 
-}
+    tr.innerHTML = `
+      <td style="font-weight:600">${offer.title}</td>
+      <td>${offer.type === "product" ? "Product Offer" : "Category Offer"}</td>
+      <td>${valueText}</td>
+      <td>${categoryText}</td>
+      <td style="font-size:12px;color:#5f6368">
+        ${new Date(offer.createdAt).toLocaleDateString()} -
+        ${new Date(offer.expiryDate).toLocaleDateString()}
+      </td>
+      <td><span class="badge ${statusClass}">${status}</span></td>
+      <td class="actions">
+        <span class="action-icon" onclick="event.stopPropagation(); deleteOffer('${offer._id}')">🗑</span>
+      </td>
+    `;
+
+    tbody.appendChild(tr);
+  });
+})
+
 async function deleteOffer(id){
 
 if(!confirm("Delete this offer?")) return;
 
-await fetch(`http://localhost:5000/api/admin/offers/${id}`,{
+await fetch(`http://16.171.151.84:5000/api/admin/offers/${id}`,{
 method:"DELETE",
 headers:{
 Authorization:`Bearer ${token}`
@@ -662,17 +718,22 @@ loadOffers();
 
 }
 
-function openOfferModal(){
-document.getElementById("offerModal").style.display="flex";
+function openOfferModal() {
+  document.getElementById("offerModal").style.display = "flex";
+
+  const type = document.getElementById("offerType").value;
+  document.getElementById("offerCategory").style.display =
+    type === "category" ? "block" : "none";
 }
 
-function closeModal(){
-document.getElementById("offerModal").style.display="none";
-document.getElementById("offerTitle").value="";
-document.getElementById("offerDiscount").value="";
-document.getElementById("offerCategory").value="";
-document.getElementById("offerExpiry").value="";
-
+function closeModal() {
+  document.getElementById("offerModal").style.display = "none";
+  document.getElementById("offerTitle").value = "";
+  document.getElementById("offerType").value = "product";
+  document.getElementById("offerDiscount").value = "";
+  document.getElementById("offerCategory").value = "";
+  document.getElementById("offerCategory").style.display = "none";
+  document.getElementById("offerExpiry").value = "";
 }
 
 async function createOffer(){
@@ -724,7 +785,7 @@ expiryDate:expiry
 if(!confirm("Create this offer?")) return;
 
 
-const res = await fetch("http://localhost:5000/api/admin/offers",{
+const res = await fetch("http://16.171.151.84:5000/api/admin/offers",{
 
 method:"POST",
 
@@ -770,22 +831,26 @@ categoryField.style.display = "none";
 
 });
 
-async function loadCoupons(){
+async function loadCoupons() {
+  try {
+    const res = await fetch("http://16.171.151.84:5000/api/admin/coupons", {
+      headers: {
+        Authorization: "Bearer " + token
+      }
+    });
 
-  const token = localStorage.getItem("adminToken");
+    const data = await res.json();
 
-document.querySelector("#couponTable tbody").innerHTML =
-"<tr><td colspan='6'>Loading...</td></tr>";
-
-  const res = await fetch("http://localhost:5000/api/admin/coupons",{
-    headers:{
-      "Authorization":"Bearer " + token
+    if (!res.ok) {
+      throw new Error(data.message || "Failed to load coupons");
     }
-  });
 
-  const data = await res.json();
-
-  renderCoupons(data.coupons);
+    renderCoupons(data.coupons || []);
+  } catch (error) {
+    console.error("Load coupons error:", error);
+    document.querySelector("#couponTable tbody").innerHTML =
+      "<tr><td colspan='6' style='text-align:center;color:red;'>Failed to load coupons</td></tr>";
+  }
 }
 
 
@@ -857,7 +922,7 @@ if(!confirm("Delete this coupon?")) return;
 
 const token = localStorage.getItem("adminToken");
 
-await fetch(`http://localhost:5000/api/admin/coupons/${id}`,{
+await fetch(`http://16.171.151.84:5000/api/admin/coupons/${id}`,{
 
 method:"DELETE",
 
@@ -887,6 +952,21 @@ const expiryInput = document.getElementById("expiryDate").value;
 if(!code || !discountValue || !expiryInput){
 alert("Please fill required fields");
 return;
+}
+
+if (discountValue <= 0) {
+  alert("Discount value must be greater than 0");
+  return;
+}
+
+if (discountType === "percentage" && discountValue > 100) {
+  alert("Percentage discount cannot exceed 100");
+  return;
+}
+
+if (minOrderAmount < 0 || maxDiscount < 0) {
+  alert("Amounts cannot be negative");
+  return;
 }
 
 
@@ -921,7 +1001,7 @@ return;
 }
 
 // API call
-const res = await fetch("http://localhost:5000/api/admin/coupons",{
+const res = await fetch("http://16.171.151.84:5000/api/admin/coupons",{
 method:"POST",
 headers:{
 "Content-Type":"application/json",
@@ -932,10 +1012,11 @@ body:JSON.stringify(coupon)
 
 const data = await res.json();
 
-if(!data.success){
-alert("Failed to create coupon");
-return;
+if (!res.ok || !data.success) {
+  alert(data.message || "Failed to create coupon");
+  return;
 }
+
 alert("Coupon created successfully");
 
 loadCoupons();

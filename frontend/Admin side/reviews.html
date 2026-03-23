@@ -543,7 +543,8 @@
         </div>
     </main>
 <script src="admin-common.js"></script>
-    <script>
+<script src="../common.js"></script>
+<script>
 if (!token) window.location.href = "admin-login.html";
 
 const tbody = document.querySelector("table tbody");
@@ -553,120 +554,163 @@ const selectFilter = document.querySelector(".select-filter");
 let reviews = [];
 let selectedReview = null;
 
-// Render review table
+const BASE_URL = "http://16.171.151.84:5000/api/admin/reviews";
+
+function getStars(rating = 0) {
+  let html = "";
+  for (let i = 1; i <= 5; i++) {
+    html += i <= rating ? "★" : `<span class="star-empty">★</span>`;
+  }
+  return html;
+}
+
 function renderTable(data) {
   tbody.innerHTML = "";
-  data.forEach(r => {
-    const userName = r.user?.name || "Unknown User";
-    const productTitle = r.product?.title || "Unknown Product";
-    const stars = "★".repeat(r.rating || 0) + "★".repeat(5 - (r.rating || 0)).replace(/★/g, `<span class="star-empty">★</span>`);
 
-    tbody.innerHTML += `
+  if (!data.length) {
+    tbody.innerHTML = `
       <tr>
-        <td style="font-weight: 600;">${userName}</td>
-        <td style="font-size: 13px;">${productTitle}</td>
-        <td><div class="stars">${stars}</div></td>
-        <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${r.reviewText || ""}</td>
-        <td style="font-size: 12px; color: var(--text-muted);">${r.createdAt ? new Date(r.createdAt).toLocaleDateString() : ""}</td>
-        <td><span class="badge status-${(r.status || "Pending").toLowerCase()}">${r.status || "Pending"}</span></td>
-        <td class="actions">
-          <span class="action-icon approve" data-id="${r._id}" title="Approve">✓</span>
-          <span class="action-icon delete" data-id="${r._id}" title="Delete">🗑</span>
-        </td>
+        <td colspan="7" style="text-align:center; padding:20px;">No reviews found</td>
       </tr>
     `;
+    return;
+  }
+
+  data.forEach(r => {
+    const userName = r.user?.name || "Unknown User";
+    const productTitle = r.product?.name || "Unknown Product";
+    const tr = document.createElement("tr");
+    tr.style.cursor = "pointer";
+    tr.addEventListener("click", () => showReviewDetails(r));
+
+    tr.innerHTML = `
+      <td style="font-weight: 600;">${userName}</td>
+      <td style="font-size: 13px;">${productTitle}</td>
+      <td><div class="stars">${getStars(r.rating || 0)}</div></td>
+      <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${r.reviewText || ""}</td>
+      <td style="font-size: 12px; color: var(--text-muted);">${r.createdAt ? new Date(r.createdAt).toLocaleDateString() : ""}</td>
+      <td><span class="badge status-${(r.status || "Pending").toLowerCase()}">${r.status || "Pending"}</span></td>
+      <td class="actions">
+        <span class="action-icon approve" data-id="${r._id}" title="Approve">✓</span>
+        <span class="action-icon delete" data-id="${r._id}" title="Delete">🗑</span>
+      </td>
+    `;
+
+    tbody.appendChild(tr);
   });
 
-  // Event listeners
   document.querySelectorAll(".approve").forEach(btn => {
-    btn.addEventListener("click", () => updateStatus(btn.dataset.id, "Approved"));
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      updateStatus(btn.dataset.id, "Approved");
+    });
   });
+
   document.querySelectorAll(".delete").forEach(btn => {
-    btn.addEventListener("click", () => deleteReview(btn.dataset.id));
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      deleteReview(btn.dataset.id);
+    });
   });
 }
 
-// Fetch reviews from backend
-const BASE_URL = "http://localhost:5000/api/admin/reviews";
-
-// Fetch reviews
 async function loadReviews() {
   try {
     const res = await fetch(BASE_URL, {
-      headers: { "Authorization": `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${token}` }
     });
-    reviews = await res.json();
+
+    const data = await res.json();
+    reviews = data.reviews || data;
+
     renderTable(reviews);
-    if (reviews.length) showReviewDetails(reviews[0]);
+
+    if (reviews.length) {
+      showReviewDetails(reviews[0]);
+    }
   } catch (err) {
     console.error("Failed to load reviews:", err);
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="7" style="text-align:center; padding:20px; color:red;">Failed to load reviews</td>
+      </tr>
+    `;
   }
 }
 
-// Update status
 async function updateStatus(id, status) {
-  await fetch(`${BASE_URL}/${id}/status`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-    body: JSON.stringify({ status })
-  });
-  loadReviews();
+  try {
+    await fetch(`${BASE_URL}/${id}/status`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ status })
+    });
+
+    loadReviews();
+  } catch (err) {
+    console.error("Failed to update review status:", err);
+  }
 }
 
-// Delete review
 async function deleteReview(id) {
   if (!confirm("Are you sure you want to delete this review?")) return;
-  await fetch(`${BASE_URL}/${id}`, {
-    method: "DELETE",
-    headers: { "Authorization": `Bearer ${token}` }
-  });
-  loadReviews();
+
+  try {
+    await fetch(`${BASE_URL}/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    loadReviews();
+  } catch (err) {
+    console.error("Failed to delete review:", err);
+  }
 }
 
-// Search filter
 filterInput.addEventListener("input", () => {
   const query = filterInput.value.toLowerCase();
+
   renderTable(reviews.filter(r =>
-    r.user.name.toLowerCase().includes(query) ||
-    r.product.title.toLowerCase().includes(query)
+    (r.user?.name || "").toLowerCase().includes(query) ||
+    (r.product?.name || r.product?.title || "").toLowerCase().includes(query)
   ));
 });
 
-// Rating filter
 selectFilter.addEventListener("change", () => {
   const val = selectFilter.value;
+
   if (val === "All Ratings") {
     renderTable(reviews);
   } else {
-    const rating = parseInt(val); // "5 Star" => 5
+    const rating = parseInt(val);
     renderTable(reviews.filter(r => r.rating === rating));
   }
 });
 
-// Show details in right panel
 function showReviewDetails(review) {
   selectedReview = review;
+
   const detailsThumb = document.querySelector(".product-thumb");
   const detailsTitle = document.querySelector(".details-title");
   const detailsReviewer = detailsTitle.nextElementSibling;
   const reviewTextFull = document.querySelector(".review-text-full");
 
-  // Use optional chaining and default values
-  const productTitle = review.product?.title || "Unknown Product";
+  const productTitle = review.product?.name || "Unknown Product";
   const userName = review.user?.name || "Unknown User";
 
-  detailsThumb.textContent = "👠"; // Could use product image later
+  detailsThumb.textContent = "👠";
   detailsTitle.textContent = productTitle;
   detailsReviewer.textContent = `Reviewed by ${userName}`;
   reviewTextFull.textContent = review.reviewText || "";
 
-  // Approve/Reject buttons
   const buttons = reviewTextFull.parentElement.querySelectorAll("button");
   buttons[0].onclick = () => updateStatus(review._id, "Rejected");
   buttons[1].onclick = () => updateStatus(review._id, "Approved");
 }
 
-// Initialize
 loadReviews();
 </script>
 </body>

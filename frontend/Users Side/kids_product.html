@@ -16,6 +16,7 @@
 
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" href="data:,">
 </head>
 
 <body class="products-body">
@@ -198,7 +199,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 async function loadOffers() {
   try {
-    const res = await fetch("http://localhost:5000/api/offers");
+    const res = await fetch("http://16.171.151.84:5000/api/offers");
     offers = await res.json();
     console.log("Offers loaded:", offers);
   } catch (err) {
@@ -231,7 +232,7 @@ async function loadOffers() {
         // }
 
         // Fetch Kids Products from Backend
-fetch("http://localhost:5000/api/products/kids")
+fetch("http://16.171.151.84:5000/api/products/kids")
             .then(res => res.json())
             .then(products => {
                 const container = document.getElementById("productsContainer");
@@ -258,7 +259,7 @@ fetch("http://localhost:5000/api/products/kids")
 async function loadKidsProducts() {
   try {
     
-    const res = await fetch("http://localhost:5000/api/products/kids");
+    const res = await fetch("http://16.171.151.84:5000/api/products/kids");
     const products = await res.json();
 
     const container = document.getElementById("productsContainer");
@@ -266,7 +267,19 @@ async function loadKidsProducts() {
 
     products.forEach(product => {
 
-         const offer = offers.find(o => o.productId === product._id);
+
+    let offers = [];
+
+async function loadOffers() {
+  try {
+    const res = await fetch("http://16.171.151.84:5000/api/offers");
+    offers = await res.json();
+  } catch (err) {
+    console.error("Error loading offers:", err);
+  }
+}
+
+const offer = offers.find(o => o.productId?.toString() === product._id?.toString());
 
   let priceHTML = `₹${product.price}`;
   if (offer) {
@@ -285,8 +298,7 @@ async function loadKidsProducts() {
       // Only HTML inside innerHTML
       card.innerHTML = `
         <div class="image-wrapper">
-          <img src="${encodeURI(product.image)}" class="product-img" />
-          
+<img src="${getProductImage(product)}" class="product-img" />          
           <div class="wishlist-icon" data-id="${product._id}">
             ♡
           </div>
@@ -322,6 +334,9 @@ async function loadKidsProducts() {
       container.appendChild(card);
     });
 
+    await initializeWishlist();
+
+
   } catch (err) {
     console.error("Error loading kids products:", err);
   }
@@ -342,7 +357,7 @@ async function toggleWishlist(iconElement) {
     if (!token) return;
 
     try {
-        const res = await fetch("http://localhost:5000/api/wishlist", {
+        const res = await fetch("http://16.171.151.84:5000/api/wishlist", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -390,7 +405,7 @@ async function addToCart(productId) {
   }
 
   try {
-    const response = await fetch("http://localhost:5000/api/cart", {
+    const response = await fetch("http://16.171.151.84:5000/api/cart", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -413,8 +428,68 @@ async function addToCart(productId) {
   }
 }
 
+
+async function initializeWishlist() {
+  const token = localStorage.getItem("token");
+  if (!token) return;
+
+  try {
+    const res = await fetch("http://16.171.151.84:5000/api/wishlist", {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+
+    const wishlist = await res.json();
+
+    if (!wishlist.products) return;
+
+    const wishlistIds = wishlist.products.map(item =>
+      item.productId?._id || item.productId
+    );
+
+    document.querySelectorAll(".wishlist-icon").forEach(icon => {
+      const id = icon.dataset.id;
+
+      if (wishlistIds.includes(id)) {
+        icon.textContent = "♥";
+        icon.classList.add("active");
+      } else {
+        icon.textContent = "♡";
+        icon.classList.remove("active");
+      }
+    });
+
+  } catch (err) {
+    console.error("Wishlist load error:", err);
+  }
+}
+
 // Load products on page load
 loadKidsProducts();
+
+
+const API_BASE_URL = "http://16.171.151.84:5000";
+
+function getProductImage(product) {
+  if (!product.image) {
+    return "images/default.png";
+  }
+
+  if (product.image.startsWith("http")) {
+    return product.image;
+  }
+
+  if (product.image.startsWith("uploads/")) {
+    return `${API_BASE_URL}/${encodeURI(product.image)}`;
+  }
+
+  if (product.image.startsWith("images/")) {
+    return `./${encodeURI(product.image)}`;
+  }
+
+  return `${API_BASE_URL}/uploads/${encodeURI(product.image)}`;
+}
 
 </script>
 </body>

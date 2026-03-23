@@ -700,6 +700,7 @@ font-size:12px;
             </div>
         </div>
     </footer>
+    <script src="../common.js"></script>
     <script>
 window.autoApplyCoupon = (code) => {
     document.getElementById("couponCode").value = code;
@@ -741,7 +742,7 @@ console.log("Selected Shipping Address:", shippingData);
 }
 
 
-const res = await fetch("http://localhost:5000/api/cart", {
+const res = await fetch("http://16.171.151.84:5000/api/cart", {
   headers: { Authorization: "Bearer " + token }
 });
 const data = await res.json();
@@ -753,7 +754,7 @@ cartItems.forEach(item => {
   div.className = "product-item";
   div.innerHTML = `
     <div class="product-thumbnail">
-<img src="${product.image?.trim() || 'images/no-image.png'}" alt="${product.name}">
+<img src="${getProductImage(product)}" alt="${product.name}">
     </div>
     <div class="product-details">
       <h4>${product.name}</h4>
@@ -781,7 +782,7 @@ document.getElementById("total").innerText = "₹" + total;
 
   // ---------------- Fetch Wallet Balance ----------------
   try {
-    const walletRes = await fetch("http://localhost:5000/api/wallet/balance", {
+    const walletRes = await fetch("http://16.171.151.84:5000/api/wallet/balance", {
       headers: { Authorization: `Bearer ${token}` }
     });
 
@@ -815,7 +816,7 @@ return;
   });
 
   try {
-    const res = await fetch("http://localhost:5000/api/coupons/apply", {
+    const res = await fetch("http://16.171.151.84:5000/api/coupons/apply", {
       method:"POST",
         headers:{
         "Content-Type":"application/json",
@@ -850,7 +851,7 @@ if(!container) return;
 
 try{
 
-const res = await fetch("http://localhost:5000/api/coupons");
+const res = await fetch("http://16.171.151.84:5000/api/coupons");
 const data = await res.json();
 
 container.innerHTML = "";
@@ -886,13 +887,6 @@ console.log("Coupon fetch error",err);
 }
 
 
-function autoApplyCoupon(code){
-
-document.getElementById("couponCode").value = code;
-
-document.getElementById("applyCouponBtn").click();
-
-}
 
 
   // ---------------- Payment Option Selection ----------------
@@ -920,7 +914,17 @@ payButton.addEventListener("click", async () => {
     payButton.disabled = true;
     payButton.innerText = "Processing...";
 
-    let paymentMethod = document.querySelector(".payment-option.selected")?.getAttribute("data-method") || "Razorpay";
+    const selectedOption = document.querySelector(".payment-option.selected");
+if (!selectedOption) {
+  alert("Please select a payment method");
+  payButton.disabled = false;
+  payButton.innerText = "Pay & Continue";
+  return;
+}
+
+let paymentMethod = selectedOption.getAttribute("data-method");
+
+paymentMethod = document.querySelector(".payment-option.selected")?.getAttribute("data-method") || "Razorpay";
 
 const orderData = {
     shippingDetails: shippingData, // ✅ use shippingData
@@ -931,7 +935,7 @@ const orderData = {
 };
 
     try {
-        let backendOrderRes = await fetch("http://localhost:5000/api/orders/create", {
+        let backendOrderRes = await fetch("http://16.171.151.84:5000/api/orders/create", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -949,7 +953,7 @@ const orderData = {
         if (paymentMethod === "Razorpay") {
 
             // 1️⃣ Create Razorpay order using backend orderId
-            const razorRes = await fetch("http://localhost:5000/api/orders/create-razorpay", {
+            const razorRes = await fetch("http://16.171.151.84:5000/api/orders/create-razorpay", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -975,7 +979,7 @@ const orderData = {
                 },
                 handler: async function(response) {
                     // Verify payment
-                    const verifyRes = await fetch("http://localhost:5000/api/orders/verify-razorpay", {
+                    const verifyRes = await fetch("http://16.171.151.84:5000/api/orders/verify-razorpay", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",

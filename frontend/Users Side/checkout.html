@@ -453,6 +453,7 @@
             </div>
         </div>
     </footer>
+    <script src="../common.js"></script>
     <script>
 // Place order button click
 document.querySelector(".place-order-btn").addEventListener("click", async () => {
@@ -481,7 +482,7 @@ localStorage.setItem("shippingDetails", JSON.stringify(shippingDetails));
 
 
 //Save Address To Database When User Clicks Place Order
-await fetch("http://localhost:5000/api/address", {
+await fetch("http://16.171.151.84:5000/api/address", {
   method: "POST",
   headers: {
     "Content-Type": "application/json",
@@ -495,7 +496,7 @@ await fetch("http://localhost:5000/api/address", {
   if (!token) return alert("Login first!");
 
   try {
-    const res = await fetch("http://localhost:5000/api/cart", {
+    const res = await fetch("http://16.171.151.84:5000/api/cart", {
       headers: { Authorization: "Bearer " + token }
     });
     const data = await res.json();
@@ -537,7 +538,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (!token) return alert("Login first!");
 
   try {
-    const res = await fetch("http://localhost:5000/api/cart", {
+    const res = await fetch("http://16.171.151.84:5000/api/cart", {
       headers: { Authorization: "Bearer " + token }
     });
 
@@ -557,7 +558,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       li.className = "summary-item";
       li.innerHTML = `
         <div class="summary-product">
-          <img src="${item.product.image}" />
+<img src="${getProductImage(item.product)}" />
           <div class="item-info-left">
             <span class="item-title">${item.product.name}</span>
             <span class="item-qty-price">Qty: ${item.quantity} × ₹${item.product.price}</span>

@@ -330,9 +330,9 @@
             </div>
         </div>
     </footer>
-    <script>
+  <script src="../common.js"></script>
+<script>
 document.addEventListener("DOMContentLoaded", async () => {
-
   const params = new URLSearchParams(window.location.search);
   const orderId = params.get("orderId");
 
@@ -341,8 +341,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  // Show Order ID immediately
-document.getElementById("orderId").textContent = orderId;
+  document.getElementById("orderId").textContent = orderId;
+  document.getElementById("summaryBtn").href = `summary.html?orderId=${orderId}`;
 
   const token = localStorage.getItem("token");
 
@@ -353,7 +353,7 @@ document.getElementById("orderId").textContent = orderId;
   }
 
   try {
-    const response = await fetch(`http://localhost:5000/api/orders/${orderId}`, {
+    const response = await fetch(`${API_BASE_URL}/api/orders/${orderId}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -362,13 +362,12 @@ document.getElementById("orderId").textContent = orderId;
     const data = await response.json();
 
     if (!response.ok) {
-      alert(data.message);
+      alert(data.message || "Failed to fetch order");
       return;
     }
 
-    const order = data.order; 
+    const order = data.order || data;
 
-    // Set Delivery Date properly
     if (order.deliveryDate) {
       const deliveryDate = new Date(order.deliveryDate);
       document.getElementById("deliveryDate").innerText =
@@ -377,14 +376,12 @@ document.getElementById("orderId").textContent = orderId;
       document.getElementById("deliveryDate").innerText = "Not Available";
     }
 
-    document.getElementById("summaryBtn").href =
-  `summary.html?orderId=${orderId}`;
+    document.getElementById("summaryBtn").href = `summary.html?orderId=${orderId}`;
 
   } catch (error) {
     console.error("Error:", error);
     alert("Something went wrong");
   }
-
 });
 </script>
 </body>

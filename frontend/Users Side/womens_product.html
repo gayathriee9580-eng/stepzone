@@ -187,6 +187,8 @@
             </div>
         </div>
     </footer>
+
+    <script src="../common.js"></script>
    <script>
     let offers = []; // Will store all offers from backend
 
@@ -197,7 +199,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 async function loadOffers() {
   try {
-    const res = await fetch("http://localhost:5000/api/offers");
+    const res = await fetch("http://16.171.151.84:5000/api/offers");
     offers = await res.json();
     console.log("Offers loaded:", offers);
   } catch (err) {
@@ -208,7 +210,7 @@ async function loadOffers() {
 async function loadWomenProducts() {
 
   try {
-    const res = await fetch("http://localhost:5000/api/products/women"); // your API route
+    const res = await fetch("http://16.171.151.84:5000/api/products/women"); // your API route
     const products = await res.json();
 
     const container = document.getElementById("productsContainer");
@@ -292,7 +294,7 @@ async function toggleWishlist(iconElement) {
 if (!token) return;
 
     try {
-        const res = await fetch("http://localhost:5000/api/wishlist", {
+        const res = await fetch("http://16.171.151.84:5000/api/wishlist", {
             method: "POST",
             headers: {
     "Content-Type": "application/json",
@@ -324,7 +326,7 @@ async function initializeWishlistIcons() {
 const token = localStorage.getItem("token");
 if (!token) return;
 
-const res = await fetch("http://localhost:5000/api/wishlist", {
+const res = await fetch("http://16.171.151.84:5000/api/wishlist", {
     headers: {
         "Authorization": `Bearer ${token}`
     }
@@ -376,7 +378,7 @@ async function addToCart(productId) {
   }
 
   try {
-    const response = await fetch("http://localhost:5000/api/cart", {
+    const response = await fetch("http://16.171.151.84:5000/api/cart", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

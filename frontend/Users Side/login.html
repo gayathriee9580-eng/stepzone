@@ -44,55 +44,36 @@
             Don't have an account? <a href="signup.html" class="create-account">Create Account</a>
         </div>
     </div>
-
-
-
 <script>
 document.getElementById("loginForm").addEventListener("submit", async (e) => {
   e.preventDefault();
-  console.log("Login form submitted"); // 👈 ADD THIS
 
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
 
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+  try {
+    const response = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ email, password })
+    });
 
-  const response = await fetch("http://localhost:5000/api/auth/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password })
-  });
+    const data = await response.json();
 
-  const data = await response.json();
-
-
-  if (response.ok && data.token) {
-    // ✅ token store cheyyuka
-    localStorage.setItem("token", data.token);
-
-    // ✅ login success message (optional)
-    alert("Login successful");
-
-    // ✅ DIRECT HOME PAGE REDIRECT
-    window.location.href = "home.html";
-  } else {
-    alert(data.message || "Login failed");
+    if (response.ok && data.token) {
+      localStorage.setItem("token", data.token);
+      alert("Login successful");
+      window.location.href = "home.html";
+    } else {
+      alert(data.message || "Login failed");
+    }
+  } catch (error) {
+    console.error("Fetch error:", error);
+    alert("Something went wrong");
   }
 });
-
-  if (response.ok && data.token) {
-    // ✅ token store cheyyuka
-    localStorage.setItem("token", data.token);
-
-    // ✅ login success message (optional)
-    alert("Login successful");
-
-    // ✅ DIRECT HOME PAGE REDIRECT
-    window.location.href = "products.html";
-  } else {
-    alert(data.message || "Login failed");
-  }
-;
 </script>
 </body>
-
 </html>

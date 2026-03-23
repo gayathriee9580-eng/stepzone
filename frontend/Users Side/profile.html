@@ -413,7 +413,6 @@
                     <li><a href="wishlist.html"><i class="fas fa-heart"></i> Wishlist</a></li>
                     <li><a href="#"><i class="fas fa-map-marker-alt"></i> My Address</a></li>
                     <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
-                  <li>
 <li>
   <a href="#" onclick="logout()" style="color: rgb(191, 61, 61);">
     <i class="fas fa-sign-out-alt"></i> Logout
@@ -583,7 +582,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // ✅ Load Profile
   try {
-    const res = await fetch("http://localhost:5000/api/users/profile", {
+    const res = await fetch("http://16.171.151.84:5000/api/users/profile", {
       headers: { Authorization: "Bearer " + token }
     });
 
@@ -617,7 +616,7 @@ async function loadAddresses() {
   const token = localStorage.getItem("token");
 
   try {
-    const res = await fetch("http://localhost:5000/api/address", {
+    const res = await fetch("http://16.171.151.84:5000/api/address", {
       headers: { Authorization: "Bearer " + token }
     });
 
@@ -679,14 +678,14 @@ async function saveProfile() {
   const token = localStorage.getItem("token");
   const inputs = document.querySelectorAll(".info-value input");
 
-  const updatedData = {
-    name: inputs[0].value,
-    phone: inputs[1].value,
-    gender: inputs[2].value,
-    dob: inputs[3].value
-  };
+const updatedData = {
+  name: inputs[0].value,
+  phone: inputs[1].value,
+  gender: inputs[2].value,
+  dob: inputs[3].value
+};
 
-  const res = await fetch("http://localhost:5000/api/users/profile", {
+  const res = await fetch("http://16.171.151.84:5000/api/users/profile", {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -732,7 +731,7 @@ async function changePassword() {
 
   try {
 
-    const res = await fetch("http://localhost:5000/api/users/change-password", {
+    const res = await fetch("http://16.171.151.84:5000/api/users/change-password", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

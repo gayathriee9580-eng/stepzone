@@ -281,10 +281,11 @@ font-size:14px;
 
 }
 
-statusFilter{
+#statusFilter {
     padding: 10px;
-    height: 20px;
-    width: 20px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
 }
 
 
@@ -385,11 +386,11 @@ statusFilter{
     <!-- TOPBAR -->
     <header class="topbar">
         <div class="search-container">
-    <input 
-        type="text" 
-        id="searchUser" 
-        placeholder="Search user by name or email..."
-        onkeyup="searchUser()">
+<input 
+    type="text" 
+    id="searchUser" 
+    placeholder="Search user by name or email..."
+    onkeyup="applyFilters()">
 </div>
         <div class="topbar-right">
 <div class="user-profile">
@@ -414,8 +415,8 @@ statusFilter{
 
 
 
-<select id="statusFilter"onchange="filterUsers()">
-  <option value="all">All Users</option>
+<select id="statusFilter" onchange="applyFilters()">
+    <option value="all">All Users</option>
   <option value="active">Active Users</option>
   <option value="blocked">Blocked Users</option>
 </select>
@@ -438,172 +439,157 @@ statusFilter{
             </table>
         </div>
     </main>
-    <script src="admin-common.js"></script>
+  <script src="admin-common.js"></script>
+<script src="../common.js"></script>
 <script>
-let allUsers = [];
+if (!token) {
+  window.location.href = "admin-login.html";
+}
 
+let allUsers = [];
 const tableBody = document.getElementById("usersTable");
 
-async function loadUsers(){
-
-    const res = await fetch("http://localhost:5000/api/admin/users",{
-        headers:{
-            "Authorization":`Bearer ${token}`
-        }
+async function loadUsers() {
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/admin/users`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     });
 
-    const users = await res.json();
+    const data = await res.json();
+    allUsers = data.users || data;
 
-    allUsers = users;
-
-    displayUsers(users);
-
-    tableBody.innerHTML = "";
-
-    users.forEach(user=>{
-
-        const tr = document.createElement("tr");
-
-        tr.innerHTML = `
-
-        <td>#USR-${user._id.slice(-4)}</td>
-
-        <td>${user.name}</td>
-
-        <td>${user.email}</td>
-
-        <td>${user.role}</td>
-
-        <td>
-            <span class="badge ${user.isBlocked ? "status-blocked":"status-active"}">
-            ${user.isBlocked ? "Blocked":"Active"}
-            </span>
+    displayUsers(allUsers);
+  } catch (err) {
+    console.error("Failed to load users:", err);
+    tableBody.innerHTML = `
+      <tr>
+        <td colspan="7" style="text-align:center; padding:20px; color:red;">
+          Failed to load users
         </td>
+      </tr>
+    `;
+  }
+}
 
-        <td>${new Date(user.createdAt).toLocaleDateString()}</td>
+function displayUsers(users) {
+  tableBody.innerHTML = "";
 
-        <td class="actions">
-
-        <a href="#" onclick="toggleBlock('${user._id}')">
-        ${user.isBlocked ? "🔓":"🚫"}
-        </a>
-
-        <a href="#" onclick="deleteUser('${user._id}')">
-        🗑
-        </a>
-
+  if (!users.length) {
+    tableBody.innerHTML = `
+      <tr>
+        <td colspan="7" style="text-align:center; padding:20px;">
+          No users found
         </td>
+      </tr>
+    `;
+    return;
+  }
 
-        `;
+  users.forEach(user => {
+    const tr = document.createElement("tr");
 
-        tableBody.appendChild(tr);
-
-    });
-
-}
-
-
-
-async function toggleBlock(id){
-
-    await fetch(`http://localhost:5000/api/admin/users/block/${id}`,{
-        method:"PUT",
-        headers:{
-            "Authorization":`Bearer ${token}`
-        }
-    });
-
-    loadUsers();
-}
-
-
-
-async function deleteUser(id){
-
-    if(!confirm("Delete this user?")) return;
-
-    await fetch(`http://localhost:5000/api/admin/users/${id}`,{
-        method:"DELETE",
-        headers:{
-            "Authorization":`Bearer ${token}`
-        }
-    });
-
-    loadUsers();
-}
-
-function displayUsers(users){
-
-    tableBody.innerHTML = "";
-
-    users.forEach(user => {
-
-        const tr = document.createElement("tr");
-
-        tr.innerHTML = `
-        <td>#USR-${user._id.slice(-4)}</td>
-        <td>${user.name}</td>
-        <td>${user.email}</td>
-        <td>${user.role}</td>
-
-        <td>
-        <span class="badge ${user.isBlocked ? "status-blocked":"status-active"}">
-        ${user.isBlocked ? "Blocked":"Active"}
+    tr.innerHTML = `
+      <td>#USR-${user._id.slice(-4)}</td>
+      <td>${user.name || "N/A"}</td>
+      <td>${user.email || "N/A"}</td>
+      <td>${user.role || "user"}</td>
+      <td>
+        <span class="badge ${user.isBlocked ? "status-blocked" : "status-active"}">
+          ${user.isBlocked ? "Blocked" : "Active"}
         </span>
-        </td>
-
-        <td>${new Date(user.createdAt).toLocaleDateString()}</td>
-
-        <td>
-        <a onclick="toggleBlock('${user._id}')">
-        ${user.isBlocked ? "🔓":"🚫"}
+      </td>
+      <td>${user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "N/A"}</td>
+      <td class="actions">
+        <a href="#" class="action-link" onclick="toggleBlock('${user._id}'); return false;">
+          ${user.isBlocked ? "🔓" : "🚫"}
         </a>
-        </td>
-        `;
+        <a href="#" class="action-link" onclick="deleteUser('${user._id}'); return false;">
+          🗑
+        </a>
+      </td>
+    `;
 
-        tableBody.appendChild(tr);
+    tableBody.appendChild(tr);
+  });
+}
+
+function applyFilters() {
+  const keyword = document.getElementById("searchUser").value.toLowerCase();
+  const filter = document.getElementById("statusFilter").value;
+
+  let filtered = [...allUsers];
+
+  if (keyword) {
+    filtered = filtered.filter(user =>
+      (user.name || "").toLowerCase().includes(keyword) ||
+      (user.email || "").toLowerCase().includes(keyword)
+    );
+  }
+
+  if (filter === "active") {
+    filtered = filtered.filter(user => !user.isBlocked);
+  }
+
+  if (filter === "blocked") {
+    filtered = filtered.filter(user => user.isBlocked);
+  }
+
+  displayUsers(filtered);
+}
+
+async function toggleBlock(id) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/admin/users/${id}/block`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     });
-}
 
-function filterUsers(){
 
-    const filter = document.getElementById("statusFilter").value;
 
-    if(filter === "all"){
-        displayUsers(allUsers);
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.message || "Failed to update user status");
+      return;
     }
 
-    if(filter === "active"){
-        const active = allUsers.filter(user => !user.isBlocked);
-        displayUsers(active);
-    }
-
-    if(filter === "blocked"){
-        const blocked = allUsers.filter(user => user.isBlocked);
-        displayUsers(blocked);
-    }
-
+    loadUsers();
+  } catch (err) {
+    console.error(err);
+    alert("Server error");
+  }
 }
 
+async function deleteUser(id) {
+  if (!confirm("Delete this user?")) return;
 
-function searchUser(){
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/admin/users/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
 
-const keyword = document.getElementById("searchUser").value.toLowerCase();
+    const data = await res.json();
 
-const filteredUsers = allUsers.filter(user => 
+    if (!res.ok) {
+      alert(data.message || "Failed to delete user");
+      return;
+    }
 
-user.name.toLowerCase().includes(keyword) ||
-user.email.toLowerCase().includes(keyword)
-
-);
-
-displayUsers(filteredUsers);
-
+    loadUsers();
+  } catch (err) {
+    console.error(err);
+    alert("Server error");
+  }
 }
-
 
 loadUsers();
-
 </script>
 </body>
 </html>
