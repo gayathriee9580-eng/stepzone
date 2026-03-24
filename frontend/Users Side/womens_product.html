@@ -400,27 +400,7 @@ async function addToCart(productId) {
     console.error("Add to Cart Error:", error);
   }
 }
-function getProductImage(product) {
-  if (product.images && product.images.length > 0) {
-    let imagePath = product.images[0];
 
-    if (imagePath.startsWith("http://16.171.151.84:5000/uploads/")) {
-      imagePath = imagePath.replace("http://16.171.151.84:5000", "");
-    }
-
-    if (imagePath.startsWith("/uploads/")) {
-      return imagePath;
-    }
-
-    if (!imagePath.startsWith("http")) {
-      return `/uploads/${imagePath}`;
-    }
-
-    return imagePath;
-  }
-
-  return "/Users%20Side/images/default.png";
-}
 
 </script>
 </body>
