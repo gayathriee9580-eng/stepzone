@@ -491,18 +491,21 @@
         </div>
     </footer>
     <script src="../common.js"></script>
+<script src="/common.js?v=2"></script>
 <script>
-
 document.addEventListener("DOMContentLoaded", loadOrders);
 
 async function loadOrders() {
-
   const token = localStorage.getItem("token");
 
-  try {
+  if (!token) {
+    window.location.href = "login.html";
+    return;
+  }
 
-fetch(`/api/orders/my-orders`, {
-          headers: { Authorization: "Bearer " + token }
+  try {
+    const res = await fetch(`/api/orders/my-orders`, {
+      headers: { Authorization: "Bearer " + token }
     });
 
     const data = await res.json();
@@ -511,54 +514,59 @@ fetch(`/api/orders/my-orders`, {
     const ordersList = document.getElementById("ordersList");
     const orderCount = document.getElementById("orderCount");
     const totalAmountEl = document.getElementById("totalAmount");
-            if (totalAmountEl) {
-        totalAmountEl.innerText = "$0";
-        }
+
+    if (totalAmountEl) {
+      totalAmountEl.innerText = "₹0";
+    }
 
     ordersList.innerHTML = "";
 
-    if (!data.orders || data.orders.length === 0) {
-      ordersList.innerHTML = "<p>No orders found</p>";
+    if (!res.ok) {
+      ordersList.innerHTML = `<p>${data.message || "Failed to load orders"}</p>`;
       orderCount.innerText = "(0 items)";
-      totalAmountEl.innerText = "$0";
       return;
     }
 
-    orderCount.innerText = `(${data.orders.length} items)`;
+    const orders = Array.isArray(data.orders) ? data.orders : [];
+
+    if (!orders.length) {
+      ordersList.innerHTML = "<p>No orders found</p>";
+      orderCount.innerText = "(0 items)";
+      return;
+    }
+
+    orderCount.innerText = `(${orders.length} items)`;
 
     let grandTotal = 0;
-    console.log("Orders data:", data.orders);
 
-    data.orders.forEach(order => {
+    orders.forEach(order => {
+      grandTotal += Number(order.totalAmount || 0);
 
-      grandTotal += order.totalAmount;
+      if (!order.items || order.items.length === 0) return;
 
-if (!order.items || order.items.length === 0) return;
+      const firstItem = order.items[0];
+      const firstProduct = firstItem.product;
+      if (!firstProduct) return;
 
-const firstItem = order.items[0];
-const firstProduct = firstItem.product;
-
-if (!firstProduct) return;
       const statusClass =
         order.status === "Delivered" ? "status-delivered" :
         order.status === "Cancelled" ? "status-cancelled" :
         "status-shipped";
 
       const statusText =
-        order.status === "Delivered" ?
-        `Delivered on ${new Date(order.updatedAt).toDateString()}` :
-        order.status;
+        order.status === "Delivered"
+          ? `Delivered on ${new Date(order.updatedAt).toDateString()}`
+          : order.status;
 
       ordersList.innerHTML += `
         <div class="order-card">
-
           <div class="order-img-wrapper">
-<img src="${getProductImage(firstProduct)}" class="order-img">
+            <img src="${getProductImage(firstProduct)}" class="order-img" alt="${firstProduct.name}">
           </div>
 
           <div class="order-details">
             <h2 class="product-name">${firstProduct.name}</h2>
-            <span class="product-category">${firstProduct.category}</span>
+            <span class="product-category">${firstProduct.category || ""}</span>
             <span class="product-price">₹${order.totalAmount}</span>
 
             <div class="order-meta-info">
@@ -571,7 +579,7 @@ if (!firstProduct) return;
 
           <div class="order-status-section">
             <span class="order-number">Order #${order._id.slice(-6)}</span>
-<a href="summary.html?orderId=${order._id}" class="view-details-link">           
+            <a href="summary.html?orderId=${order._id}" class="view-details-link">
               View Order Details
             </a>
 
@@ -579,15 +587,18 @@ if (!firstProduct) return;
               <span class="status-dot"></span>
               ${statusText}
             </div>
-
           </div>
-
         </div>
       `;
     });
 
+    if (totalAmountEl) {
+      totalAmountEl.innerText = `₹${grandTotal}`;
+    }
+
   } catch (err) {
     console.error("Load orders error:", err);
+    document.getElementById("ordersList").innerHTML = "<p>Failed to load orders</p>";
   }
 }
 </script>
