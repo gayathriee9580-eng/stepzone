@@ -401,6 +401,13 @@ async function addToCart(productId) {
   }
 }
 
+function getProductImage(product) {
+  if (product.images && product.images.length > 0) {
+    return product.images[0];
+  }
+  return "images/default.png"; // fallback
+}
+
 </script>
 </body>
 </html>
