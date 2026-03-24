@@ -1,3 +1,5 @@
+console.log("NEW COMMON JS LOADED");
+
 function getProductImage(product) {
   const img = (product?.image || product?.images?.[0] || "").trim();
 
