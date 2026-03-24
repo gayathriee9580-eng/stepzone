@@ -490,11 +490,12 @@
             </div>
         </div>
     </footer>
-    <script src="../common.js"></script>
+   <script src="../common.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", loadOrders);
 
 async function loadOrders() {
+  const token = localStorage.getItem("token");
 
   if (!token) {
     window.location.href = "login.html";
