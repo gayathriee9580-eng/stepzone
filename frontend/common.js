@@ -4,7 +4,7 @@ function getProductImage(product) {
 const img = (product?.image || product?.images?.[0] || "")
   .trim()
   .replace(/\s+/g, " "); // normalize spaces
-  
+
   if (!img) {
     return "/Users%20Side/images/default.png";
   }
@@ -26,10 +26,7 @@ const img = (product?.image || product?.images?.[0] || "")
   }
 
   if (img.startsWith("images/")) {
-    const isAdminPage = window.location.pathname.includes("/admin/");
-    return isAdminPage
-      ? `/Users%20Side/${encodeURI(img)}`
-      : `./${encodeURI(img)}`;
+    return `/${encodeURI(img)}`;
   }
 
   return `/uploads/${encodeURI(img)}`;
