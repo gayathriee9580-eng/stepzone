@@ -508,11 +508,7 @@ if (selectedCategory) {
 
       tr.innerHTML = `
         <td>
-        <img 
-        src="${getProductImage(product)}"
-        onerror="this.src='/Users%20Side/images/default.png'"
-        width="45" height="45"
-        />
+         <img src="${getProductImage(product)}" width="45" height="45" style="border-radius:8px;" />
         </td>
         <td><span style="font-weight:600;">${product.name}</span></td>
         <td>
