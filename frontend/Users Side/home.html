@@ -56,7 +56,7 @@
                 <a href="cart.html" class="icon-link"><i class="fas fa-shopping-cart"></i></a>
                 <a href="profile.html" class="profile-link">
                     <div class="avatar-circle"><i class="fas fa-user"></i></div>
-                    <span class="username">Anne Doe</span>
+                <span id="userName">Anne Doe</span>
                 </a>
             </div>
             <div class="mobile-menu-trigger">
@@ -364,6 +364,21 @@
             </div>
         </div>
     </footer>
+    <script>
+document.addEventListener("DOMContentLoaded", () => {
+  const userData = localStorage.getItem("user");
+
+  if (userData) {
+    const user = JSON.parse(userData);
+
+    const nameElement = document.getElementById("userName");
+
+    if (nameElement && user.name) {
+      nameElement.innerText = user.name;
+    }
+  }
+});
+</script>
   <script>
     function logout() {
       localStorage.removeItem("token");
