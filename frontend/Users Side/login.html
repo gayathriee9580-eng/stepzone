@@ -28,12 +28,13 @@
                 <a href="forgot_password.html" class="forgot-password">Forgot Password?</a>
             </div>
 
-                  <button type="submit" class="login-btn">LOGIN</button>
-                  <p id="loginMessage" style="margin-top: 12px; font-size: 14px;"></p>
+<button type="submit" class="login-btn">LOGIN</button>
+<div id="toast" class="toast"></div>                  
+                  <p style="margin-top: 12px; font-size: 14px;"></p>
 
             <!-- <div class="divider">or</div> -->
             <div class="google-auth">
-                <button class="google-btn">
+                <button type="button" class="google-btn">
                     <img src="https://developers.google.com/identity/images/g-logo.png"> <span
                         class="google-text">Continue with Google</span>
 
@@ -45,10 +46,10 @@
             Don't have an account? <a href="signup.html" class="create-account">Create Account</a>
         </div>
     </div>
+    <div id="toast" class="toast"></div>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("loginForm");
-  const message = document.getElementById("loginMessage");
   const loginBtn = document.querySelector(".login-btn");
 
   form.addEventListener("submit", async (e) => {
@@ -57,7 +58,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value.trim();
 
-    message.innerText = "";
     loginBtn.disabled = true;
     loginBtn.innerText = "Logging in...";
 
@@ -77,27 +77,34 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.setItem("user", JSON.stringify(data.user));
         localStorage.setItem("userName", data.user.name);
 
-        message.style.color = "green";
-        message.innerText = "Login successful! Redirecting...";
+        showToast("Login successful!", "success");
 
         setTimeout(() => {
-window.location.href = "/home.html";
+          window.location.href = "/Users%20Side/home.html";
         }, 800);
       } else {
-        message.style.color = "red";
-        message.innerText = data.message || "Login failed";
+        showToast(data.message || "Login failed", "error");
       }
 
     } catch (error) {
       console.error("Login error:", error);
-      message.style.color = "red";
-      message.innerText = "Something went wrong. Please try again.";
+      showToast("Something went wrong", "error");
     } finally {
       loginBtn.disabled = false;
       loginBtn.innerText = "LOGIN";
     }
   });
 });
+
+function showToast(message, type = "success") {
+  const toast = document.getElementById("toast");
+  toast.innerText = message;
+  toast.className = `toast show ${type}`;
+
+  setTimeout(() => {
+    toast.className = "toast";
+  }, 3000);
+}
 </script>
 </body>
 </html>
