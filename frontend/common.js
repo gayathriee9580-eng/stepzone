@@ -1,8 +1,10 @@
 console.log("NEW COMMON JS LOADED");
 
 function getProductImage(product) {
-  const img = (product?.image || product?.images?.[0] || "").trim();
-
+const img = (product?.image || product?.images?.[0] || "")
+  .trim()
+  .replace(/\s+/g, " "); // normalize spaces
+  
   if (!img) {
     return "/Users%20Side/images/default.png";
   }
@@ -16,7 +18,7 @@ function getProductImage(product) {
   }
 
   if (img.startsWith("uploads/")) {
-  return `/uploads/${encodeURI(img.replace("uploads/", ""))}`;
+    return "/uploads/" + encodeURIComponent(img.replace("uploads/", ""));
   }
 
   if (img.startsWith("/uploads/")) {
