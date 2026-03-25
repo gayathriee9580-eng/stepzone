@@ -65,12 +65,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const data = await response.json();
       console.log("Response:", data);
-      if (response.ok && data.token) {
+
+      if (response.ok && data.token && data.user) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        localStorage.removeItem("userName");
+
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
         localStorage.setItem("userName", data.user.name);
-        alert("Login successful");
-        window.location.href = "home.html";
+
+        console.log("TOKEN SAVED:", localStorage.getItem("token"));
+        console.log("USER SAVED:", localStorage.getItem("user"));
+        console.log("USERNAME SAVED:", localStorage.getItem("userName"));
+
+        window.location.href = "/Users%20Side/home.html";
+      } else {
+        alert(data.message || "Login failed");
       }
 
     } catch (error) {
