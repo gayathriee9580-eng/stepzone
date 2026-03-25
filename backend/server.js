@@ -37,7 +37,7 @@ app.get("/", (req, res) => res.send("Backend Running..."));
 //   res.sendFile(path.join(__dirname, "../frontend/Users Side/forgot_password.html"));
 // });
 
-app.get(/^(?!\/api|\/uploads).*$/, (req, res) => {
+app.get(/^(?!\/api|\/uploads|\/admin).*$/, (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/Users Side/forgot_password.html"));
 });
 
