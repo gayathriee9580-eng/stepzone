@@ -618,13 +618,13 @@
  <script src="admin-common.js"></script>
 <script src="../common.js"></script>
 <script>
-
 if (!token) {
   window.location.href = "admin-login.html";
 }
 
 let allOrders = [];
 let filteredOrders = [];
+let selectedOrderId = null;
 
 function updateMetrics(orderList) {
   document.getElementById("totalOrders").innerText = orderList.length;
@@ -647,7 +647,9 @@ function getStatusClass(status) {
 }
 
 function getPaymentClass(paymentStatus) {
-  return paymentStatus === "Paid" ? "payment-paid" : "payment-pending";
+  return paymentStatus === "Paid" || paymentStatus === "Refunded"
+    ? "payment-paid"
+    : "payment-pending";
 }
 
 function renderOrdersTable(orderList) {
@@ -666,6 +668,8 @@ function renderOrdersTable(orderList) {
   orderList.forEach(order => {
     const tr = document.createElement("tr");
 
+    const isCancelled = order.status === "Cancelled";
+
     tr.innerHTML = `
       <td style="font-weight:600;">#${order._id.slice(-6).toUpperCase()}</td>
       <td>${order.user?.name || "N/A"}</td>
@@ -676,7 +680,11 @@ function renderOrdersTable(orderList) {
       <td>₹${order.totalAmount ?? 0}</td>
       <td>
         <span class="action-icon" title="View" onclick="viewOrder('${order._id}')">👁</span>
-        <span class="action-icon" title="Cancel" onclick="cancelOrder('${order._id}')">✖</span>
+        ${
+          isCancelled
+            ? `<span class="action-icon" style="opacity:0.4; cursor:not-allowed;" title="Already Cancelled">✖</span>`
+            : `<span class="action-icon" title="Cancel" onclick="cancelOrder('${order._id}')">✖</span>`
+        }
       </td>
     `;
 
@@ -696,9 +704,11 @@ function showOrderDetails(order) {
     return;
   }
 
-const address = order.shippingDetails
-  ? `${order.shippingDetails.fullName || ""}, ${order.shippingDetails.address || ""}, ${order.shippingDetails.city || ""}, ${order.shippingDetails.state || ""}, ${order.shippingDetails.country || ""} - ${order.shippingDetails.pincode || ""}`
-  : "N/A";
+  selectedOrderId = order._id;
+
+  const address = order.shippingDetails
+    ? `${order.shippingDetails.fullName || ""}, ${order.shippingDetails.address || ""}, ${order.shippingDetails.city || ""}, ${order.shippingDetails.state || ""}, ${order.shippingDetails.country || ""} - ${order.shippingDetails.pincode || ""}`
+    : "N/A";
 
   detailsCard.innerHTML = `
     <div class="details-title">Order Details: #${order._id.slice(-6).toUpperCase()}</div>
@@ -718,24 +728,24 @@ const address = order.shippingDetails
       <div class="detail-label">Products</div>
       <div class="detail-value">
         ${(order.items || []).map(item => `
-  <div class="item-row">
-    <div class="item-img">
-      <img
-        src="${getImageUrl(item)}"
-        alt="${item.product?.name || 'Product'}"
-        style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;"
-        onerror="this.src='../Users Side/images/default.png'"
-      />
-    </div>
-    <div class="product-info">
-      <div style="font-size: 13px; font-weight: 600;">
-        ${item.product?.name || "N/A"}
-      </div>
-      <div style="font-size: 11px; color: var(--text-muted);">
-        Qty: ${item.quantity || 1} • Price: ₹${item.price || 0}
-      </div>
-    </div>
-  </div>
+          <div class="item-row">
+            <div class="item-img">
+              <img
+                src="${getImageUrl(item)}"
+                alt="${item.product?.name || 'Product'}"
+                style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;"
+                onerror="this.src='../Users Side/images/default.png'"
+              />
+            </div>
+            <div class="product-info">
+              <div style="font-size: 13px; font-weight: 600;">
+                ${item.product?.name || "N/A"}
+              </div>
+              <div style="font-size: 11px; color: var(--text-muted);">
+                Qty: ${item.quantity || 1} • Price: ₹${item.price || 0}
+              </div>
+            </div>
+          </div>
         `).join("")}
       </div>
     </div>
@@ -755,42 +765,42 @@ const address = order.shippingDetails
       <div class="detail-value" style="font-weight: 700;">₹${order.totalAmount ?? 0}</div>
     </div>
 
-<div class="timeline">
-  <div class="timeline-item active">
-    <div class="timeline-label">Order Placed</div>
-    <div class="timeline-date">${order.createdAt ? new Date(order.createdAt).toLocaleString() : "--"}</div>
-  </div>
+    <div class="timeline">
+      <div class="timeline-item active">
+        <div class="timeline-label">Order Placed</div>
+        <div class="timeline-date">${order.createdAt ? new Date(order.createdAt).toLocaleString() : "--"}</div>
+      </div>
 
-  <div class="timeline-item ${order.paymentStatus === "Paid" ? "active" : ""}">
-    <div class="timeline-label">Payment Verified</div>
-    <div class="timeline-date">${order.paymentStatus || "--"}</div>
-  </div>
+      <div class="timeline-item ${["Paid", "Refunded"].includes(order.paymentStatus) ? "active" : ""}">
+        <div class="timeline-label">Payment Verified</div>
+        <div class="timeline-date">${order.paymentStatus || "--"}</div>
+      </div>
 
-  <div class="timeline-item ${["Confirmed", "Packed", "Shipped", "Delivered"].includes(order.status) ? "active" : ""}">
-    <div class="timeline-label">Confirmed</div>
-    <div class="timeline-date">${["Confirmed", "Packed", "Shipped", "Delivered"].includes(order.status) ? "Done" : "--"}</div>
-  </div>
+      <div class="timeline-item ${["Confirmed", "Packed", "Shipped", "Delivered"].includes(order.status) ? "active" : ""}">
+        <div class="timeline-label">Confirmed</div>
+        <div class="timeline-date">${["Confirmed", "Packed", "Shipped", "Delivered"].includes(order.status) ? "Done" : "--"}</div>
+      </div>
 
-  <div class="timeline-item ${["Packed", "Shipped", "Delivered"].includes(order.status) ? "active" : ""}">
-    <div class="timeline-label">Packed</div>
-    <div class="timeline-date">${["Packed", "Shipped", "Delivered"].includes(order.status) ? "Done" : "--"}</div>
-  </div>
+      <div class="timeline-item ${["Packed", "Shipped", "Delivered"].includes(order.status) ? "active" : ""}">
+        <div class="timeline-label">Packed</div>
+        <div class="timeline-date">${["Packed", "Shipped", "Delivered"].includes(order.status) ? "Done" : "--"}</div>
+      </div>
 
-  <div class="timeline-item ${["Shipped", "Delivered"].includes(order.status) ? "active" : ""}">
-    <div class="timeline-label">Shipped</div>
-    <div class="timeline-date">${["Shipped", "Delivered"].includes(order.status) ? "Done" : "--"}</div>
-  </div>
+      <div class="timeline-item ${["Shipped", "Delivered"].includes(order.status) ? "active" : ""}">
+        <div class="timeline-label">Shipped</div>
+        <div class="timeline-date">${["Shipped", "Delivered"].includes(order.status) ? "Done" : "--"}</div>
+      </div>
 
-  <div class="timeline-item ${order.status === "Delivered" ? "active" : ""}">
-    <div class="timeline-label">Delivered</div>
-    <div class="timeline-date">${order.status === "Delivered" && order.deliveryDate ? new Date(order.deliveryDate).toLocaleDateString() : "--"}</div>
-  </div>
+      <div class="timeline-item ${order.status === "Delivered" ? "active" : ""}">
+        <div class="timeline-label">Delivered</div>
+        <div class="timeline-date">${order.status === "Delivered" && order.deliveryDate ? new Date(order.deliveryDate).toLocaleDateString() : "--"}</div>
+      </div>
 
-  <div class="timeline-item ${order.status === "Cancelled" ? "active" : ""}">
-    <div class="timeline-label">Cancelled</div>
-    <div class="timeline-date">${order.status === "Cancelled" ? "Cancelled" : "--"}</div>
-  </div>
-</div>
+      <div class="timeline-item ${order.status === "Cancelled" ? "active" : ""}">
+        <div class="timeline-label">Cancelled</div>
+        <div class="timeline-date">${order.status === "Cancelled" ? "Cancelled" : "--"}</div>
+      </div>
+    </div>
   `;
 }
 
@@ -822,10 +832,11 @@ function applyFilters() {
   renderOrdersTable(filteredOrders);
   updateMetrics(filteredOrders);
 
-  if (filteredOrders.length > 0) {
-    showOrderDetails(filteredOrders[0]);
+  if (selectedOrderId) {
+    const selectedOrder = filteredOrders.find(o => o._id === selectedOrderId) || allOrders.find(o => o._id === selectedOrderId);
+    showOrderDetails(selectedOrder || filteredOrders[0] || null);
   } else {
-    showOrderDetails(null);
+    showOrderDetails(filteredOrders[0] || null);
   }
 }
 
@@ -838,15 +849,13 @@ async function loadOrders() {
     });
 
     const data = await res.json();
-    allOrders = data.orders || [];
 
-    applyFilters();
-
-    if (allOrders.length > 0) {
-      showOrderDetails(allOrders[0]);
-    } else {
-      showOrderDetails(null);
+    if (!res.ok) {
+      throw new Error(data.message || "Failed to load orders");
     }
+
+    allOrders = data.orders || [];
+    applyFilters();
   } catch (err) {
     console.error("Load orders error:", err);
     document.getElementById("ordersTableBody").innerHTML = `
@@ -856,6 +865,7 @@ async function loadOrders() {
         </td>
       </tr>
     `;
+    showOrderDetails(null);
   }
 }
 
@@ -871,12 +881,17 @@ async function cancelOrder(id) {
     });
 
     const data = await res.json();
-    alert(data.message || "Order cancelled successfully");
 
-    loadOrders();
+    if (!res.ok) {
+      throw new Error(data.message || "Failed to cancel order");
+    }
+
+    alert(data.message || "Order cancelled successfully");
+    await loadOrders();
+    viewOrder(id);
   } catch (err) {
     console.error("Cancel order error:", err);
-    alert("Failed to cancel order");
+    alert(err.message || "Failed to cancel order");
   }
 }
 
