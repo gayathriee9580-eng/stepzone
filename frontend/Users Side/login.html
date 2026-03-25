@@ -29,6 +29,7 @@
             </div>
 
                   <button type="submit" class="login-btn">LOGIN</button>
+                  <p id="loginMessage" style="margin-top: 12px; font-size: 14px;"></p>
 
             <!-- <div class="divider">or</div> -->
             <div class="google-auth">
@@ -44,15 +45,21 @@
             Don't have an account? <a href="signup.html" class="create-account">Create Account</a>
         </div>
     </div>
-<script>
+<<script>
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("loginForm");
+  const message = document.getElementById("loginMessage");
+  const loginBtn = document.querySelector(".login-btn");
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value.trim();
+
+    message.innerText = "";
+    loginBtn.disabled = true;
+    loginBtn.innerText = "Logging in...";
 
     try {
       const response = await fetch("/api/auth/login", {
@@ -64,29 +71,30 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       const data = await response.json();
-      console.log("Response:", data);
 
-      if (response.ok && data.token && data.user) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        localStorage.removeItem("userName");
-
+      if (response.ok && data.token) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
         localStorage.setItem("userName", data.user.name);
 
-        console.log("TOKEN SAVED:", localStorage.getItem("token"));
-        console.log("USER SAVED:", localStorage.getItem("user"));
-        console.log("USERNAME SAVED:", localStorage.getItem("userName"));
+        message.style.color = "green";
+        message.innerText = "Login successful! Redirecting...";
 
-        window.location.href = "/Users%20Side/home.html";
+        setTimeout(() => {
+          window.location.href = "/Users%20Side/home.html";
+        }, 800);
       } else {
-        alert(data.message || "Login failed");
+        message.style.color = "red";
+        message.innerText = data.message || "Login failed";
       }
 
     } catch (error) {
-      console.error("Fetch error:", error);
-      alert("Something went wrong");
+      console.error("Login error:", error);
+      message.style.color = "red";
+      message.innerText = "Something went wrong. Please try again.";
+    } finally {
+      loginBtn.disabled = false;
+      loginBtn.innerText = "LOGIN";
     }
   });
 });
