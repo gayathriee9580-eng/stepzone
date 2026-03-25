@@ -78,14 +78,37 @@ exports.updateOrderStatus = async (req, res) => {
 exports.cancelOrder = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id);
-    if (!order) return res.status(404).json({ success: false, message: "Order not found" });
 
-    order.status = "Cancelled";
-    if (order.paymentStatus === "Paid") order.paymentStatus = "Refunded";
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found"
+      });
+    }
 
-    await order.save();
-    res.json({ success: true, order });
+    const updateData = {
+      status: "Cancelled"
+    };
+
+    if (order.paymentStatus === "Paid") {
+      updateData.paymentStatus = "Refunded";
+    }
+
+    const updatedOrder = await Order.findByIdAndUpdate(
+      req.params.id,
+      { $set: updateData },
+      { new: true }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Order cancelled successfully",
+      order: updatedOrder
+    });
   } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+    res.status(500).json({
+      success: false,
+      message: err.message
+    });
   }
 };
