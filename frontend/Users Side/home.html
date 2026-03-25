@@ -364,31 +364,31 @@
             </div>
         </div>
     </footer>
-    <script>
+    <script src="/common.js"></script>
+  <script>
 document.addEventListener("DOMContentLoaded", () => {
+  const nameElement = document.getElementById("userName");
   const userData = localStorage.getItem("user");
+  const savedName = localStorage.getItem("userName");
+
+  if (!nameElement) return;
 
   if (userData) {
-    const user = JSON.parse(userData);
-
-    const nameElement = document.getElementById("userName");
-
-    if (nameElement && user.name) {
-      nameElement.innerText = user.name;
+    try {
+      const user = JSON.parse(userData);
+      if (user && user.name) {
+        nameElement.innerText = user.name;
+        return;
+      }
+    } catch (err) {
+      console.error("User parse error:", err);
     }
+  }
+
+  if (savedName) {
+    nameElement.innerText = savedName;
   }
 });
 </script>
-  <script>
-    function logout() {
-      localStorage.removeItem("token");
-      alert("Logged out successfully");
-      window.location.href = "login.html";
-    }
-
-    
-  </script>
-
 </body>
-
 </html>
