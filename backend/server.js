@@ -1,4 +1,3 @@
-
 const express = require("express");
 const cors = require("cors");
 const swaggerUi = require("swagger-ui-express");
@@ -29,24 +28,18 @@ app.use("/api", mainRouter);
 
 app.use(express.static(path.join(__dirname, "../frontend/Users Side")));
 
+app.get("/common.js", (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/common.js"));
+});
+
 app.get("/", (req, res) => res.send("Backend Running..."));
 
-
-
-// app.get(/^(?!\/api).*$/, (req, res) => {
-//   res.sendFile(path.join(__dirname, "../frontend/Users Side/forgot_password.html"));
-// });
-
-app.get(/^(?!\/api|\/uploads|\/admin).*$/, (req, res) => {
+app.get(/^(?!\/api|\/uploads|\/admin|\/common\.js).*$/, (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/Users Side/forgot_password.html"));
 });
 
-// Start Server
- const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5000;
 
- app.listen(PORT, () => {
+app.listen(PORT, () => {
   console.log(`Server started on http://localhost:${PORT}`);
- });
-
-
-
+});
