@@ -18,7 +18,7 @@ app.use(express.json());
 
 connectDB();
 
-app.use("/admin", express.static(path.join(__dirname, "../frontend/Admin Side")));
+app.use("/admin", express.static(path.join(__dirname, "../frontend/Admin side")));
 app.use("/images", express.static("images"));
 app.use("/uploads", express.static(uploadsDir));
 
