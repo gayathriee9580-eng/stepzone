@@ -16,7 +16,7 @@ function getProductImage(product) {
   }
 
   if (img.startsWith("uploads/")) {
-    return `/${encodeURI(img)}`;
+  return `/uploads/${encodeURI(img.replace("uploads/", ""))}`;
   }
 
   if (img.startsWith("/uploads/")) {
