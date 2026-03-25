@@ -44,7 +44,7 @@
             Don't have an account? <a href="signup.html" class="create-account">Create Account</a>
         </div>
     </div>
-    <div id="toast" class="toast"></div>
+    <div id="toast"></div>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("loginForm");
@@ -83,7 +83,6 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         showToast(data.message || "Login failed", "error");
       }
-
     } catch (error) {
       console.error("Login error:", error);
       showToast("Something went wrong", "error");
@@ -96,12 +95,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function showToast(message, type = "success") {
   const toast = document.getElementById("toast");
+
   toast.innerText = message;
-  toast.className = `toast show ${type}`;
+  toast.style.position = "fixed";
+  toast.style.top = "20px";
+  toast.style.right = "20px";
+  toast.style.padding = "12px 18px";
+  toast.style.borderRadius = "6px";
+  toast.style.fontSize = "14px";
+  toast.style.color = "#fff";
+  toast.style.zIndex = "99999";
+  toast.style.minWidth = "220px";
+  toast.style.textAlign = "center";
+  toast.style.boxShadow = "0 8px 20px rgba(0,0,0,0.15)";
+  toast.style.opacity = "1";
+  toast.style.transform = "translateY(0)";
+  toast.style.transition = "all 0.3s ease";
+
+  toast.style.background = type === "success" ? "#28a745" : "#dc3545";
 
   setTimeout(() => {
-    toast.className = "toast";
-  }, 3000);
+    toast.style.opacity = "0";
+    toast.style.transform = "translateY(-20px)";
+  }, 2500);
 }
 </script>
 </body>
