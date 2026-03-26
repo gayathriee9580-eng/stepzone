@@ -249,8 +249,7 @@ card.innerHTML = `
   <!-- PRICE CENTERED -->
 <p class="product-price">${priceHTML}</p>
 
-<button class="add-cart-btn"
-  onclick="addToCart('${product._id}', this)">
+<button class="add-cart-btn">
   ADD TO CART
 </button>
 
@@ -270,7 +269,7 @@ card.addEventListener("click", () => {
       });
 
       // 🔥 Prevent redirect when clicking add to cart
-      const addCartBtn = card.querySelector(".add-cart-btn");
+const addCartBtn = card.querySelector(".add-cart-btn");
 addCartBtn.addEventListener("click", (e) => {
   e.stopPropagation();
   addToCart(product._id, addCartBtn);
