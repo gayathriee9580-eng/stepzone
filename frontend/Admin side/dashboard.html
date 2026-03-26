@@ -848,11 +848,11 @@ async function loadOrderStatus() {
     container.innerHTML = "";
 
     const statuses = [
-    { name: "Pending", value: data.pending, color: "#fbbc04" },
-    { name: "Confirmed", value: data.confirmed, color: "#1a73e8" },
-    { name: "Shipped", value: data.shipped, color: "#9334e6" },
-    { name: "Delivered", value: data.delivered, color: "#1e8e3e" },
-    { name: "Cancelled", value: data.cancelled, color: "#d93025" }
+{ name: "Pending", value: data.pending || 0, color: "#fbbc04" },
+{ name: "Confirmed", value: data.confirmed || 0, color: "#1a73e8" },
+{ name: "Shipped", value: data.shipped || 0, color: "#9334e6" },
+{ name: "Delivered", value: data.delivered || 0, color: "#1e8e3e" },
+{ name: "Cancelled", value: data.cancelled || 0, color: "#d93025" }
     ];
 
     statuses.forEach(status => {
