@@ -840,13 +840,12 @@ return "₹" + Number(price).toLocaleString("en-IN");
                     document.getElementById(`action-${productId}`).innerHTML =
                     `<button class="cancelled-btn">Cancelled</button>`;
 
-
                     alert("Item cancelled successfully");
+                    location.reload();
 
                 } catch (err) {
                     alert(err.message);
                 }
-
             });
 
         });

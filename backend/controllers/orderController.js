@@ -387,34 +387,57 @@ const orders = await Order.find({ user: new mongoose.Types.ObjectId(userId) })
 
 exports.cancelItem = async (req, res) => {
   try {
-
     const { orderId, productId } = req.body;
 
-    const order = await Order.findById(orderId);
+    const order = await Order.findById(orderId).populate("items.product");
 
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
 
     const item = order.items.find(
-      i => i.product.toString() === productId
+      i => i.product._id.toString() === productId
     );
 
     if (!item) {
       return res.status(404).json({ message: "Item not found" });
     }
 
-    // ⭐ mark item cancelled
+    if (item.status === "Cancelled") {
+      return res.status(400).json({ message: "Item already cancelled" });
+    }
+
     item.status = "Cancelled";
+
+    // Recalculate subtotal only for non-cancelled items
+    let newSubtotal = 0;
+
+    order.items.forEach(i => {
+      if (i.status !== "Cancelled") {
+        newSubtotal += i.price * i.quantity;
+      }
+    });
+
+    order.subtotal = newSubtotal;
+    order.totalAmount = newSubtotal + order.deliveryCharge - order.discount;
+
+    // If all items cancelled, mark whole order cancelled
+    const activeItems = order.items.filter(i => i.status !== "Cancelled");
+    if (activeItems.length === 0) {
+      order.status = "Cancelled";
+      order.paymentStatus = "Refunded";
+    }
 
     await order.save();
 
     res.json({
       success: true,
-      message: "Item cancelled successfully"
+      message: "Item cancelled successfully",
+      order
     });
 
   } catch (error) {
+    console.error("Cancel Item Error:", error);
     res.status(500).json({ message: error.message });
   }
 };
