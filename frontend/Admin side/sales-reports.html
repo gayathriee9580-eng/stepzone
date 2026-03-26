@@ -879,14 +879,21 @@ let url = `/api/admin/sales`;
             ${order.status || "N/A"}
           </span>
         </td>
-        <td class="action-btns">
-          <a href="invoice.html?order=${order._id}" class="btn-icon">
-            <i class="far fa-eye"></i>
-          </a>
-        </td>
+            <td class="action-btns">
+            <button class="btn-icon view-btn" type="button" title="View Summary">
+                <i class="far fa-eye"></i>
+            </button>
+            </td>
       `;
+      
 
       tr.addEventListener("click", () => showOrderSummary(order));
+
+const viewBtn = tr.querySelector(".view-btn");
+  viewBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    showOrderSummary(order);
+  });
       tbody.appendChild(tr);
     });
 
