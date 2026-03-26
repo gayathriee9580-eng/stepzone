@@ -24,9 +24,8 @@ const img = (product?.image || product?.images?.[0] || "")
   if (img.startsWith("/uploads/")) {
     return encodeURI(img);
   }
-
   if (img.startsWith("images/")) {
-    return `/${encodeURI(img)}`;
+    return `/Users%20Side/${encodeURI(img)}`;
   }
 
   return `/uploads/${encodeURI(img)}`;
