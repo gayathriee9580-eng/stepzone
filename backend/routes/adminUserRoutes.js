@@ -22,7 +22,7 @@ const {
  */
 
 router.get("/users", getUsers);
-router.put("/users/block/:id", toggleUserBlock);
+router.put("/users/:id/block", toggleUserBlock);
 router.delete("/users/:id", deleteUser);
 
 
