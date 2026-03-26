@@ -959,15 +959,21 @@ function showOrderSummary(order) {
     </div>
   `;
 
-  panelStatus.innerHTML = `
-    <span class="badge ${getStatusBadge(order.status)}">
-      ${order.status || "N/A"}
-    </span>
-  `;
+ panelStatus.innerHTML = `
+  <span class="badge ${getStatusBadge(order.status)}">
+    ${order.status || "N/A"}
+  </span>
+`;
 
-  downloadInvoiceBtn.onclick = () => {
-    window.open(`invoice.html?order=${order._id}`, "_blank");
-  };
+downloadInvoiceBtn.innerHTML = `
+  <i class="fas fa-check-circle"></i>
+  Summary Loaded
+`;
+
+downloadInvoiceBtn.disabled = true;
+downloadInvoiceBtn.style.opacity = "0.7";
+downloadInvoiceBtn.style.cursor = "default";
+downloadInvoiceBtn.onclick = null;
 }
 
 const dateInputs = document.querySelectorAll(".date-filter input");
