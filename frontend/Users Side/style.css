@@ -956,6 +956,21 @@ form {
     margin-top: auto;
 }
 
+.add-cart-btn.adding {
+  opacity: 0.8;
+  transform: scale(0.98);
+}
+
+.add-cart-btn.added {
+  background-color: #28a745;
+  color: #fff;
+  transform: scale(1.03);
+}
+
+.add-cart-btn:disabled {
+  cursor: not-allowed;
+}
+
 
 @media (max-width: 992px) {
     .hero-section {

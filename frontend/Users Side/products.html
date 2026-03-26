@@ -207,14 +207,17 @@
             </div>
         </div>
     </footer>
+    <div id="toast"></div>
+
     <script src="/common.js"></script>
 
   <script>
 let offers = []; // fetched from backend
 
 document.addEventListener("DOMContentLoaded", async () => {
-  await loadOffers();   // Fetch offers first
-  await loadProducts(); // Then load products
+  await loadOffers();
+  await loadProducts();
+  loadCartCount();
 });
 
 async function loadOffers() {
@@ -253,7 +256,7 @@ async function loadProducts() {
             `<p class="price"><span class="original-price">₹${product.price}</span> ₹${finalPrice} <span class="discount-tag">${discount}% OFF</span></p>` :
             `<p class="price">₹${product.price}</p>`
           }
-          <button class="add-cart-btn" onclick="addToCart('${product._id}')">ADD TO CART</button>
+<button class="add-cart-btn" id="cart-btn-${product._id}" onclick="addToCart('${product._id}', this)">ADD TO CART</button>
         </div>
       `;
 
@@ -313,11 +316,13 @@ function goToDetails(productId) {
 async function toggleWishlist(productId, iconElement) {
   const token = localStorage.getItem("token");
 
-  if (!token) {
-    alert("Please login first");
+if (!token) {
+  showToast("Please login first", "error");
+  setTimeout(() => {
     window.location.href = "login.html";
-    return;
-  }
+  }, 800);
+  return;
+}
 
   try {
     const response = await fetch("/api/wishlist", {
@@ -386,13 +391,21 @@ document.querySelectorAll(".wishlist-icon").forEach(icon => {
   }}
 
 // 🛒 Add to Cart
-async function addToCart(productId) {
+async function addToCart(productId, btnElement) {
   const token = localStorage.getItem("token");
 
   if (!token) {
-    alert("Please login first");
-    window.location.href = "login.html";
+    showToast("Please login first", "error");
+    setTimeout(() => {
+      window.location.href = "login.html";
+    }, 800);
     return;
+  }
+
+  if (btnElement) {
+    btnElement.disabled = true;
+    btnElement.innerText = "ADDING...";
+    btnElement.classList.add("adding");
   }
 
   try {
@@ -408,14 +421,39 @@ async function addToCart(productId) {
     const data = await response.json();
 
     if (response.ok) {
-      alert("Added to cart ✅");
-      loadCartCount(); // update navbar count
+      showToast("Added to cart ✅", "success");
+      loadCartCount();
+
+      if (btnElement) {
+        btnElement.innerText = "ADDED ✓";
+        btnElement.classList.remove("adding");
+        btnElement.classList.add("added");
+
+        setTimeout(() => {
+          btnElement.innerText = "ADD TO CART";
+          btnElement.disabled = false;
+          btnElement.classList.remove("added");
+        }, 1500);
+      }
     } else {
-      alert(data.message);
+      showToast(data.message || "Failed to add to cart", "error");
+
+      if (btnElement) {
+        btnElement.innerText = "ADD TO CART";
+        btnElement.disabled = false;
+        btnElement.classList.remove("adding");
+      }
     }
 
   } catch (error) {
     console.error("Add to Cart Error:", error);
+    showToast("Something went wrong", "error");
+
+    if (btnElement) {
+      btnElement.innerText = "ADD TO CART";
+      btnElement.disabled = false;
+      btnElement.classList.remove("adding");
+    }
   }
 }
 
@@ -448,26 +486,18 @@ async function loadCartCount() {
     console.error("Error loading cart:", error);
   }}
 
-const API_BASE_URL = "http://16.171.151.84:5000";
 
-function getProductImage(product) {
 
-  if (!product.image) {
-    return "images/default.png";
-  }
+function showToast(message, type = "success") {
+  const toast = document.getElementById("toast");
+  if (!toast) return;
 
-  // backend uploads
-  if (product.image.startsWith("uploads/")) {
-    return `${API_BASE_URL}/${product.image}`;
-  }
+  toast.innerText = message;
+  toast.className = `show ${type}`;
 
-  // old frontend images
-  if (product.image.startsWith("images/")) {
-    return product.image;
-  }
-
-  // filename only
-  return `${API_BASE_URL}/uploads/${product.image}`;
+  setTimeout(() => {
+    toast.className = "";
+  }, 2500);
 }
 
 </script>
