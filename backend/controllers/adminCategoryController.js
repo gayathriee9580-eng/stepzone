@@ -14,7 +14,10 @@ exports.getCategories = async (req, res) => {
 
     const categoriesWithCount = await Promise.all(
       categories.map(async (cat) => {
-        const count = await Product.countDocuments({ category: cat._id });
+        const count = await Product.countDocuments({
+          category: { $regex: `^${cat.name}$`, $options: "i" }
+        });
+
         return {
           ...cat,
           productCount: count
@@ -23,8 +26,8 @@ exports.getCategories = async (req, res) => {
     );
 
     res.json(categoriesWithCount);
-
   } catch (err) {
+    console.error("getCategories error:", err);
     res.status(500).json({ message: "Failed to load categories" });
   }
 };
@@ -39,20 +42,34 @@ exports.addCategory = async (req, res) => {
   try {
     const { name } = req.body;
 
-    const existing = await Category.findOne({ name });
+    if (!name || !name.trim()) {
+      return res.status(400).json({ message: "Category name is required" });
+    }
+
+    const normalizedName = name.trim().toLowerCase();
+
+    const existing = await Category.findOne({
+      name: { $regex: `^${normalizedName}$`, $options: "i" }
+    });
+
     if (existing) {
       return res.status(400).json({ message: "Category already exists" });
     }
 
-    const category = new Category({ name });
+    const category = new Category({
+      name: normalizedName,
+      isActive: true
+    });
+
     await category.save();
 
     res.status(201).json(category);
-
   } catch (err) {
+    console.error("addCategory error:", err);
     res.status(500).json({ message: "Failed to add category" });
   }
 };
+
 
 // Update Category
 // Route: PUT /api/categories/:id
@@ -63,14 +80,34 @@ exports.addCategory = async (req, res) => {
 // Response: Updated category
 exports.updateCategory = async (req, res) => {
   try {
+    const { name, isActive } = req.body;
+
+    const oldCategory = await Category.findById(req.params.id);
+    if (!oldCategory) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+
+    const updateData = {};
+    if (name) updateData.name = name.trim().toLowerCase();
+    if (typeof isActive === "boolean") updateData.isActive = isActive;
+
     const updated = await Category.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      updateData,
       { new: true }
     );
 
+    // If category name changed, update products too
+    if (name && oldCategory.name !== updateData.name) {
+      await Product.updateMany(
+        { category: oldCategory.name },
+        { category: updateData.name }
+      );
+    }
+
     res.json(updated);
   } catch (err) {
+    console.error("updateCategory error:", err);
     res.status(500).json({ message: "Update failed" });
   }
 };
@@ -83,9 +120,21 @@ exports.updateCategory = async (req, res) => {
 // Response: Confirmation message
 exports.deleteCategory = async (req, res) => {
   try {
+    const category = await Category.findById(req.params.id);
+    if (!category) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+
+    await Product.updateMany(
+      { category: category.name },
+      { $unset: { category: "" } }
+    );
+
     await Category.findByIdAndDelete(req.params.id);
-    res.json({ message: "Category deleted" });
+
+    res.json({ message: "Category deleted successfully" });
   } catch (err) {
+    console.error("deleteCategory error:", err);
     res.status(500).json({ message: "Delete failed" });
   }
 };
@@ -103,21 +152,30 @@ exports.assignProducts = async (req, res) => {
   try {
     const { categoryId, productIds } = req.body;
 
-    // Remove category from all products
+    if (!categoryId) {
+      return res.status(400).json({ message: "Category is required" });
+    }
+
+    const category = await Category.findById(categoryId);
+    if (!category) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+
+    // remove current category from products that already belong to it
     await Product.updateMany(
-      { category: categoryId },
+      { category: category.name },
       { $unset: { category: "" } }
     );
 
-    // Assign category to selected products
+    // assign selected products to this category
     await Product.updateMany(
-      { _id: { $in: productIds } },
-      { category: categoryId }
+      { _id: { $in: productIds || [] } },
+      { category: category.name }
     );
 
     res.json({ message: "Products assigned successfully" });
-
   } catch (err) {
+    console.error("assignProducts error:", err);
     res.status(500).json({ message: "Assignment failed" });
   }
 };
