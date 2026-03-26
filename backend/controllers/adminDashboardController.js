@@ -139,12 +139,15 @@ exports.getCategoryDistribution = async (req, res) => {
     const total = categories.reduce((acc, c) => acc + c.count, 0);
 
     // Assign colors for frontend display
-    const colors = { Women: "#ea4335", Kids: "#fbbc04" };
+    const colors = {
+      women: "#ea4335",
+      kids: "#fbbc04"
+    };
 
     const distribution = categories.map(c => ({
       categoryName: c._id,
       percentage: Math.round((c.count / total) * 100),
-      color: colors[c._id] || "#888"
+      color: colors[String(c._id).toLowerCase()] || "#888"
     }));
 
     res.json(distribution);
@@ -215,19 +218,21 @@ exports.getOrderStatusStats = async (req, res) => {
   try {
     const total = await Order.countDocuments();
 
-    const completed = await Order.countDocuments({ status: "Completed" });
-    const processing = await Order.countDocuments({ status: "Processing" });
-    const returned = await Order.countDocuments({ status: "Returned" });
+    const pending = await Order.countDocuments({ status: "Pending" });
+    const confirmed = await Order.countDocuments({ status: "Confirmed" });
+    const shipped = await Order.countDocuments({ status: "Shipped" });
+    const delivered = await Order.countDocuments({ status: "Delivered" });
     const cancelled = await Order.countDocuments({ status: "Cancelled" });
 
     res.json({
-      completed: total ? Math.round((completed / total) * 100) : 0,
-      processing: total ? Math.round((processing / total) * 100) : 0,
-      returned: total ? Math.round((returned / total) * 100) : 0,
+      pending: total ? Math.round((pending / total) * 100) : 0,
+      confirmed: total ? Math.round((confirmed / total) * 100) : 0,
+      shipped: total ? Math.round((shipped / total) * 100) : 0,
+      delivered: total ? Math.round((delivered / total) * 100) : 0,
       cancelled: total ? Math.round((cancelled / total) * 100) : 0
     });
-
   } catch (error) {
+    console.error("Order Status Stats Error:", error);
     res.status(500).json({ message: "Failed to load order status stats" });
   }
 };
