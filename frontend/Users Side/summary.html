@@ -771,37 +771,45 @@ function formatPrice(price){
 return "₹" + Number(price).toLocaleString("en-IN");
 }
         
-        const totalsHTML = `
-            <tr>
-                <td colspan="3" style="text-align:left;">Subtotal</td>
-                <td>₹${order.subtotal}</td>
-            </tr>
-            <tr>
-                <td colspan="3" style="text-align:left;">Delivery</td>
-                <td>₹${order.deliveryCharge}</td>
-            </tr>
-            <tr>
-                <td colspan="3" style="text-align:left;">Discount</td>
-                <td>- ₹${order.discount}</td>
-            </tr>
-            <tr>
-                <td colspan="3" style="text-align:left; font-size:18px; color:green;">
-                    <b>Total Amount</b>
-                </td>
-                <td style="font-size:18px; color:green;">
-                    <b>${formatPrice(order.totalAmount)}</b>
-                </td>
-            </tr>
+     const activeItems = order.items.filter(item => item.status !== "Cancelled");
 
-            <tr>
-                <td colspan="4" style="text-align:right; padding-top:10px;">
-                    <button onclick="cancelFullOrder('${order._id}')" 
-                        id="cancelBtn"
-                        style="padding:8px 13px;background:transparent;color:black;border:1px solid black;border-radius:50px;cursor:pointer;">
-                        Cancel Total Orders
-                    </button>
-                </td>
-            </tr>
+const recalculatedSubtotal = activeItems.reduce((sum, item) => {
+    return sum + (item.price * item.quantity);
+}, 0);
+
+const finalDelivery = activeItems.length === 0 ? 0 : order.deliveryCharge;
+const recalculatedTotal = recalculatedSubtotal + finalDelivery - order.discount;
+const totalsHTML = `
+    <tr>
+        <td colspan="3" style="text-align:left;">Subtotal</td>
+        <td>₹${recalculatedSubtotal}</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="text-align:left;">Delivery</td>
+        <td>₹${order.deliveryCharge}</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="text-align:left;">Discount</td>
+        <td>- ₹${order.discount}</td>
+    </tr>
+    <tr>
+        <td colspan="3" style="text-align:left; font-size:18px; color:green;">
+            <b>Total Amount</b>
+        </td>
+        <td style="font-size:18px; color:green;">
+            <b>${formatPrice(recalculatedTotal)}</b>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="4" style="text-align:right; padding-top:10px;">
+            <button onclick="cancelFullOrder('${order._id}')" 
+                id="cancelBtn"
+                style="padding:8px 13px;background:transparent;color:black;border:1px solid black;border-radius:50px;cursor:pointer;">
+                Cancel Total Orders
+            </button>
+        </td>
+    </tr>
+
         `;
 
         itemsContainer.innerHTML += totalsHTML;
