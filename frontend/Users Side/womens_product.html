@@ -193,6 +193,7 @@
     let offers = []; // Will store all offers from backend
 
 document.addEventListener("DOMContentLoaded", async () => {
+  loadCartCount();
   await loadOffers();       // Load offers first
   await loadWomenProducts(); // Then load products
 });
@@ -248,11 +249,15 @@ card.innerHTML = `
   <!-- PRICE CENTERED -->
 <p class="product-price">${priceHTML}</p>
 
-  <button class="add-cart-btn"
-    onclick="addToCart('${product._id}')">
-    ADD TO CART
-  </button>
-`;
+<button class="add-cart-btn"
+  onclick="addToCart('${product._id}', this)">
+  ADD TO CART
+</button>
+
+
+  `;
+
+
 card.addEventListener("click", () => {
         goToProduct(product._id);
       });
@@ -266,10 +271,10 @@ card.addEventListener("click", () => {
 
       // 🔥 Prevent redirect when clicking add to cart
       const addCartBtn = card.querySelector(".add-cart-btn");
-      addCartBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        addToCart(product._id);
-      });
+addCartBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  addToCart(product._id, addCartBtn);
+});
 
       container.appendChild(card);
     });
@@ -368,13 +373,21 @@ const res = await fetch("/api/wishlist", {
 
 
 // Add to cart
-async function addToCart(productId) {
+async function addToCart(productId, btnElement) {
   const token = localStorage.getItem("token");
 
   if (!token) {
-    alert("Please login first");
-    window.location.href = "login.html";
+    showToast("Please login first", "error");
+    setTimeout(() => {
+      window.location.href = "login.html";
+    }, 800);
     return;
+  }
+
+  if (btnElement) {
+    btnElement.disabled = true;
+    btnElement.innerText = "ADDING...";
+    btnElement.classList.add("adding");
   }
 
   try {
@@ -390,14 +403,43 @@ async function addToCart(productId) {
     const data = await response.json();
 
     if (response.ok) {
-      alert("Added to cart ✅");
-      loadCartCount(); // update navbar count
+      showToast("Added to cart 🛒", "success");
+
+      // 🔥 SAFE CHECK
+      if (typeof loadCartCount === "function") {
+        loadCartCount();
+      }
+
+      if (btnElement) {
+        btnElement.innerText = "ADDED ✓";
+        btnElement.classList.remove("adding");
+        btnElement.classList.add("added");
+
+        setTimeout(() => {
+          btnElement.innerText = "ADD TO CART";
+          btnElement.disabled = false;
+          btnElement.classList.remove("added");
+        }, 1500);
+      }
     } else {
-      alert(data.message);
+      showToast(data.message || "Failed to add to cart", "error");
+
+      if (btnElement) {
+        btnElement.innerText = "ADD TO CART";
+        btnElement.disabled = false;
+        btnElement.classList.remove("adding");
+      }
     }
 
   } catch (error) {
     console.error("Add to Cart Error:", error);
+    showToast("Something went wrong", "error");
+
+    if (btnElement) {
+      btnElement.innerText = "ADD TO CART";
+      btnElement.disabled = false;
+      btnElement.classList.remove("adding");
+    }
   }
 }
 
